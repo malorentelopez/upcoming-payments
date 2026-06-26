@@ -1,10 +1,11 @@
 "use client";
 
 import { Plus } from "lucide-react";
-import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
+
+import { useAppData } from "@/components/data/app-data-provider";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -20,7 +21,7 @@ import { Label } from "@/components/ui/label";
 import { createCategory } from "@/lib/actions/payments";
 
 export function AddCategoryDialog() {
-  const router = useRouter();
+  const { refresh: refreshAppData } = useAppData();
   const t = useTranslations("settings");
   const tCommon = useTranslations("common");
   const tAuth = useTranslations("auth");
@@ -36,7 +37,7 @@ export function AddCategoryDialog() {
         await createCategory(formData);
         toast.success(t("categoryAdded"));
         setOpen(false);
-        router.refresh();
+        await refreshAppData();
       } catch (error) {
         toast.error(
           error instanceof Error ? error.message : tAuth("somethingWrong"),

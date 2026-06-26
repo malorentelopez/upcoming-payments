@@ -5,7 +5,7 @@ import {
   DashboardSkeleton,
 } from "@/components/dashboard/dashboard-client";
 import { AppDataSeed } from "@/components/data/app-data-provider";
-import { getDashboardData } from "@/lib/data/queries";
+import { getAppShellData } from "@/lib/data/queries";
 import { getMonthKey } from "@/lib/payments/occurrences";
 
 interface DashboardPageProps {
@@ -24,7 +24,7 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 }
 
 async function DashboardContent({ initialMonth }: { initialMonth: string }) {
-  const data = await getDashboardData();
+  const data = await getAppShellData();
 
   return (
     <AppDataSeed data={data}>

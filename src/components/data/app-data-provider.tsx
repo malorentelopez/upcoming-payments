@@ -4,6 +4,7 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useLayoutEffect,
   useMemo,
   useState,
@@ -11,17 +12,19 @@ import {
 } from "react";
 
 import { fetchAppData } from "@/lib/actions/app-data";
-import type { DashboardData } from "@/lib/data/queries";
-import type { PaymentView, ProfileView } from "@/lib/types";
+import type { AppShellData } from "@/lib/data/queries";
+import type { CategoryView, PaymentView, ProfileView } from "@/lib/types";
 
 interface AppDataContextValue {
   payments: PaymentView[];
   profile: ProfileView | null;
+  categories: CategoryView[];
+  userEmail: string | null;
   defaultCurrency: string;
   hasCache: boolean;
   isLoading: boolean;
   isRefreshing: boolean;
-  seedFromServer: (data: DashboardData) => void;
+  seedFromServer: (data: AppShellData) => void;
   loadIfEmpty: () => Promise<void>;
   refresh: () => Promise<void>;
 }
@@ -29,11 +32,11 @@ interface AppDataContextValue {
 const AppDataContext = createContext<AppDataContextValue | null>(null);
 
 export function AppDataProvider({ children }: { children: ReactNode }) {
-  const [data, setData] = useState<DashboardData | null>(null);
+  const [data, setData] = useState<AppShellData | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  const seedFromServer = useCallback((seed: DashboardData) => {
+  const seedFromServer = useCallback((seed: AppShellData) => {
     setData(seed);
   }, []);
 
@@ -61,10 +64,16 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     }
   }, [data]);
 
+  useEffect(() => {
+    void loadIfEmpty();
+  }, [loadIfEmpty]);
+
   const value = useMemo(
     () => ({
       payments: data?.payments ?? [],
       profile: data?.profile ?? null,
+      categories: data?.categories ?? [],
+      userEmail: data?.userEmail ?? null,
       defaultCurrency: data?.profile?.default_currency ?? "USD",
       hasCache: data !== null,
       isLoading,
@@ -84,7 +93,7 @@ export function AppDataSeed({
   data,
   children,
 }: {
-  data: DashboardData;
+  data: AppShellData;
   children: ReactNode;
 }) {
   const { seedFromServer } = useAppData();

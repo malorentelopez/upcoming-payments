@@ -1,10 +1,11 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+
 import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { AddCategoryDialog } from "@/components/settings/add-category-dialog";
+import { useAppData } from "@/components/data/app-data-provider";
 import { Button } from "@/components/ui/button";
 import { deleteCategory } from "@/lib/actions/payments";
 import { sanitizeHexColor } from "@/lib/security/colors";
@@ -15,7 +16,7 @@ interface CategoriesSectionProps {
 }
 
 export function CategoriesSection({ categories }: CategoriesSectionProps) {
-  const router = useRouter();
+  const { refresh: refreshAppData } = useAppData();
   const t = useTranslations("settings");
   const tCommon = useTranslations("common");
 
@@ -25,7 +26,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
       toast.error(result.error);
     } else {
       toast.success(t("categoryRemoved"));
-      router.refresh();
+      await refreshAppData();
     }
   }
 
