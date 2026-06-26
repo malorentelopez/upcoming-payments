@@ -84,6 +84,8 @@
   --bottom-nav-extra: 0.75rem;
   --bottom-nav-inset: calc(env(safe-area-inset-bottom, 0px) + var(--bottom-nav-extra));
   --mobile-bottom-clearance: calc(7rem + var(--bottom-nav-inset));
+  --top-safe-extra: 1.5rem;
+  --top-safe-inset: calc(env(safe-area-inset-top, 0px) + var(--top-safe-extra));
 }
 
 .dark {
@@ -161,5 +163,9 @@
 
   .h-mobile-nav-fade {
     height: var(--mobile-bottom-clearance);
+  }
+
+  .pt-safe-top {
+    padding-top: var(--top-safe-inset);
   }
 }
