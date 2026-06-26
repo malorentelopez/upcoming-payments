@@ -20,6 +20,15 @@ interface AuthFormProps {
   redirectTo?: string | null;
 }
 
+function isEmailNotConfirmed(message: string, code?: string): boolean {
+  const lower = message.toLowerCase();
+  return (
+    code === "email_not_confirmed" ||
+    lower.includes("email not confirmed") ||
+    lower.includes("email not verified")
+  );
+}
+
 export function AuthForm({ mode, redirectTo }: AuthFormProps) {
   const t = useTranslations("auth");
   const tCommon = useTranslations("common");
@@ -42,10 +51,11 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
           throw new Error(parsed.error.issues[0]?.message ?? t("somethingWrong"));
         }
 
-        const { error } = await supabase.auth.signUp({
+        const { data, error } = await supabase.auth.signUp({
           email: parsed.data.email,
           password: parsed.data.password,
           options: {
+            emailRedirectTo: `${window.location.origin}/auth/callback`,
             data: {
               full_name: parsed.data.displayName || undefined,
               locale: detectClientLocale(),
@@ -53,8 +63,16 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
           },
         });
         if (error) throw error;
-        toast.success(t("accountCreated"));
-        router.push("/login");
+
+        if (data.session) {
+          toast.success(t("accountCreated"));
+          router.push(postLoginPath);
+          router.refresh();
+          return;
+        }
+
+        toast.success(t("checkEmail"));
+        router.push("/login?checkEmail=1");
         router.refresh();
       } else {
         const parsed = loginSchema.safeParse({ email, password });
@@ -66,7 +84,12 @@ export function AuthForm({ mode, redirectTo }: AuthFormProps) {
           email: parsed.data.email,
           password: parsed.data.password,
         });
-        if (error) throw error;
+        if (error) {
+          if (isEmailNotConfirmed(error.message, error.code)) {
+            throw new Error(t("emailNotConfirmed"));
+          }
+          throw error;
+        }
         router.push(postLoginPath);
         router.refresh();
       }

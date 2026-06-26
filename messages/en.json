@@ -40,6 +40,31 @@
         "title": "Insights",
         "desc": "Charts to spot where money goes"
       }
+    },
+    "faq": {
+      "title": "Common questions",
+      "items": {
+        "what": {
+          "question": "What is ahead?",
+          "answer": "A simple app to track upcoming payments — subscriptions, rent, loans, and one-off bills — organized by month. You enter amounts and dates yourself."
+        },
+        "bank": {
+          "question": "Does it connect to my bank?",
+          "answer": "No. ahead does not read your bank account or move money. Everything you see is what you choose to add."
+        },
+        "free": {
+          "question": "Is it free?",
+          "answer": "Yes, for personal use. We may introduce paid plans later, but the core tracker will stay straightforward."
+        },
+        "privacy": {
+          "question": "Who can see my data?",
+          "answer": "Only you. Your payments are private to your account and protected by database-level access controls."
+        },
+        "delete": {
+          "question": "How do I delete my account?",
+          "answer": "Go to Me → Delete account, confirm with your email, and your data is permanently removed. You can also email us if you need help."
+        }
+      }
     }
   },
   "auth": {
@@ -61,6 +86,9 @@
     "alreadyHaveAccount": "Already have an account?",
     "newHere": "New here?",
     "accountCreated": "Account created. You can sign in now.",
+    "checkEmail": "Check your email to confirm your account before signing in.",
+    "checkEmailBanner": "We sent you a confirmation link. Open it, then sign in here. Google sign-in does not require this step.",
+    "emailNotConfirmed": "Please confirm your email first. Check your inbox for the confirmation link.",
     "somethingWrong": "Something went wrong"
   },
   "dashboard": {

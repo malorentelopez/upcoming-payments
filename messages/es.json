@@ -40,6 +40,31 @@
         "title": "Estadísticas",
         "desc": "Gráficos para ver en qué se te va el dinero"
       }
+    },
+    "faq": {
+      "title": "Preguntas frecuentes",
+      "items": {
+        "what": {
+          "question": "¿Qué es ahead?",
+          "answer": "Una aplicación sencilla para llevar el control de tus próximos pagos — suscripciones, alquiler, préstamos y facturas puntuales — organizados por mes. Tú introduces los importes y las fechas."
+        },
+        "bank": {
+          "question": "¿Se conecta con mi banco?",
+          "answer": "No. ahead no lee tu cuenta bancaria ni mueve dinero. Todo lo que ves es lo que tú decides añadir."
+        },
+        "free": {
+          "question": "¿Es gratis?",
+          "answer": "Sí, para uso personal. Más adelante podríamos ofrecer planes de pago, pero el núcleo de la app seguirá siendo sencillo."
+        },
+        "privacy": {
+          "question": "¿Quién puede ver mis datos?",
+          "answer": "Solo tú. Tus pagos son privados de tu cuenta y están protegidos con controles de acceso a nivel de base de datos."
+        },
+        "delete": {
+          "question": "¿Cómo elimino mi cuenta?",
+          "answer": "Ve a Mi cuenta → Eliminar cuenta, confirma con tu correo electrónico y tus datos se borrarán de forma permanente. También puedes escribirnos si necesitas ayuda."
+        }
+      }
     }
   },
   "auth": {
@@ -61,6 +86,9 @@
     "alreadyHaveAccount": "¿Ya tienes cuenta?",
     "newHere": "¿Primera vez aquí?",
     "accountCreated": "Cuenta creada. Ya puedes iniciar sesión.",
+    "checkEmail": "Revisa tu correo para confirmar la cuenta antes de iniciar sesión.",
+    "checkEmailBanner": "Te hemos enviado un enlace de confirmación. Ábrelo y luego inicia sesión aquí. Con Google no hace falta este paso.",
+    "emailNotConfirmed": "Confirma tu correo primero. Busca el enlace de confirmación en tu bandeja de entrada.",
     "somethingWrong": "Ha ocurrido un error"
   },
   "dashboard": {

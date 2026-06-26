@@ -8,12 +8,12 @@ import { PageTransition } from "@/components/motion/page-transition";
 import { safeRedirectPath } from "@/lib/security/safe-redirect";
 
 interface LoginPageProps {
-  searchParams: Promise<{ redirect?: string }>;
+  searchParams: Promise<{ redirect?: string; checkEmail?: string }>;
 }
 
 export default async function LoginPage({ searchParams }: LoginPageProps) {
   const t = await getTranslations("auth");
-  const { redirect: redirectParam } = await searchParams;
+  const { redirect: redirectParam, checkEmail } = await searchParams;
 
   return (
     <main className="relative flex min-h-full flex-col items-center justify-center px-4 py-12">
@@ -27,6 +27,14 @@ export default async function LoginPage({ searchParams }: LoginPageProps) {
           <h1 className="text-2xl font-semibold tracking-tight">{t("welcomeBack")}</h1>
           <p className="text-sm text-muted-foreground">{t("signInSubtitle")}</p>
         </div>
+        {checkEmail === "1" && (
+          <div
+            role="status"
+            className="rounded-2xl border border-primary/30 bg-primary/5 px-4 py-3 text-sm text-foreground"
+          >
+            {t("checkEmailBanner")}
+          </div>
+        )}
         <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
           <AuthForm mode="login" redirectTo={safeRedirectPath(redirectParam)} />
         </div>
