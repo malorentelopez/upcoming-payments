@@ -14,7 +14,7 @@ export default async function NewPaymentPage() {
   const t = await getTranslations("payments");
 
   return (
-    <PageTransition className="space-y-6">
+    <PageTransition entrance={false} className="space-y-6">
       <div className="flex items-center gap-3">
         <Link
           href="/dashboard"

@@ -14,6 +14,7 @@ import {
   type HorizonDays,
 } from "@/components/dashboard/dashboard-upcoming-panel";
 import { LedgerFilterSwitcher } from "@/components/ledger/ledger-filter";
+import { useAppData } from "@/components/data/app-data-provider";
 import { PageTransition } from "@/components/motion/page-transition";
 import { MotionEntranceProvider } from "@/components/motion/motion-entrance";
 import { PrivacyToggle } from "@/components/privacy/privacy-toggle";
@@ -41,11 +42,8 @@ import {
   type LedgerFilter,
 } from "@/lib/payments/ledger";
 import { replaceAppUrl } from "@/lib/navigation/replace-app-url";
-import type { PaymentView } from "@/lib/types";
 
 interface DashboardClientProps {
-  payments: PaymentView[];
-  defaultCurrency: string;
   initialMonth: string;
 }
 
@@ -72,10 +70,9 @@ function syncDashboardUrl(options: {
 }
 
 export function DashboardClient({
-  payments,
-  defaultCurrency,
   initialMonth,
 }: DashboardClientProps) {
+  const { payments, defaultCurrency } = useAppData();
   const searchParams = useSearchParams();
   const t = useTranslations("dashboard");
   const locale = useLocale();

@@ -18,15 +18,18 @@ function NavTab({
   label,
   icon: Icon,
   active,
+  prefetch,
 }: {
   href: string;
   label: string;
   icon: React.ComponentType<{ className?: string }>;
   active: boolean;
+  prefetch?: boolean;
 }) {
   return (
     <Link
       href={href}
+      prefetch={prefetch}
       className={cn(
         "flex min-h-11 min-w-[4.5rem] flex-col items-center justify-end gap-1 rounded-xl px-3 py-2 text-xs transition-colors",
         active
@@ -46,8 +49,8 @@ export function BottomNav() {
   const tCommon = useTranslations("common");
 
   const leftTabs = [
-    { href: "/dashboard", label: t("overview"), icon: LayoutGrid },
-    { href: "/insights", label: t("insights"), icon: BarChart3 },
+    { href: "/dashboard", label: t("overview"), icon: LayoutGrid, prefetch: true },
+    { href: "/insights", label: t("insights"), icon: BarChart3, prefetch: false },
   ];
 
   const rightTabs = [
@@ -56,11 +59,11 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/90 pb-[var(--bottom-nav-inset)] backdrop-blur-lg md:hidden">
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 pb-[var(--bottom-nav-inset)] md:hidden">
       <div className="relative mx-auto max-w-lg pt-2">
         <div className="grid grid-cols-[1fr_auto_1fr] items-end px-2">
           <ul className="flex items-end justify-evenly">
-            {leftTabs.map(({ href, label, icon }) => {
+            {leftTabs.map(({ href, label, icon, prefetch }) => {
               const active =
                 pathname === href ||
                 (href !== "/dashboard" && pathname.startsWith(href));
@@ -71,6 +74,7 @@ export function BottomNav() {
                     label={label}
                     icon={icon}
                     active={active}
+                    prefetch={prefetch}
                   />
                 </li>
               );

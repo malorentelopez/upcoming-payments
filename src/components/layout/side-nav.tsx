@@ -14,8 +14,8 @@ export function SideNav() {
   const tCommon = useTranslations("common");
 
   const links = [
-    { href: "/dashboard", label: t("overview"), icon: LayoutGrid },
-    { href: "/insights", label: t("insights"), icon: BarChart3 },
+    { href: "/dashboard", label: t("overview"), icon: LayoutGrid, prefetch: true },
+    { href: "/insights", label: t("insights"), icon: BarChart3, prefetch: false },
     { href: "/settings", label: t("settings"), icon: Settings },
     { href: "/me", label: t("me"), icon: User },
   ];
@@ -25,12 +25,13 @@ export function SideNav() {
       <div className="sticky top-0 flex h-screen flex-col px-4 py-8">
         <AppLogo href="/dashboard" className="mb-8 px-2" />
         <nav className="flex flex-1 flex-col gap-1">
-          {links.map(({ href, label, icon: Icon }) => {
+          {links.map(({ href, label, icon: Icon, prefetch }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
             return (
               <Link
                 key={href}
                 href={href}
+                prefetch={prefetch}
                 className={cn(
                   "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-colors",
                   active

@@ -1,9 +1,10 @@
 "use client";
 
-import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 
+import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { useMotionEntrance } from "@/components/motion/motion-entrance";
+import { cn } from "@/lib/utils";
 
 interface PageTransitionProps {
   children: ReactNode;
@@ -17,23 +18,20 @@ export function PageTransition({
   className,
   entrance,
 }: PageTransitionProps) {
-  const reduceMotion = useReducedMotion();
+  const reduceMotion = usePrefersReducedMotion();
   const contextEntrance = useMotionEntrance();
-  const shouldAnimate = entrance ?? contextEntrance;
-
-  if (reduceMotion || !shouldAnimate) {
-    return <div className={className}>{children}</div>;
-  }
+  const shouldAnimate = (entrance ?? contextEntrance) && !reduceMotion;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 8 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-      className={className}
+    <div
+      className={cn(
+        className,
+        shouldAnimate &&
+          "motion-safe:animate-in motion-safe:fade-in motion-safe:slide-in-from-bottom-2 motion-safe:duration-300 motion-safe:ease-out",
+      )}
     >
       {children}
-    </motion.div>
+    </div>
   );
 }
 
@@ -43,60 +41,17 @@ interface StaggerListProps {
   entrance?: boolean;
 }
 
-export function StaggerList({ children, className, entrance }: StaggerListProps) {
-  const reduceMotion = useReducedMotion();
-  const contextEntrance = useMotionEntrance();
-  const shouldAnimate = entrance ?? contextEntrance;
-
-  if (reduceMotion || !shouldAnimate) {
-    return <div className={className}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      initial="hidden"
-      animate="visible"
-      variants={{
-        hidden: {},
-        visible: { transition: { staggerChildren: 0.04 } },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
+export function StaggerList({ children, className }: StaggerListProps) {
+  return <div className={className}>{children}</div>;
 }
 
 export function StaggerItem({
   children,
   className,
-  entrance,
 }: {
   children: ReactNode;
   className?: string;
   entrance?: boolean;
 }) {
-  const reduceMotion = useReducedMotion();
-  const contextEntrance = useMotionEntrance();
-  const shouldAnimate = entrance ?? contextEntrance;
-
-  if (reduceMotion || !shouldAnimate) {
-    return <div className={className}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      variants={{
-        hidden: { opacity: 0, y: 6 },
-        visible: {
-          opacity: 1,
-          y: 0,
-          transition: { duration: 0.25, ease: [0.22, 1, 0.36, 1] },
-        },
-      }}
-      className={className}
-    >
-      {children}
-    </motion.div>
-  );
+  return <div className={className}>{children}</div>;
 }
