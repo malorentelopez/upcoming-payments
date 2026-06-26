@@ -3,9 +3,16 @@ import { describe, expect, it } from "vitest";
 import {
   expandAllOccurrences,
   expandPaymentOccurrences,
+  filterOccurrencesInRange,
+  getHorizonRange,
   getMonthRange,
+  isOccurrenceUpcoming,
+  isCurrentMonth,
+  isFutureMonth,
+  isPastMonth,
   parseMonthParam,
   shiftMonth,
+  splitOccurrencesByDueDate,
   sumOccurrences,
 } from "./occurrences";
 import type { Payment } from "@/lib/types";
@@ -179,5 +186,90 @@ describe("sumOccurrences", () => {
     ];
     const occurrences = expandAllOccurrences(payments, start, end);
     expect(sumOccurrences(occurrences, "USD")).toBe(125);
+  });
+});
+
+describe("splitOccurrencesByDueDate", () => {
+  const today = new Date(2026, 5, 15);
+
+  it("splits upcoming and past due by today", () => {
+    const { start, end } = getMonthRange(2026, 6);
+    const payments = [
+      makePayment({ id: "past", type: "one_off", due_date: "2026-06-05" }),
+      makePayment({ id: "today", type: "one_off", due_date: "2026-06-15" }),
+      makePayment({ id: "future", type: "one_off", due_date: "2026-06-25" }),
+    ];
+    const occurrences = expandAllOccurrences(payments, start, end);
+    const { upcoming, pastDue } = splitOccurrencesByDueDate(occurrences, today);
+
+    expect(pastDue).toHaveLength(1);
+    expect(pastDue[0].paymentId).toBe("past");
+    expect(upcoming).toHaveLength(2);
+    expect(upcoming.map((o) => o.paymentId)).toEqual(["today", "future"]);
+  });
+});
+
+describe("isOccurrenceUpcoming", () => {
+  const today = new Date(2026, 5, 15);
+
+  it("treats today as upcoming", () => {
+    expect(isOccurrenceUpcoming(new Date(2026, 5, 15), today)).toBe(true);
+  });
+
+  it("treats yesterday as past due", () => {
+    expect(isOccurrenceUpcoming(new Date(2026, 5, 14), today)).toBe(false);
+  });
+});
+
+describe("getHorizonRange", () => {
+  const today = new Date(2026, 5, 10);
+
+  it("includes today and the Nth day", () => {
+    const { start, end } = getHorizonRange(14, today);
+    expect(start.getDate()).toBe(10);
+    expect(end.getDate()).toBe(24);
+    expect(end.getMonth()).toBe(5);
+  });
+});
+
+describe("filterOccurrencesInRange", () => {
+  it("filters occurrences within horizon", () => {
+    const today = new Date(2026, 5, 10);
+    const { start, end } = getHorizonRange(7, today);
+    const payments = [
+      makePayment({ id: "in", type: "one_off", due_date: "2026-06-12" }),
+      makePayment({ id: "out", type: "one_off", due_date: "2026-06-25" }),
+    ];
+    const all = expandAllOccurrences(payments, start, end);
+    const filtered = filterOccurrencesInRange(all, start, end);
+
+    expect(filtered).toHaveLength(1);
+    expect(filtered[0].paymentId).toBe("in");
+  });
+});
+
+describe("month context helpers", () => {
+  const today = new Date(2026, 5, 15);
+
+  it("detects current, past, and future months", () => {
+    expect(isCurrentMonth(2026, 6, today)).toBe(true);
+    expect(isPastMonth(2026, 5, today)).toBe(true);
+    expect(isFutureMonth(2026, 7, today)).toBe(true);
+  });
+});
+
+describe("pending vs total sums", () => {
+  it("pending excludes past-due occurrences in the month", () => {
+    const today = new Date(2026, 5, 15);
+    const { start, end } = getMonthRange(2026, 6);
+    const payments = [
+      makePayment({ id: "past", amount: 40, type: "one_off", due_date: "2026-06-05" }),
+      makePayment({ id: "future", amount: 60, type: "one_off", due_date: "2026-06-25" }),
+    ];
+    const occurrences = expandAllOccurrences(payments, start, end);
+    const { upcoming } = splitOccurrencesByDueDate(occurrences, today);
+
+    expect(sumOccurrences(occurrences, "USD")).toBe(100);
+    expect(sumOccurrences(upcoming, "USD")).toBe(60);
   });
 });
