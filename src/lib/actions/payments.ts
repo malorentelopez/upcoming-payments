@@ -94,6 +94,12 @@ async function assertCategoryOwned(
   }
 }
 
+function emptyToNull(value: FormDataEntryValue | undefined): string | null | undefined {
+  if (value === undefined) return undefined;
+  const str = String(value);
+  return str === "" ? null : str;
+}
+
 function parsePaymentFormData(formData: FormData) {
   const raw = Object.fromEntries(formData.entries());
   return paymentFormSchema.safeParse({
@@ -105,6 +111,8 @@ function parsePaymentFormData(formData: FormData) {
     totalInstallments: raw.totalInstallments ? Number(raw.totalInstallments) : undefined,
     paidInstallments: raw.paidInstallments ? Number(raw.paidInstallments) : 0,
     categoryId: raw.categoryId === "" ? null : raw.categoryId,
+    endDate: emptyToNull(raw.endDate),
+    notes: raw.notes === "" ? null : raw.notes,
   });
 }
 
