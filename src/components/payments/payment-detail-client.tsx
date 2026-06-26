@@ -13,7 +13,7 @@ import {
   togglePaymentActive,
 } from "@/lib/actions/payments";
 import { sanitizeHexColor } from "@/lib/security/colors";
-import { formatCurrency } from "@/lib/payments/formatters";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 import { localeToIntl } from "@/lib/i18n/locale";
 import type { PaymentFrequency, PaymentType, PaymentView } from "@/lib/types";
 import { cn } from "@/lib/utils";
@@ -29,6 +29,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
   const tLedger = useTranslations("ledger");
   const locale = useLocale();
   const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
+  const { formatAmount } = useFormatCurrency();
 
   async function handleToggle() {
     const result = await togglePaymentActive(payment.id, !payment.is_active);
@@ -66,7 +67,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-3xl font-semibold tabular-nums">
-              {formatCurrency(payment.amount, payment.currency, intlLocale)}
+              {formatAmount(payment.amount, payment.currency, intlLocale)}
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               <Badge variant="secondary">{t(`types.${payment.type}` as `types.${PaymentType}`)}</Badge>

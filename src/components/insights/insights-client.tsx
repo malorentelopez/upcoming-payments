@@ -11,6 +11,7 @@ import {
 } from "@/components/charts/insights-charts";
 import { LedgerFilterSwitcher } from "@/components/ledger/ledger-filter";
 import { PageTransition } from "@/components/motion/page-transition";
+import { PrivacyToggle } from "@/components/privacy/privacy-toggle";
 import {
   expandAllOccurrences,
   getMonthRange,
@@ -20,7 +21,8 @@ import {
   shiftMonth,
   sumOccurrences,
 } from "@/lib/payments/occurrences";
-import { formatCurrency, formatMonthYear } from "@/lib/payments/formatters";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
+import { formatMonthYear } from "@/lib/payments/formatters";
 import { localeToIntl } from "@/lib/i18n/locale";
 import {
   appendLedgerParam,
@@ -49,6 +51,7 @@ export function InsightsClient({
   const tCommon = useTranslations("common");
   const locale = useLocale();
   const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
+  const { formatAmount } = useFormatCurrency();
 
   const monthParam = searchParams.get("month") ?? initialMonth;
   const ledger = parseLedgerFilter(searchParams.get("ledger"));
@@ -116,7 +119,10 @@ export function InsightsClient({
           <p className="text-sm text-muted-foreground">{t("trends")}</p>
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
         </div>
-        <LedgerFilterSwitcher value={ledger} onChange={setLedger} className="mt-1" />
+        <div className="flex shrink-0 items-center gap-1">
+          <PrivacyToggle />
+          <LedgerFilterSwitcher value={ledger} onChange={setLedger} className="mt-1" />
+        </div>
       </header>
 
       <section className="rounded-2xl border border-border/60 bg-card p-5">
@@ -133,7 +139,7 @@ export function InsightsClient({
               {t("byCategory")}
             </h2>
             <p className="text-lg font-semibold tabular-nums">
-              {formatCurrency(monthTotal, defaultCurrency, intlLocale)}
+              {formatAmount(monthTotal, defaultCurrency, intlLocale)}
             </p>
           </div>
           <div className="flex items-center gap-1">
@@ -173,7 +179,7 @@ export function InsightsClient({
                 {item.name}
               </span>
               <span className="font-medium tabular-nums">
-                {formatCurrency(item.value, defaultCurrency, intlLocale)}
+                {formatAmount(item.value, defaultCurrency, intlLocale)}
               </span>
             </li>
           ))}

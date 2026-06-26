@@ -204,6 +204,13 @@
     "currentlyUsing": "Mode {mode} actif{systemNote}.",
     "fromSystem": " (selon le système)"
   },
+  "privacy": {
+    "title": "Affichage privé",
+    "description": "Masquez les montants réels lorsque vous montrez l'application à quelqu'un. Les chiffres restent masqués sur cet appareil jusqu'à désactivation.",
+    "toggleLabel": "Masquer les montants",
+    "hideAmounts": "Masquer les montants",
+    "showAmounts": "Afficher les montants"
+  },
   "language": {
     "title": "Langue",
     "changeLanguage": "Changer de langue",

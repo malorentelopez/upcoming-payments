@@ -204,6 +204,13 @@
     "currentlyUsing": "Currently using {mode} mode{systemNote}.",
     "fromSystem": " (from system)"
   },
+  "privacy": {
+    "title": "Privacy display",
+    "description": "Hide real amounts when showing the app to someone else. Numbers stay masked on this device until you turn it off.",
+    "toggleLabel": "Hide amounts",
+    "hideAmounts": "Hide amounts",
+    "showAmounts": "Show amounts"
+  },
   "language": {
     "title": "Language",
     "changeLanguage": "Change language",

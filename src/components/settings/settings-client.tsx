@@ -5,6 +5,7 @@ import { useTranslations } from "next-intl";
 
 import { CookiePreferencesTrigger } from "@/components/consent/cookie-preferences-dialog";
 import { PageTransition } from "@/components/motion/page-transition";
+import { PrivacySettings } from "@/components/privacy/privacy-settings";
 import { CategoriesSection } from "@/components/settings/categories-section";
 import { ThemeSettings } from "@/components/theme/theme-settings";
 import { buttonVariants } from "@/components/ui/button";
@@ -27,6 +28,8 @@ export function SettingsClient({ categories }: SettingsClientProps) {
       </header>
 
       <ThemeSettings />
+
+      <PrivacySettings />
 
       <CategoriesSection categories={categories} />
 

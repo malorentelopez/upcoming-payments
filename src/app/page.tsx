@@ -8,6 +8,7 @@ import { ThemeSwitcher } from "@/components/theme/theme-switcher";
 import { buttonVariants } from "@/components/ui/button";
 import { PageTransition } from "@/components/motion/page-transition";
 import { LandingFaq } from "@/components/landing/landing-faq";
+import { LandingHeroAccent } from "@/components/landing/landing-hero-accent";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { cn } from "@/lib/utils";
 
@@ -23,8 +24,9 @@ export default async function LandingPage() {
   return (
     <main className="relative flex min-h-full flex-col overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
+      <LandingHeroAccent />
 
-      <header className="relative z-10 flex items-center justify-between gap-3 px-4 py-4 sm:px-6 sm:py-6 md:px-10">
+      <header className="relative z-10 flex items-center justify-between gap-3 px-4 pb-4 pt-safe-top sm:px-6 sm:pb-6 md:px-10">
         <AppLogo href="/" size="lg" className="shrink-0 max-sm:text-2xl" />
         <div className="flex shrink-0 items-center gap-0.5 sm:gap-2">
           <ThemeSwitcher compact />

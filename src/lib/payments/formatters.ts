@@ -11,6 +11,43 @@ export function formatCurrency(
   }).format(amount);
 }
 
+/** Replaces digits in a formatted currency string with bullets for privacy mode. */
+export function maskCurrency(
+  amount: number,
+  currency = "USD",
+  locale = "en-US",
+): string {
+  return formatCurrency(amount, currency, locale).replace(/\d/g, "•");
+}
+
+export function formatDisplayCurrency(
+  amount: number,
+  currency = "USD",
+  locale = "en-US",
+  privacyEnabled = false,
+): string {
+  if (privacyEnabled) {
+    return maskCurrency(amount, currency, locale);
+  }
+
+  return formatCurrency(amount, currency, locale);
+}
+
+export function formatDisplayCurrencyAxis(
+  amount: number,
+  currency = "USD",
+  locale = "en-US",
+  privacyEnabled = false,
+): string {
+  const formatted = formatCurrencyAxis(amount, currency, locale);
+
+  if (privacyEnabled) {
+    return formatted.replace(/\d/g, "•");
+  }
+
+  return formatted;
+}
+
 export function formatCurrencyAxis(
   amount: number,
   currency = "USD",

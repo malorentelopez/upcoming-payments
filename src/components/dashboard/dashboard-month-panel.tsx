@@ -6,7 +6,8 @@ import { useTranslations } from "next-intl";
 import { CollapsiblePaymentSection } from "@/components/dashboard/collapsible-payment-section";
 import { PaymentCard } from "@/components/payments/payment-card";
 import { StaggerItem, StaggerList } from "@/components/motion/page-transition";
-import { formatCurrency, formatMonthYear } from "@/lib/payments/formatters";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
+import { formatMonthYear } from "@/lib/payments/formatters";
 import type { PaymentOccurrence } from "@/lib/types";
 
 interface DashboardMonthHeroProps {
@@ -32,6 +33,7 @@ export function DashboardMonthHero({
 }: DashboardMonthHeroProps) {
   const t = useTranslations("dashboard");
   const tCommon = useTranslations("common");
+  const { formatAmount } = useFormatCurrency();
 
   return (
     <section className="relative z-10 rounded-2xl border border-border/60 bg-gradient-to-br from-primary/10 via-card to-card p-5 max-md:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.18)] dark:max-md:shadow-[0_14px_28px_-8px_rgba(0,0,0,0.45)]">
@@ -49,11 +51,11 @@ export function DashboardMonthHero({
             <>
               <p className="text-sm text-muted-foreground">{t("stillToPay")}</p>
               <p className="text-3xl font-semibold tabular-nums tracking-tight">
-                {formatCurrency(monthPending, defaultCurrency, intlLocale)}
+                {formatAmount(monthPending, defaultCurrency, intlLocale)}
               </p>
               <p className="mt-1 text-sm text-muted-foreground/70">
                 {t("totalThisMonth", {
-                  amount: formatCurrency(monthTotal, defaultCurrency, intlLocale),
+                  amount: formatAmount(monthTotal, defaultCurrency, intlLocale),
                 })}
               </p>
             </>
@@ -61,7 +63,7 @@ export function DashboardMonthHero({
             <>
               <p className="text-sm text-muted-foreground">{t("dueThisMonth")}</p>
               <p className="text-3xl font-semibold tabular-nums tracking-tight">
-                {formatCurrency(monthTotal, defaultCurrency, intlLocale)}
+                {formatAmount(monthTotal, defaultCurrency, intlLocale)}
               </p>
             </>
           )}

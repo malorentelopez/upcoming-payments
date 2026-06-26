@@ -204,6 +204,13 @@
     "currentlyUsing": "{mode}-Modus aktiv{systemNote}.",
     "fromSystem": " (vom System)"
   },
+  "privacy": {
+    "title": "Privatsphäre-Anzeige",
+    "description": "Blenden Sie echte Beträge aus, wenn Sie die App jemandem zeigen. Zahlen bleiben auf diesem Gerät maskiert, bis Sie es ausschalten.",
+    "toggleLabel": "Beträge ausblenden",
+    "hideAmounts": "Beträge ausblenden",
+    "showAmounts": "Beträge anzeigen"
+  },
   "language": {
     "title": "Sprache",
     "changeLanguage": "Sprache ändern",
