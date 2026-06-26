@@ -27,7 +27,7 @@ export function DashboardUpcomingHero({
   const t = useTranslations("dashboard");
 
   return (
-    <section className="rounded-2xl border border-border/60 bg-card p-5">
+    <section className="relative z-10 rounded-2xl border border-border/60 bg-card p-5 max-md:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.18)] dark:max-md:shadow-[0_14px_28px_-8px_rgba(0,0,0,0.45)]">
       <div className="flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium">{t("comingUp")}</p>
