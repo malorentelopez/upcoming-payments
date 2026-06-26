@@ -24,6 +24,7 @@ interface AppDataContextValue {
   hasCache: boolean;
   isLoading: boolean;
   isRefreshing: boolean;
+  getPaymentById: (id: string) => PaymentView | null;
   seedFromServer: (data: AppShellData) => void;
   loadIfEmpty: () => Promise<void>;
   refresh: () => Promise<void>;
@@ -64,6 +65,11 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     }
   }, [data]);
 
+  const getPaymentById = useCallback(
+    (id: string) => data?.payments.find((payment) => payment.id === id) ?? null,
+    [data],
+  );
+
   useEffect(() => {
     void loadIfEmpty();
   }, [loadIfEmpty]);
@@ -78,11 +84,20 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       hasCache: data !== null,
       isLoading,
       isRefreshing,
+      getPaymentById,
       seedFromServer,
       loadIfEmpty,
       refresh,
     }),
-    [data, isLoading, isRefreshing, seedFromServer, loadIfEmpty, refresh],
+    [
+      data,
+      isLoading,
+      isRefreshing,
+      getPaymentById,
+      seedFromServer,
+      loadIfEmpty,
+      refresh,
+    ],
   );
 
   return <AppDataContext.Provider value={value}>{children}</AppDataContext.Provider>;
