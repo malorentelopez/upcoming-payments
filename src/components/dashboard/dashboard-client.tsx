@@ -171,7 +171,7 @@ export function DashboardClient({
   return (
     <MotionEntranceProvider entrance={false}>
       <PageTransition className="flex h-full min-h-0 flex-col overflow-hidden md:h-auto md:space-y-6 md:overflow-visible">
-      <div className="shrink-0 space-y-4 md:space-y-6">
+      <div className="relative z-10 shrink-0 space-y-4 md:space-y-6">
         <header className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <LedgerFilterSwitcher value={ledger} onChange={setLedger} />
@@ -212,9 +212,9 @@ export function DashboardClient({
         </Tabs>
       </div>
 
-      <div className="relative min-h-0 flex-1 md:static">
+      <div className="relative z-0 min-h-0 flex-1 max-md:-mt-4 md:static">
         <div className="no-scrollbar h-full min-h-0 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch] md:h-auto md:overflow-visible">
-          <div className="space-y-6 pt-4 pb-8 md:pt-0 md:pb-0">
+          <div className="space-y-6 pb-8 max-md:pt-8 md:pb-0">
             {view === "upcoming" ? (
               <DashboardUpcomingList
                 occurrences={horizonOccurrences}
@@ -260,12 +260,12 @@ export function DashboardClient({
 export function DashboardSkeleton() {
   return (
     <div className="flex h-full min-h-0 flex-col overflow-hidden md:h-auto md:space-y-6 md:overflow-visible">
-      <div className="shrink-0 space-y-4 md:space-y-6">
+      <div className="relative z-10 shrink-0 space-y-4 md:space-y-6">
         <Skeleton className="h-8 w-40" />
         <Skeleton className="h-10 w-full rounded-xl" />
         <Skeleton className="h-32 w-full rounded-2xl" />
       </div>
-      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pt-4 md:flex-none md:overflow-visible md:pt-0">
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto max-md:-mt-4 max-md:pt-8 md:flex-none md:overflow-visible md:pt-0">
         {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton key={i} className="h-20 w-full rounded-2xl" />
         ))}
