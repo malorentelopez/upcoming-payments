@@ -14,6 +14,7 @@ import {
   type HorizonDays,
 } from "@/components/dashboard/dashboard-upcoming-panel";
 import { PageTransition } from "@/components/motion/page-transition";
+import { MotionEntranceProvider } from "@/components/motion/motion-entrance";
 import { ScrollFadeOverlay } from "@/components/layout/scroll-fade-overlay";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -129,7 +130,8 @@ export function DashboardClient({
   }
 
   return (
-    <PageTransition className="flex h-full min-h-0 flex-col overflow-hidden md:h-auto md:space-y-6 md:overflow-visible">
+    <MotionEntranceProvider entrance={false}>
+      <PageTransition className="flex h-full min-h-0 flex-col overflow-hidden md:h-auto md:space-y-6 md:overflow-visible">
       <div className="shrink-0 space-y-4 md:space-y-6">
         <header>
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
@@ -209,6 +211,7 @@ export function DashboardClient({
         <ScrollFadeOverlay variant="inset" className="absolute inset-x-0 bottom-0 z-10 h-20 md:hidden" />
       </div>
     </PageTransition>
+    </MotionEntranceProvider>
   );
 }
 

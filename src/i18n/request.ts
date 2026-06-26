@@ -6,6 +6,7 @@ import {
   detectLocaleFromAcceptLanguage,
   isSupportedLocale,
 } from "@/lib/i18n/locale";
+import { getAuthUser } from "@/lib/data/auth";
 import { createClient } from "@/lib/supabase/server";
 
 export default getRequestConfig(async () => {
@@ -21,12 +22,10 @@ export default getRequestConfig(async () => {
 
   if (!locale) {
     try {
-      const supabase = await createClient();
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
+      const user = await getAuthUser();
 
       if (user) {
+        const supabase = await createClient();
         const { data: profile } = await supabase
           .from("profiles")
           .select("locale")

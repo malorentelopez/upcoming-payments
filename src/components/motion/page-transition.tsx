@@ -3,15 +3,25 @@
 import { motion, useReducedMotion } from "framer-motion";
 import type { ReactNode } from "react";
 
+import { useMotionEntrance } from "@/components/motion/motion-entrance";
+
 interface PageTransitionProps {
   children: ReactNode;
   className?: string;
+  /** Override context; when false, content is visible immediately (better LCP). */
+  entrance?: boolean;
 }
 
-export function PageTransition({ children, className }: PageTransitionProps) {
+export function PageTransition({
+  children,
+  className,
+  entrance,
+}: PageTransitionProps) {
   const reduceMotion = useReducedMotion();
+  const contextEntrance = useMotionEntrance();
+  const shouldAnimate = entrance ?? contextEntrance;
 
-  if (reduceMotion) {
+  if (reduceMotion || !shouldAnimate) {
     return <div className={className}>{children}</div>;
   }
 
@@ -30,12 +40,15 @@ export function PageTransition({ children, className }: PageTransitionProps) {
 interface StaggerListProps {
   children: ReactNode;
   className?: string;
+  entrance?: boolean;
 }
 
-export function StaggerList({ children, className }: StaggerListProps) {
+export function StaggerList({ children, className, entrance }: StaggerListProps) {
   const reduceMotion = useReducedMotion();
+  const contextEntrance = useMotionEntrance();
+  const shouldAnimate = entrance ?? contextEntrance;
 
-  if (reduceMotion) {
+  if (reduceMotion || !shouldAnimate) {
     return <div className={className}>{children}</div>;
   }
 
@@ -57,13 +70,17 @@ export function StaggerList({ children, className }: StaggerListProps) {
 export function StaggerItem({
   children,
   className,
+  entrance,
 }: {
   children: ReactNode;
   className?: string;
+  entrance?: boolean;
 }) {
   const reduceMotion = useReducedMotion();
+  const contextEntrance = useMotionEntrance();
+  const shouldAnimate = entrance ?? contextEntrance;
 
-  if (reduceMotion) {
+  if (reduceMotion || !shouldAnimate) {
     return <div className={className}>{children}</div>;
   }
 
