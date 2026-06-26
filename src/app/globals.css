@@ -127,6 +127,15 @@
   html {
     @apply font-sans;
   }
+  @media (max-width: 767px) {
+    html {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
+    }
+    html::-webkit-scrollbar {
+      display: none;
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

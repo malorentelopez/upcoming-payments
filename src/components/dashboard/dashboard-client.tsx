@@ -1,37 +1,64 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState, useTransition } from "react";
 
-import { PaymentCard } from "@/components/payments/payment-card";
-import { PageTransition, StaggerItem, StaggerList } from "@/components/motion/page-transition";
-import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
+import {
+  DashboardMonthHero,
+  DashboardMonthList,
+} from "@/components/dashboard/dashboard-month-panel";
+import {
+  DashboardUpcomingHero,
+  DashboardUpcomingList,
+  type HorizonDays,
+} from "@/components/dashboard/dashboard-upcoming-panel";
+import { PageTransition } from "@/components/motion/page-transition";
+import { ScrollFadeOverlay } from "@/components/layout/scroll-fade-overlay";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   expandAllOccurrences,
+  getHorizonRange,
   getMonthRange,
+  isCurrentMonth,
+  isFutureMonth,
+  isPastMonth,
   parseMonthParam,
   shiftMonth,
+  splitOccurrencesByDueDate,
+  startOfToday,
   sumOccurrences,
 } from "@/lib/payments/occurrences";
-import { formatCurrency, formatMonthYear } from "@/lib/payments/formatters";
 import { localeToIntl } from "@/lib/i18n/locale";
-import { sanitizeHexColor } from "@/lib/security/colors";
-import type { CategoryView, PaymentType, PaymentView } from "@/lib/types";
+import type { PaymentView } from "@/lib/types";
 
 interface DashboardClientProps {
   payments: PaymentView[];
-  categories: CategoryView[];
   defaultCurrency: string;
   initialMonth: string;
 }
 
+type DashboardView = "upcoming" | "month";
+
+function parseViewParam(value: string | null): DashboardView {
+  return value === "month" ? "month" : "upcoming";
+}
+
+function buildDashboardUrl(view: DashboardView, monthKey?: string): string {
+  const params = new URLSearchParams();
+  if (view === "month") {
+    params.set("view", "month");
+    if (monthKey) {
+      params.set("month", monthKey);
+    }
+  }
+  const query = params.toString();
+  return query ? `/dashboard?${query}` : "/dashboard";
+}
+
 export function DashboardClient({
   payments,
-  categories,
   defaultCurrency,
   initialMonth,
 }: DashboardClientProps) {
@@ -39,206 +66,162 @@ export function DashboardClient({
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
   const t = useTranslations("dashboard");
-  const tPayments = useTranslations("payments.types");
-  const tCommon = useTranslations("common");
   const locale = useLocale();
   const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
 
+  const view = parseViewParam(searchParams.get("view"));
   const monthParam = searchParams.get("month") ?? initialMonth;
   const { year, month } = parseMonthParam(monthParam);
+  const monthKey = `${year}-${String(month).padStart(2, "0")}`;
 
-  const [search, setSearch] = useState("");
-  const [categoryFilter, setCategoryFilter] = useState<string | null>(null);
-  const [typeFilter, setTypeFilter] = useState<PaymentType | null>(null);
+  const [horizonDays, setHorizonDays] = useState<HorizonDays>(14);
+
+  const today = useMemo(() => startOfToday(), []);
+  const viewingCurrentMonth = isCurrentMonth(year, month, today);
+  const viewingPastMonth = isPastMonth(year, month, today);
+  const viewingFutureMonth = isFutureMonth(year, month, today);
 
   const { start, end } = getMonthRange(year, month);
+  const horizonRange = useMemo(
+    () => getHorizonRange(horizonDays, today),
+    [horizonDays, today],
+  );
 
-  const occurrences = useMemo(() => {
-    let items = expandAllOccurrences(payments, start, end);
+  const horizonOccurrences = useMemo(
+    () => expandAllOccurrences(payments, horizonRange.start, horizonRange.end),
+    [payments, horizonRange.start, horizonRange.end],
+  );
 
-    if (search.trim()) {
-      const q = search.toLowerCase();
-      items = items.filter((o) => o.name.toLowerCase().includes(q));
+  const monthOccurrences = useMemo(
+    () => expandAllOccurrences(payments, start, end),
+    [payments, start, end],
+  );
+
+  const { upcoming: monthUpcoming, pastDue: monthPastDue } = useMemo(
+    () => splitOccurrencesByDueDate(monthOccurrences, today),
+    [monthOccurrences, today],
+  );
+
+  const monthTotal = sumOccurrences(monthOccurrences, defaultCurrency);
+  const monthPending = sumOccurrences(monthUpcoming, defaultCurrency);
+  const horizonTotal = sumOccurrences(horizonOccurrences, defaultCurrency);
+
+  const visibleMonthList = viewingPastMonth ? [] : viewingFutureMonth ? monthOccurrences : monthUpcoming;
+  const collapsedMonthList = viewingPastMonth ? monthOccurrences : monthPastDue;
+
+  function setView(nextView: DashboardView) {
+    if (nextView === view) {
+      return;
     }
-    if (categoryFilter) {
-      items = items.filter((o) => o.category?.id === categoryFilter);
-    }
-    if (typeFilter) {
-      items = items.filter((o) => o.type === typeFilter);
-    }
-
-    return items;
-  }, [payments, start, end, search, categoryFilter, typeFilter]);
-
-  const total = sumOccurrences(occurrences, defaultCurrency);
+    startTransition(() => {
+      router.replace(
+        buildDashboardUrl(nextView, nextView === "month" ? monthKey : undefined),
+      );
+    });
+  }
 
   function navigateMonth(delta: number) {
     const next = shiftMonth(year, month, delta);
     const key = `${next.year}-${String(next.month).padStart(2, "0")}`;
     startTransition(() => {
-      router.push(`/dashboard?month=${key}`);
+      router.replace(buildDashboardUrl("month", key));
     });
   }
 
-  const types: PaymentType[] = ["recurring", "installment", "one_off"];
-
   return (
-    <PageTransition className="space-y-6">
-      <header>
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-      </header>
+    <PageTransition className="flex h-full min-h-0 flex-col overflow-hidden md:h-auto md:space-y-6 md:overflow-visible">
+      <div className="shrink-0 space-y-4 md:space-y-6">
+        <header>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        </header>
 
-      <section className="rounded-2xl border border-border/60 bg-gradient-to-br from-primary/10 via-card to-card p-5">
-        <div className="flex items-center justify-between">
-          <button
-            type="button"
-            onClick={() => navigateMonth(-1)}
-            className="flex size-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            aria-label={tCommon("previousMonth")}
-          >
-            <ChevronLeft className="size-5" />
-          </button>
-          <div className="text-center">
-            <p className="text-sm text-muted-foreground">{t("dueThisMonth")}</p>
-            <p className="text-3xl font-semibold tabular-nums tracking-tight">
-              {formatCurrency(total, defaultCurrency, intlLocale)}
-            </p>
-            <p className="mt-1 text-sm font-medium">
-              {formatMonthYear(year, month, intlLocale)}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={() => navigateMonth(1)}
-            className="flex size-10 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-            aria-label={tCommon("nextMonth")}
-          >
-            <ChevronRight className="size-5" />
-          </button>
-        </div>
-      </section>
+        <Tabs value={view} onValueChange={(value) => setView(value as DashboardView)} className="gap-4">
+          <TabsList className="grid h-10 w-full grid-cols-2 rounded-xl">
+            <TabsTrigger value="upcoming" className="rounded-lg">
+              {t("tabUpcoming")}
+            </TabsTrigger>
+            <TabsTrigger value="month" className="rounded-lg">
+              {t("tabMonth")}
+            </TabsTrigger>
+          </TabsList>
 
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          placeholder={t("searchPlaceholder")}
-          className="h-11 rounded-xl pl-10"
-        />
+          <TabsContent value="upcoming" className="mt-0">
+            <DashboardUpcomingHero
+              horizonDays={horizonDays}
+              onHorizonDaysChange={setHorizonDays}
+              total={horizonTotal}
+              defaultCurrency={defaultCurrency}
+              intlLocale={intlLocale}
+            />
+          </TabsContent>
+
+          <TabsContent value="month" className="mt-0">
+            <DashboardMonthHero
+              year={year}
+              month={month}
+              viewingCurrentMonth={viewingCurrentMonth}
+              monthPending={monthPending}
+              monthTotal={monthTotal}
+              defaultCurrency={defaultCurrency}
+              intlLocale={intlLocale}
+              onNavigateMonth={navigateMonth}
+            />
+          </TabsContent>
+        </Tabs>
       </div>
 
-      <div className="flex flex-wrap gap-2">
-        <FilterChip
-          label={t("allTypes")}
-          active={!typeFilter}
-          onClick={() => setTypeFilter(null)}
-        />
-        {types.map((paymentType) => (
-          <FilterChip
-            key={paymentType}
-            label={tPayments(paymentType)}
-            active={typeFilter === paymentType}
-            onClick={() =>
-              setTypeFilter(typeFilter === paymentType ? null : paymentType)
-            }
-          />
-        ))}
-      </div>
-
-      <div className="flex flex-wrap gap-2">
-        <FilterChip
-          label={t("allCategories")}
-          active={!categoryFilter}
-          onClick={() => setCategoryFilter(null)}
-        />
-        {categories.map((cat) => (
-          <FilterChip
-            key={cat.id}
-            label={cat.name}
-            active={categoryFilter === cat.id}
-            onClick={() =>
-              setCategoryFilter(categoryFilter === cat.id ? null : cat.id)
-            }
-            color={cat.color}
-          />
-        ))}
-      </div>
-
-      {occurrences.length === 0 ? (
-        <EmptyState hasPayments={payments.length > 0} t={t} />
-      ) : (
-        <StaggerList className="space-y-3">
-          {occurrences.map((occurrence) => (
-            <StaggerItem key={`${occurrence.paymentId}-${occurrence.dueDate.toISOString()}`}>
-              <PaymentCard
-                occurrence={occurrence}
-                currency={defaultCurrency}
+      <div className="relative min-h-0 flex-1 md:static">
+        <div className="no-scrollbar h-full min-h-0 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch] md:h-auto md:overflow-visible">
+          <div className="space-y-6 pt-4 pb-8 md:pt-0 md:pb-0">
+            {view === "upcoming" ? (
+              <DashboardUpcomingList
+                occurrences={horizonOccurrences}
+                horizonDays={horizonDays}
+                defaultCurrency={defaultCurrency}
                 intlLocale={intlLocale}
               />
-            </StaggerItem>
-          ))}
-        </StaggerList>
-      )}
+            ) : (
+              <DashboardMonthList
+                visibleOccurrences={visibleMonthList}
+                collapsedOccurrences={collapsedMonthList}
+                viewingPastMonth={viewingPastMonth}
+                hasPayments={payments.length > 0}
+                defaultCurrency={defaultCurrency}
+                intlLocale={intlLocale}
+              />
+            )}
 
-      <p className="text-center text-xs text-muted-foreground">
-        {t("paymentCount", { count: occurrences.length })}
-      </p>
+            <p className="pb-1 text-center text-xs text-muted-foreground">
+              {view === "upcoming" ? (
+                t("horizonCount", { count: horizonOccurrences.length, days: horizonDays })
+              ) : viewingCurrentMonth && monthPastDue.length > 0 ? (
+                <>
+                  {t("upcomingCount", { count: monthUpcoming.length })}
+                  {" · "}
+                  {t("pastDueCount", { count: monthPastDue.length })}
+                </>
+              ) : (
+                t("paymentCount", { count: monthOccurrences.length })
+              )}
+            </p>
+          </div>
+        </div>
+        <ScrollFadeOverlay variant="inset" className="absolute inset-x-0 bottom-0 z-10 h-20 md:hidden" />
+      </div>
     </PageTransition>
-  );
-}
-
-function FilterChip({
-  label,
-  active,
-  onClick,
-  color,
-}: {
-  label: string;
-  active: boolean;
-  onClick: () => void;
-  color?: string;
-}) {
-  return (
-    <button type="button" onClick={onClick}>
-      <Badge
-        variant={active ? "default" : "secondary"}
-        className="cursor-pointer rounded-full px-3 py-1 capitalize"
-        style={active && color ? { backgroundColor: sanitizeHexColor(color) } : undefined}
-      >
-        {label}
-      </Badge>
-    </button>
-  );
-}
-
-function EmptyState({
-  hasPayments,
-  t,
-}: {
-  hasPayments: boolean;
-  t: (key: "emptyNoneDue" | "emptyNoPayments" | "emptyTryFilters" | "emptyGetStarted") => string;
-}) {
-  return (
-    <div className="rounded-2xl border border-dashed border-border/80 bg-muted/30 px-6 py-12 text-center">
-      <p className="font-medium">
-        {hasPayments ? t("emptyNoneDue") : t("emptyNoPayments")}
-      </p>
-      <p className="mt-2 text-sm text-muted-foreground">
-        {hasPayments ? t("emptyTryFilters") : t("emptyGetStarted")}
-      </p>
-    </div>
   );
 }
 
 export function DashboardSkeleton() {
   return (
-    <div className="space-y-6">
-      <Skeleton className="h-8 w-40" />
-      <Skeleton className="h-36 w-full rounded-2xl" />
-      <Skeleton className="h-11 w-full rounded-xl" />
-      <div className="space-y-3">
-        {Array.from({ length: 4 }).map((_, i) => (
+    <div className="flex h-full min-h-0 flex-col overflow-hidden md:h-auto md:space-y-6 md:overflow-visible">
+      <div className="shrink-0 space-y-4 md:space-y-6">
+        <Skeleton className="h-8 w-40" />
+        <Skeleton className="h-10 w-full rounded-xl" />
+        <Skeleton className="h-32 w-full rounded-2xl" />
+      </div>
+      <div className="min-h-0 flex-1 space-y-3 overflow-y-auto pt-4 md:flex-none md:overflow-visible md:pt-0">
+        {Array.from({ length: 3 }).map((_, i) => (
           <Skeleton key={i} className="h-20 w-full rounded-2xl" />
         ))}
       </div>

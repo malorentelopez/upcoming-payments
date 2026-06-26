@@ -51,6 +51,8 @@ export interface PaymentOccurrence {
   dueDate: Date;
   category: Pick<Category, "id" | "name" | "color" | "icon"> | null;
   type: PaymentType;
+  installmentRemainingCount?: number;
+  installmentPendingAmount?: number;
 }
 
 export interface Database {

@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 
-import { formatCurrency } from "@/lib/payments/formatters";
+import { formatCurrency, formatCurrencyAxis } from "@/lib/payments/formatters";
 
 const CHART_COLORS = [
   "#0d9488",
@@ -33,7 +33,7 @@ export function MonthlyBarChart({ data, currency, intlLocale = "en-US" }: Monthl
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
-        <BarChart data={data} margin={{ top: 8, right: 8, left: -16, bottom: 0 }}>
+        <BarChart data={data} margin={{ top: 8, right: 8, left: 4, bottom: 0 }}>
           <XAxis
             dataKey="label"
             tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
@@ -44,7 +44,8 @@ export function MonthlyBarChart({ data, currency, intlLocale = "en-US" }: Monthl
             tick={{ fontSize: 12, fill: "var(--muted-foreground)" }}
             axisLine={false}
             tickLine={false}
-            tickFormatter={(v) => `$${v}`}
+            width={56}
+            tickFormatter={(v) => formatCurrencyAxis(Number(v), currency, intlLocale)}
           />
           <Tooltip
             formatter={(value) => formatCurrency(Number(value), currency, intlLocale)}

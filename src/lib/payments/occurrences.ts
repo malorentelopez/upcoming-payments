@@ -1,4 +1,5 @@
 import {
+  addDays,
   addMonths,
   addWeeks,
   addYears,
@@ -120,7 +121,9 @@ function expandInstallment(
       !isBefore(cursor, rangeStart) &&
       isWithinInterval(cursor, { start: rangeStart, end: rangeEnd })
     ) {
-      occurrences.push(buildOccurrence(payment, cursor));
+      const occurrence = buildOccurrence(payment, cursor);
+      applyInstallmentSummary(occurrence, payment, i);
+      occurrences.push(occurrence);
     }
 
     cursor = addByFrequency(cursor, frequency);
@@ -164,6 +167,23 @@ function buildOccurrence(payment: PaymentView, dueDate: Date): PaymentOccurrence
     category: payment.category ?? null,
     type: payment.type,
   };
+}
+
+/** Installments still due after the occurrence at `installmentIndexFromNext` (0 = next due). */
+function applyInstallmentSummary(
+  occurrence: PaymentOccurrence,
+  payment: PaymentView,
+  installmentIndexFromNext: number,
+): void {
+  const total = payment.total_installments ?? 0;
+  const paid = payment.paid_installments ?? 0;
+  const remainingOnLoan = total - paid;
+  const remainingAfterThis = remainingOnLoan - installmentIndexFromNext - 1;
+
+  if (remainingAfterThis > 0) {
+    occurrence.installmentRemainingCount = remainingAfterThis;
+    occurrence.installmentPendingAmount = remainingAfterThis * Number(payment.amount);
+  }
 }
 
 export function expandPaymentOccurrences(
@@ -213,6 +233,64 @@ export function sumOccurrences(
   return occurrences
     .filter((o) => !currency || o.currency === currency)
     .reduce((sum, o) => sum + o.amount, 0);
+}
+
+export function startOfToday(): Date {
+  return startOfDay(new Date());
+}
+
+export function isOccurrenceUpcoming(dueDate: Date, today: Date): boolean {
+  return startOfDay(dueDate).getTime() >= startOfDay(today).getTime();
+}
+
+export function splitOccurrencesByDueDate(
+  occurrences: PaymentOccurrence[],
+  today: Date,
+): { upcoming: PaymentOccurrence[]; pastDue: PaymentOccurrence[] } {
+  const upcoming: PaymentOccurrence[] = [];
+  const pastDue: PaymentOccurrence[] = [];
+
+  for (const occurrence of occurrences) {
+    if (isOccurrenceUpcoming(occurrence.dueDate, today)) {
+      upcoming.push(occurrence);
+    } else {
+      pastDue.push(occurrence);
+    }
+  }
+
+  return { upcoming, pastDue };
+}
+
+export function getHorizonRange(days: number, today = startOfToday()) {
+  const start = startOfDay(today);
+  const end = endOfDay(addDays(start, days));
+  return { start, end };
+}
+
+export function filterOccurrencesInRange(
+  occurrences: PaymentOccurrence[],
+  rangeStart: Date,
+  rangeEnd: Date,
+): PaymentOccurrence[] {
+  return occurrences.filter((occurrence) =>
+    isWithinInterval(occurrence.dueDate, { start: rangeStart, end: rangeEnd }),
+  );
+}
+
+export function isCurrentMonth(year: number, month: number, today = new Date()): boolean {
+  return today.getFullYear() === year && today.getMonth() + 1 === month;
+}
+
+export function isPastMonth(year: number, month: number, today = new Date()): boolean {
+  const anchor = new Date(year, month - 1, 1);
+  const current = startOfMonth(today);
+  return anchor.getTime() < current.getTime();
+}
+
+export function isFutureMonth(year: number, month: number, today = new Date()): boolean {
+  const anchor = new Date(year, month - 1, 1);
+  const current = startOfMonth(today);
+  return anchor.getTime() > current.getTime();
 }
 
 export function groupByCategory(
