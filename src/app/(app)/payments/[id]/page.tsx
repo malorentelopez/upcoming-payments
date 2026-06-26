@@ -16,7 +16,7 @@ export default async function PaymentDetailPage({
   if (!payment) notFound();
 
   return (
-    <PageTransition>
+    <PageTransition entrance={false}>
       <PaymentDetailClient payment={payment} />
     </PageTransition>
   );

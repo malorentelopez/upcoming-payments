@@ -4,6 +4,7 @@ import {
   DashboardClient,
   DashboardSkeleton,
 } from "@/components/dashboard/dashboard-client";
+import { AppDataSeed } from "@/components/data/app-data-provider";
 import { getDashboardData } from "@/lib/data/queries";
 import { getMonthKey } from "@/lib/payments/occurrences";
 
@@ -23,13 +24,11 @@ export default async function DashboardPage({ searchParams }: DashboardPageProps
 }
 
 async function DashboardContent({ initialMonth }: { initialMonth: string }) {
-  const { payments, profile } = await getDashboardData();
+  const data = await getDashboardData();
 
   return (
-    <DashboardClient
-      payments={payments}
-      defaultCurrency={profile?.default_currency ?? "USD"}
-      initialMonth={initialMonth}
-    />
+    <AppDataSeed data={data}>
+      <DashboardClient initialMonth={initialMonth} />
+    </AppDataSeed>
   );
 }

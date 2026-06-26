@@ -19,7 +19,7 @@ export function MeClient({ profile, email }: MeClientProps) {
   const t = useTranslations("profile");
 
   return (
-    <PageTransition className="space-y-8">
+    <PageTransition entrance={false} className="space-y-8">
       <header>
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       </header>

@@ -6,6 +6,8 @@ import { ArrowLeft, Pause, Pencil, Play, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
+import { useAppData } from "@/components/data/app-data-provider";
+
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import {
@@ -30,6 +32,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
   const locale = useLocale();
   const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
   const { formatAmount } = useFormatCurrency();
+  const { refresh: refreshAppData } = useAppData();
 
   async function handleToggle() {
     const result = await togglePaymentActive(payment.id, !payment.is_active);
@@ -37,6 +40,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
       toast.error(result.error);
     } else {
       toast.success(payment.is_active ? t("paymentPaused") : t("paymentActivated"));
+      await refreshAppData();
       router.refresh();
     }
   }
