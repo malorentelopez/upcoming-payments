@@ -19,11 +19,12 @@ import {
 } from "@/lib/payments/occurrences";
 import { formatCurrency, formatMonthYear } from "@/lib/payments/formatters";
 import { localeToIntl } from "@/lib/i18n/locale";
-import type { Category, Payment, PaymentType } from "@/lib/types";
+import { sanitizeHexColor } from "@/lib/security/colors";
+import type { CategoryView, PaymentType, PaymentView } from "@/lib/types";
 
 interface DashboardClientProps {
-  payments: Payment[];
-  categories: Category[];
+  payments: PaymentView[];
+  categories: CategoryView[];
   defaultCurrency: string;
   initialMonth: string;
 }
@@ -203,7 +204,7 @@ function FilterChip({
       <Badge
         variant={active ? "default" : "secondary"}
         className="cursor-pointer rounded-full px-3 py-1 capitalize"
-        style={active && color ? { backgroundColor: color } : undefined}
+        style={active && color ? { backgroundColor: sanitizeHexColor(color) } : undefined}
       >
         {label}
       </Badge>

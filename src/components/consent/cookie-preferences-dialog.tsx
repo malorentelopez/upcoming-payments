@@ -1,5 +1,6 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { useConsent } from "@/components/consent/consent-provider";
@@ -19,6 +20,7 @@ import {
 } from "@/lib/consent/types";
 
 export function CookiePreferencesDialog() {
+  const t = useTranslations("consent");
   const {
     consent,
     preferencesOpen,
@@ -42,31 +44,28 @@ export function CookiePreferencesDialog() {
     <Dialog open={preferencesOpen} onOpenChange={(open) => !open && closePreferences()}>
       <DialogContent className="max-w-md rounded-2xl">
         <DialogHeader>
-          <DialogTitle>Cookie preferences</DialogTitle>
-          <DialogDescription>
-            Choose which cookies we may use. Essential cookies are required for
-            sign-in and cannot be disabled.
-          </DialogDescription>
+          <DialogTitle>{t("preferencesTitle")}</DialogTitle>
+          <DialogDescription>{t("preferencesDialogDesc")}</DialogDescription>
         </DialogHeader>
 
         <div className="space-y-4 py-2">
           <PreferenceRow
-            title="Essential"
-            description="Authentication and security (Supabase session cookies)."
+            title={t("essential")}
+            description={t("essentialDesc")}
             checked
             disabled
           />
           <PreferenceRow
-            title="Functional"
-            description="Remembers settings such as your cookie choice."
+            title={t("preferences")}
+            description={t("preferencesDesc")}
             checked={draft.functional}
             onChange={(checked) =>
               setDraft((current) => ({ ...current, functional: checked }))
             }
           />
           <PreferenceRow
-            title="Analytics"
-            description="Helps us understand usage and measure performance (Vercel Analytics & Speed Insights)."
+            title={t("analytics")}
+            description={t("analyticsDesc")}
             checked={draft.analytics}
             onChange={(checked) =>
               setDraft((current) => ({ ...current, analytics: checked }))
@@ -80,7 +79,7 @@ export function CookiePreferencesDialog() {
             className="h-10 w-full rounded-xl"
             onClick={() => savePreferences(draft)}
           >
-            Save preferences
+            {t("savePreferences")}
           </Button>
           <div className="grid grid-cols-2 gap-2">
             <Button
@@ -89,7 +88,7 @@ export function CookiePreferencesDialog() {
               className="h-10 rounded-xl"
               onClick={rejectNonEssential}
             >
-              Reject all
+              {t("rejectAll")}
             </Button>
             <Button
               type="button"
@@ -97,7 +96,7 @@ export function CookiePreferencesDialog() {
               className="h-10 rounded-xl"
               onClick={acceptAll}
             >
-              Accept all
+              {t("acceptAll")}
             </Button>
           </div>
         </DialogFooter>

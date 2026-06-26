@@ -5,6 +5,7 @@ import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
+import { sanitizeHexColor } from "@/lib/security/colors";
 import { formatCurrency, formatShortDate } from "@/lib/payments/formatters";
 import type { PaymentOccurrence, PaymentType } from "@/lib/types";
 
@@ -29,7 +30,9 @@ export function PaymentCard({
     >
       <div
         className="size-2.5 shrink-0 rounded-full"
-        style={{ backgroundColor: occurrence.category?.color ?? "#64748b" }}
+        style={{
+          backgroundColor: sanitizeHexColor(occurrence.category?.color, "#64748b"),
+        }}
       />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">

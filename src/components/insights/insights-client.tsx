@@ -21,10 +21,11 @@ import {
 } from "@/lib/payments/occurrences";
 import { formatCurrency, formatMonthYear } from "@/lib/payments/formatters";
 import { localeToIntl } from "@/lib/i18n/locale";
-import type { Payment } from "@/lib/types";
+import { sanitizeHexColor } from "@/lib/security/colors";
+import type { PaymentView } from "@/lib/types";
 
 interface InsightsClientProps {
-  payments: Payment[];
+  payments: PaymentView[];
   defaultCurrency: string;
   initialMonth: string;
 }
@@ -138,7 +139,7 @@ export function InsightsClient({
               <span className="flex items-center gap-2">
                 <span
                   className="size-2.5 rounded-full"
-                  style={{ backgroundColor: item.color ?? "#64748b" }}
+                  style={{ backgroundColor: sanitizeHexColor(item.color, "#64748b") }}
                 />
                 {item.name}
               </span>

@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { CookiePreferencesDialog } from "@/components/consent/cookie-preferences-dialog";
@@ -9,6 +10,8 @@ import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 export function CookieBanner() {
+  const t = useTranslations("consent");
+  const tFooter = useTranslations("footer");
   const { hasDecided, acceptAll, rejectNonEssential, openPreferences } =
     useConsent();
   const [visible, setVisible] = useState(false);
@@ -40,23 +43,30 @@ export function CookieBanner() {
         <div className="mx-auto flex max-w-3xl flex-col gap-4 md:flex-row md:items-end md:justify-between">
           <div className="space-y-2 md:max-w-xl">
             <p id="cookie-banner-title" className="font-medium">
-              Cookies & privacy
+              {t("title")}
             </p>
             <p
               id="cookie-banner-description"
               className="text-sm text-muted-foreground"
             >
-              We use essential cookies to keep you signed in and run the app.
-              With your permission, we also store preference cookies and may use
-              analytics in the future. Read our{" "}
-              <Link href="/privacy" className="text-primary underline-offset-2 hover:underline">
-                Privacy Policy
-              </Link>{" "}
-              and{" "}
-              <Link href="/cookies" className="text-primary underline-offset-2 hover:underline">
-                Cookie Policy
-              </Link>
-              .
+              {t.rich("description", {
+                privacyLink: (chunks) => (
+                  <Link
+                    href="/privacy"
+                    className="text-primary underline-offset-2 hover:underline"
+                  >
+                    {chunks}
+                  </Link>
+                ),
+                cookieLink: (chunks) => (
+                  <Link
+                    href="/cookies"
+                    className="text-primary underline-offset-2 hover:underline"
+                  >
+                    {chunks}
+                  </Link>
+                ),
+              })}
             </p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-end">
@@ -66,7 +76,7 @@ export function CookieBanner() {
               className="h-10 rounded-xl"
               onClick={openPreferences}
             >
-              Manage
+              {t("managePreferences")}
             </Button>
             <Button
               type="button"
@@ -74,14 +84,14 @@ export function CookieBanner() {
               className="h-10 rounded-xl"
               onClick={rejectNonEssential}
             >
-              Reject non-essential
+              {t("rejectNonEssential")}
             </Button>
             <Button
               type="button"
               className="h-10 rounded-xl"
               onClick={acceptAll}
             >
-              Accept all
+              {t("acceptAll")}
             </Button>
           </div>
         </div>

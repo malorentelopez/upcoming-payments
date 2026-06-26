@@ -3,11 +3,13 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
+import { toUserErrorMessage } from "@/lib/errors";
 import { createClient } from "@/lib/supabase/server";
 import {
   categorySchema,
   paymentFormSchema,
   profileSchema,
+  uuidSchema,
 } from "@/lib/payments/schemas";
 import type { PaymentFormValues } from "@/lib/payments/schemas";
 import type { Database } from "@/lib/types/database";
@@ -73,6 +75,39 @@ function formValuesToRow(values: PaymentFormValues, userId: string): PaymentInse
   }
 }
 
+async function assertCategoryOwned(
+  supabase: Awaited<ReturnType<typeof createClient>>,
+  userId: string,
+  categoryId: string | null | undefined,
+): Promise<void> {
+  if (!categoryId) return;
+
+  const { data, error } = await supabase
+    .from("categories")
+    .select("id")
+    .eq("id", categoryId)
+    .eq("user_id", userId)
+    .maybeSingle();
+
+  if (error || !data) {
+    throw new Error("Please select a valid category.");
+  }
+}
+
+function parsePaymentFormData(formData: FormData) {
+  const raw = Object.fromEntries(formData.entries());
+  return paymentFormSchema.safeParse({
+    ...raw,
+    amount: Number(raw.amount),
+    isActive: raw.isActive === "true" || raw.isActive === "on",
+    useLastDayOfMonth: raw.useLastDayOfMonth === "true" || raw.useLastDayOfMonth === "on",
+    dayOfMonth: raw.dayOfMonth ? Number(raw.dayOfMonth) : undefined,
+    totalInstallments: raw.totalInstallments ? Number(raw.totalInstallments) : undefined,
+    paidInstallments: raw.paidInstallments ? Number(raw.paidInstallments) : 0,
+    categoryId: raw.categoryId === "" ? null : raw.categoryId,
+  });
+}
+
 export async function signOut() {
   const supabase = await createClient();
   await supabase.auth.signOut();
@@ -87,27 +122,21 @@ export async function createPayment(formData: FormData): Promise<void> {
 
   if (!user) redirect("/login");
 
-  const raw = Object.fromEntries(formData.entries());
-  const parsed = paymentFormSchema.safeParse({
-    ...raw,
-    amount: Number(raw.amount),
-    isActive: raw.isActive === "true" || raw.isActive === "on",
-    useLastDayOfMonth: raw.useLastDayOfMonth === "true" || raw.useLastDayOfMonth === "on",
-    dayOfMonth: raw.dayOfMonth ? Number(raw.dayOfMonth) : undefined,
-    totalInstallments: raw.totalInstallments ? Number(raw.totalInstallments) : undefined,
-    paidInstallments: raw.paidInstallments ? Number(raw.paidInstallments) : 0,
-    categoryId: raw.categoryId === "" ? null : raw.categoryId,
-  });
+  const parsed = parsePaymentFormData(formData);
 
   if (!parsed.success) {
     throw new Error("Please check the form and try again.");
   }
 
+  await assertCategoryOwned(supabase, user.id, parsed.data.categoryId);
+
   const { error } = await supabase
     .from("payments")
     .insert(formValuesToRow(parsed.data, user.id));
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    throw new Error(toUserErrorMessage(error, "Could not create payment."));
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/insights");
@@ -122,34 +151,33 @@ export async function updatePayment(id: string, formData: FormData): Promise<voi
 
   if (!user) redirect("/login");
 
-  const raw = Object.fromEntries(formData.entries());
-  const parsed = paymentFormSchema.safeParse({
-    ...raw,
-    amount: Number(raw.amount),
-    isActive: raw.isActive === "true" || raw.isActive === "on",
-    useLastDayOfMonth: raw.useLastDayOfMonth === "true" || raw.useLastDayOfMonth === "on",
-    dayOfMonth: raw.dayOfMonth ? Number(raw.dayOfMonth) : undefined,
-    totalInstallments: raw.totalInstallments ? Number(raw.totalInstallments) : undefined,
-    paidInstallments: raw.paidInstallments ? Number(raw.paidInstallments) : 0,
-    categoryId: raw.categoryId === "" ? null : raw.categoryId,
-  });
+  const paymentId = uuidSchema.safeParse(id);
+  if (!paymentId.success) {
+    throw new Error("Invalid payment.");
+  }
+
+  const parsed = parsePaymentFormData(formData);
 
   if (!parsed.success) {
     throw new Error("Please check the form and try again.");
   }
 
+  await assertCategoryOwned(supabase, user.id, parsed.data.categoryId);
+
   const { error } = await supabase
     .from("payments")
     .update(formValuesToRow(parsed.data, user.id))
-    .eq("id", id)
+    .eq("id", paymentId.data)
     .eq("user_id", user.id);
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    throw new Error(toUserErrorMessage(error, "Could not update payment."));
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/insights");
-  revalidatePath(`/payments/${id}`);
-  redirect(`/payments/${id}`);
+  revalidatePath(`/payments/${paymentId.data}`);
+  redirect(`/payments/${paymentId.data}`);
 }
 
 export async function deletePayment(id: string): Promise<void> {
@@ -160,13 +188,20 @@ export async function deletePayment(id: string): Promise<void> {
 
   if (!user) redirect("/login");
 
+  const paymentId = uuidSchema.safeParse(id);
+  if (!paymentId.success) {
+    throw new Error("Invalid payment.");
+  }
+
   const { error } = await supabase
     .from("payments")
     .delete()
-    .eq("id", id)
+    .eq("id", paymentId.data)
     .eq("user_id", user.id);
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    throw new Error(toUserErrorMessage(error, "Could not delete payment."));
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/insights");
@@ -181,17 +216,24 @@ export async function togglePaymentActive(id: string, isActive: boolean) {
 
   if (!user) return { error: "Unauthorized" };
 
+  const paymentId = uuidSchema.safeParse(id);
+  if (!paymentId.success) {
+    return { error: "Invalid payment." };
+  }
+
   const { error } = await supabase
     .from("payments")
     .update({ is_active: isActive })
-    .eq("id", id)
+    .eq("id", paymentId.data)
     .eq("user_id", user.id);
 
-  if (error) return { error: error.message };
+  if (error) {
+    return { error: toUserErrorMessage(error, "Could not update payment.") };
+  }
 
   revalidatePath("/dashboard");
   revalidatePath("/insights");
-  revalidatePath(`/payments/${id}`);
+  revalidatePath(`/payments/${paymentId.data}`);
   return { success: true };
 }
 
@@ -218,7 +260,9 @@ export async function createCategory(formData: FormData): Promise<void> {
     ...parsed.data,
   });
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    throw new Error(toUserErrorMessage(error, "Could not create category."));
+  }
 
   revalidatePath("/settings");
 }
@@ -231,13 +275,20 @@ export async function deleteCategory(id: string) {
 
   if (!user) return { error: "Unauthorized" };
 
+  const categoryId = uuidSchema.safeParse(id);
+  if (!categoryId.success) {
+    return { error: "Invalid category." };
+  }
+
   const { error } = await supabase
     .from("categories")
     .delete()
-    .eq("id", id)
+    .eq("id", categoryId.data)
     .eq("user_id", user.id);
 
-  if (error) return { error: error.message };
+  if (error) {
+    return { error: toUserErrorMessage(error, "Could not delete category.") };
+  }
 
   revalidatePath("/settings");
   return { success: true };
@@ -270,8 +321,11 @@ export async function updateProfile(formData: FormData): Promise<void> {
     })
     .eq("id", user.id);
 
-  if (error) throw new Error(error.message);
+  if (error) {
+    throw new Error(toUserErrorMessage(error, "Could not update profile."));
+  }
 
   revalidatePath("/settings");
   revalidatePath("/dashboard");
+  revalidatePath("/me");
 }

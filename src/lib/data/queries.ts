@@ -1,5 +1,94 @@
+import { sanitizeHexColor } from "@/lib/security/colors";
 import { createClient } from "@/lib/supabase/server";
-import type { Category, Payment, Profile } from "@/lib/types";
+import type {
+  Category,
+  CategoryView,
+  Payment,
+  PaymentView,
+  Profile,
+  ProfileView,
+} from "@/lib/types";
+import { uuidSchema } from "@/lib/payments/schemas";
+
+const PROFILE_COLUMNS =
+  "id, display_name, default_currency, timezone, locale, created_at";
+
+const CATEGORY_COLUMNS = "id, user_id, name, color, icon, created_at";
+
+const PAYMENT_COLUMNS =
+  "id, user_id, category_id, name, amount, currency, type, frequency, day_of_month, use_last_day_of_month, start_date, end_date, due_date, next_due_date, total_installments, paid_installments, notes, is_active, updated_at";
+
+const NESTED_CATEGORY_COLUMNS = "id, name, color, icon";
+
+function toCategoryView(category: NestedCategoryRow): CategoryView {
+  return {
+    id: category.id,
+    name: category.name,
+    color: sanitizeHexColor(category.color),
+    icon: category.icon,
+  };
+}
+
+function toProfileView(profile: Profile): ProfileView {
+  return {
+    id: profile.id,
+    display_name: profile.display_name,
+    default_currency: profile.default_currency,
+    timezone: profile.timezone,
+    locale: profile.locale,
+  };
+}
+
+type NestedCategoryRow = Pick<Category, "id" | "name" | "color" | "icon">;
+
+type PaymentRow = {
+  id: string;
+  user_id: string;
+  category_id: string | null;
+  name: string;
+  amount: number | string;
+  currency: string;
+  type: Payment["type"];
+  frequency: Payment["frequency"];
+  day_of_month: number | null;
+  use_last_day_of_month: boolean;
+  start_date: string | null;
+  end_date: string | null;
+  due_date: string | null;
+  next_due_date: string | null;
+  total_installments: number | null;
+  paid_installments: number;
+  notes: string | null;
+  is_active: boolean;
+  category?: NestedCategoryRow | NestedCategoryRow[] | null;
+};
+
+function toPaymentView(row: PaymentRow): PaymentView {
+  const category = Array.isArray(row.category)
+    ? row.category[0] ?? null
+    : row.category ?? null;
+
+  return {
+    id: row.id,
+    category_id: row.category_id,
+    name: row.name,
+    amount: Number(row.amount),
+    currency: row.currency,
+    type: row.type,
+    frequency: row.frequency,
+    day_of_month: row.day_of_month,
+    use_last_day_of_month: row.use_last_day_of_month,
+    start_date: row.start_date,
+    end_date: row.end_date,
+    due_date: row.due_date,
+    next_due_date: row.next_due_date,
+    total_installments: row.total_installments,
+    paid_installments: row.paid_installments,
+    notes: row.notes,
+    is_active: row.is_active,
+    category: category ? toCategoryView(category) : null,
+  };
+}
 
 export async function getCurrentUser() {
   const supabase = await createClient();
@@ -9,7 +98,7 @@ export async function getCurrentUser() {
   return user;
 }
 
-export async function getProfile(): Promise<Profile | null> {
+export async function getProfile(): Promise<ProfileView | null> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -18,14 +107,14 @@ export async function getProfile(): Promise<Profile | null> {
 
   const { data } = await supabase
     .from("profiles")
-    .select("*")
+    .select(PROFILE_COLUMNS)
     .eq("id", user.id)
     .single();
 
-  return data;
+  return data ? toProfileView(data) : null;
 }
 
-export async function getCategories(): Promise<Category[]> {
+export async function getCategories(): Promise<CategoryView[]> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -34,14 +123,14 @@ export async function getCategories(): Promise<Category[]> {
 
   const { data } = await supabase
     .from("categories")
-    .select("*")
+    .select(CATEGORY_COLUMNS)
     .eq("user_id", user.id)
     .order("name");
 
-  return data ?? [];
+  return (data ?? []).map(toCategoryView);
 }
 
-export async function getPayments(): Promise<Payment[]> {
+export async function getPayments(): Promise<PaymentView[]> {
   const supabase = await createClient();
   const {
     data: { user },
@@ -50,24 +139,17 @@ export async function getPayments(): Promise<Payment[]> {
 
   const { data } = await supabase
     .from("payments")
-    .select("*, category:categories(*)")
+    .select(`${PAYMENT_COLUMNS}, category:categories(${NESTED_CATEGORY_COLUMNS})`)
     .eq("user_id", user.id)
     .order("name");
 
-  return (data ?? []).map((row) => {
-    const category = Array.isArray(row.category)
-      ? row.category[0] ?? null
-      : row.category ?? null;
-
-    return {
-      ...row,
-      amount: Number(row.amount),
-      category,
-    };
-  });
+  return (data ?? []).map((row) => toPaymentView(row as PaymentRow));
 }
 
-export async function getPayment(id: string): Promise<Payment | null> {
+export async function getPayment(id: string): Promise<PaymentView | null> {
+  const parsedId = uuidSchema.safeParse(id);
+  if (!parsedId.success) return null;
+
   const supabase = await createClient();
   const {
     data: { user },
@@ -76,20 +158,10 @@ export async function getPayment(id: string): Promise<Payment | null> {
 
   const { data } = await supabase
     .from("payments")
-    .select("*, category:categories(*)")
-    .eq("id", id)
+    .select(`${PAYMENT_COLUMNS}, category:categories(${NESTED_CATEGORY_COLUMNS})`)
+    .eq("id", parsedId.data)
     .eq("user_id", user.id)
     .single();
 
-  if (!data) return null;
-
-  const category = Array.isArray(data.category)
-    ? data.category[0] ?? null
-    : data.category ?? null;
-
-  return {
-    ...data,
-    amount: Number(data.amount),
-    category,
-  };
+  return data ? toPaymentView(data as PaymentRow) : null;
 }

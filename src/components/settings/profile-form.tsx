@@ -7,12 +7,11 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateProfile } from "@/lib/actions/payments";
-import type { Profile } from "@/lib/types";
-
-const CURRENCIES = ["USD", "EUR", "GBP", "CAD", "AUD", "MXN"];
+import { CURRENCIES } from "@/lib/payments/constants";
+import type { ProfileView } from "@/lib/types";
 
 interface ProfileFormProps {
-  profile: Profile;
+  profile: ProfileView;
 }
 
 export function ProfileForm({ profile }: ProfileFormProps) {

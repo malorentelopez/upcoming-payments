@@ -10,7 +10,8 @@ export default function CookiePolicyPage() {
         <h2>1. What are cookies?</h2>
         <p>
           Cookies are small text files stored on your device. We also use similar
-          technologies such as local storage for your cookie consent choice.
+          technologies such as local storage for preferences and your cookie consent
+          choice.
         </p>
       </section>
 
@@ -19,23 +20,21 @@ export default function CookiePolicyPage() {
         <p>Cookies fall into these categories:</p>
         <ul>
           <li>
-            <strong>Essential</strong> — required for sign-in and security. These
-            cannot be switched off while using the service.
+            <strong>Essential</strong> — required for sign-in, security, language, and
+            theme. These cannot be switched off while using the service.
           </li>
           <li>
-            <strong>Functional</strong> — remember preferences including your cookie
-            choices.
+            <strong>Functional</strong> — remember your cookie consent choices.
           </li>
           <li>
-            <strong>Analytics</strong> — help us measure usage. We do not load
-            analytics scripts today; this category is reserved for future use and only
-            applies if you consent.
+            <strong>Analytics</strong> — help us measure usage and performance. We only
+            load Vercel Analytics and Speed Insights if you opt in.
           </li>
         </ul>
       </section>
 
       <section>
-        <h2>3. Cookies we use</h2>
+        <h2>3. Cookies and storage we use</h2>
         <div className="overflow-x-auto rounded-xl border border-border/60">
           <table className="w-full min-w-[32rem] text-left text-sm">
             <thead className="border-b border-border/60 bg-muted/40">
@@ -54,10 +53,36 @@ export default function CookiePolicyPage() {
                 <td className="px-4 py-3">Session / up to 1 year</td>
               </tr>
               <tr>
+                <td className="px-4 py-3">NEXT_LOCALE</td>
+                <td className="px-4 py-3">Remember your language preference</td>
+                <td className="px-4 py-3">Essential</td>
+                <td className="px-4 py-3">Up to 1 year</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3">ahead-signup-locale</td>
+                <td className="px-4 py-3">Apply language during OAuth signup</td>
+                <td className="px-4 py-3">Essential</td>
+                <td className="px-4 py-3">1 hour</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3">ahead-theme (localStorage)</td>
+                <td className="px-4 py-3">Remember light/dark/system theme</td>
+                <td className="px-4 py-3">Essential</td>
+                <td className="px-4 py-3">Until you clear browser data</td>
+              </tr>
+              <tr>
                 <td className="px-4 py-3">ahead-cookie-consent (localStorage)</td>
                 <td className="px-4 py-3">Records your cookie consent choice</td>
-                <td className="px-4 py-3">Essential (compliance)</td>
+                <td className="px-4 py-3">Functional</td>
                 <td className="px-4 py-3">Until you clear browser data</td>
+              </tr>
+              <tr>
+                <td className="px-4 py-3">Vercel Analytics / Speed Insights</td>
+                <td className="px-4 py-3">
+                  Anonymous usage metrics and performance data (only if you consent)
+                </td>
+                <td className="px-4 py-3">Analytics</td>
+                <td className="px-4 py-3">Varies (see Vercel documentation)</td>
               </tr>
             </tbody>
           </table>

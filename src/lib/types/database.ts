@@ -49,7 +49,7 @@ export interface PaymentOccurrence {
   amount: number;
   currency: string;
   dueDate: Date;
-  category: Category | null;
+  category: Pick<Category, "id" | "name" | "color" | "icon"> | null;
   type: PaymentType;
 }
 

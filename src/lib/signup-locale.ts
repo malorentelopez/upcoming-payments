@@ -1,5 +1,3 @@
-"use server";
-
 import {
   categoriesMatchEnglishDefaults,
   DEFAULT_CATEGORIES_BY_LOCALE,
@@ -15,11 +13,18 @@ export async function applySignupLocale(
   userId: string,
   localeInput: string,
 ): Promise<SupportedLocale> {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user || user.id !== userId) {
+    throw new Error("Unauthorized");
+  }
+
   const locale = isSupportedLocale(localeInput)
     ? localeInput
     : normalizeLocale(localeInput);
-
-  const supabase = await createClient();
 
   await supabase.from("profiles").update({ locale }).eq("id", userId);
 

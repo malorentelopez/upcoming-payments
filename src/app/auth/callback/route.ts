@@ -1,21 +1,23 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 
-import { applySignupLocale } from "@/lib/actions/signup-locale";
+import { applySignupLocale } from "@/lib/signup-locale";
 import { SIGNUP_LOCALE_COOKIE } from "@/lib/i18n/default-categories";
 import { isSupportedLocale, normalizeLocale } from "@/lib/i18n/locale";
+import { appCookieOptions } from "@/lib/security/cookies";
+import { safeRedirectPath } from "@/lib/security/safe-redirect";
 import { createClient } from "@/lib/supabase/server";
 
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/dashboard";
+  const next = safeRedirectPath(searchParams.get("next"));
 
   if (code) {
     const supabase = await createClient();
     const { error } = await supabase.auth.exchangeCodeForSession(code);
     if (!error) {
-      const response = NextResponse.redirect(`${origin}${next}`);
+      const response = NextResponse.redirect(new URL(next, origin));
 
       const {
         data: { user },
@@ -45,10 +47,7 @@ export async function GET(request: Request) {
           }
         }
 
-        response.cookies.set("NEXT_LOCALE", locale, {
-          path: "/",
-          maxAge: 60 * 60 * 24 * 365,
-        });
+        response.cookies.set("NEXT_LOCALE", locale, appCookieOptions());
 
         if (signupLocaleCookie) {
           response.cookies.delete(SIGNUP_LOCALE_COOKIE);
@@ -59,5 +58,5 @@ export async function GET(request: Request) {
     }
   }
 
-  return NextResponse.redirect(`${origin}/login?error=auth`);
+  return NextResponse.redirect(new URL("/login?error=auth", origin));
 }

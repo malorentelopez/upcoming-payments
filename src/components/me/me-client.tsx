@@ -2,18 +2,20 @@
 
 import { useTranslations } from "next-intl";
 
+import { DeleteAccountDialog } from "@/components/me/delete-account-dialog";
 import { PageTransition } from "@/components/motion/page-transition";
 import { LanguageSettings } from "@/components/settings/language-settings";
 import { ProfileForm } from "@/components/settings/profile-form";
 import { Button } from "@/components/ui/button";
 import { signOut } from "@/lib/actions/payments";
-import type { Profile } from "@/lib/types";
+import type { ProfileView } from "@/lib/types";
 
 interface MeClientProps {
-  profile: Profile;
+  profile: ProfileView;
+  email: string;
 }
 
-export function MeClient({ profile }: MeClientProps) {
+export function MeClient({ profile, email }: MeClientProps) {
   const t = useTranslations("profile");
 
   return (
@@ -26,8 +28,10 @@ export function MeClient({ profile }: MeClientProps) {
 
       <LanguageSettings />
 
+      <DeleteAccountDialog email={email} />
+
       <form action={signOut}>
-        <Button type="submit" variant="destructive" className="h-11 w-full rounded-xl">
+        <Button type="submit" variant="outline" className="h-11 w-full rounded-xl">
           {t("signOut")}
         </Button>
       </form>

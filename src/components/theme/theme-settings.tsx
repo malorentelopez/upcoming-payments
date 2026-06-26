@@ -1,23 +1,14 @@
 "use client";
 
-import { Monitor, Moon, Sun } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
+import {
+  isThemeOption,
+  THEME_OPTIONS,
+} from "@/components/theme/theme-options";
 import { cn } from "@/lib/utils";
-
-const THEME_OPTIONS = [
-  { value: "system", labelKey: "system", icon: Monitor },
-  { value: "light", labelKey: "light", icon: Sun },
-  { value: "dark", labelKey: "dark", icon: Moon },
-] as const;
-
-type ThemeOption = (typeof THEME_OPTIONS)[number]["value"];
-
-function isThemeOption(value: string): value is ThemeOption {
-  return THEME_OPTIONS.some((option) => option.value === value);
-}
 
 export function ThemeSettings() {
   const t = useTranslations("appearance");

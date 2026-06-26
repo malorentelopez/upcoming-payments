@@ -12,13 +12,14 @@ import {
   deletePayment,
   togglePaymentActive,
 } from "@/lib/actions/payments";
+import { sanitizeHexColor } from "@/lib/security/colors";
 import { formatCurrency } from "@/lib/payments/formatters";
 import { localeToIntl } from "@/lib/i18n/locale";
-import type { Payment, PaymentFrequency, PaymentType } from "@/lib/types";
+import type { PaymentFrequency, PaymentType, PaymentView } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface PaymentDetailClientProps {
-  payment: Payment;
+  payment: PaymentView;
 }
 
 export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
@@ -70,7 +71,10 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
               <Badge variant="secondary">{t(`types.${payment.type}` as `types.${PaymentType}`)}</Badge>
               {payment.category && (
                 <Badge
-                  style={{ backgroundColor: payment.category.color, color: "white" }}
+                  style={{
+                    backgroundColor: sanitizeHexColor(payment.category.color),
+                    color: "white",
+                  }}
                 >
                   {payment.category.name}
                 </Badge>

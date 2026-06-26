@@ -7,11 +7,16 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Category, Payment, PaymentFrequency, PaymentType } from "@/lib/types";
+import type {
+  CategoryView,
+  PaymentFrequency,
+  PaymentType,
+  PaymentView,
+} from "@/lib/types";
 
 interface PaymentFormFieldsProps {
-  categories: Category[];
-  payment?: Payment;
+  categories: CategoryView[];
+  payment?: PaymentView;
   defaultCurrency?: string;
 }
 
@@ -166,7 +171,7 @@ function FrequencySelect({
   );
 }
 
-function RecurringFields({ payment }: { payment?: Payment }) {
+function RecurringFields({ payment }: { payment?: PaymentView }) {
   const t = useTranslations("payments");
 
   return (
@@ -228,7 +233,7 @@ function RecurringFields({ payment }: { payment?: Payment }) {
   );
 }
 
-function InstallmentFields({ payment }: { payment?: Payment }) {
+function InstallmentFields({ payment }: { payment?: PaymentView }) {
   const t = useTranslations("payments");
 
   return (
@@ -281,7 +286,7 @@ function InstallmentFields({ payment }: { payment?: Payment }) {
   );
 }
 
-function OneOffFields({ payment }: { payment?: Payment }) {
+function OneOffFields({ payment }: { payment?: PaymentView }) {
   const t = useTranslations("payments");
 
   return (

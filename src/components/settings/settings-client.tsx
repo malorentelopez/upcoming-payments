@@ -9,10 +9,10 @@ import { CategoriesSection } from "@/components/settings/categories-section";
 import { ThemeSettings } from "@/components/theme/theme-settings";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Category } from "@/lib/types";
+import type { CategoryView } from "@/lib/types";
 
 interface SettingsClientProps {
-  categories: Category[];
+  categories: CategoryView[];
 }
 
 export function SettingsClient({ categories }: SettingsClientProps) {

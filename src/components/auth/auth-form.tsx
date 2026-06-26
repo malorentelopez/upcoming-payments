@@ -11,13 +11,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { detectClientLocale } from "@/lib/i18n/locale";
 import { SIGNUP_LOCALE_COOKIE } from "@/lib/i18n/default-categories";
+import { loginSchema, signupSchema } from "@/lib/payments/schemas";
+import { safeRedirectPath } from "@/lib/security/safe-redirect";
 import { createClient } from "@/lib/supabase/client";
 
 interface AuthFormProps {
   mode: "login" | "signup";
+  redirectTo?: string | null;
 }
 
-export function AuthForm({ mode }: AuthFormProps) {
+export function AuthForm({ mode, redirectTo }: AuthFormProps) {
   const t = useTranslations("auth");
   const tCommon = useTranslations("common");
   const router = useRouter();
@@ -26,6 +29,7 @@ export function AuthForm({ mode }: AuthFormProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [displayName, setDisplayName] = useState("");
+  const postLoginPath = safeRedirectPath(redirectTo);
 
   async function handleEmailAuth(e: React.FormEvent) {
     e.preventDefault();
@@ -33,12 +37,17 @@ export function AuthForm({ mode }: AuthFormProps) {
 
     try {
       if (mode === "signup") {
+        const parsed = signupSchema.safeParse({ email, password, displayName });
+        if (!parsed.success) {
+          throw new Error(parsed.error.issues[0]?.message ?? t("somethingWrong"));
+        }
+
         const { error } = await supabase.auth.signUp({
-          email,
-          password,
+          email: parsed.data.email,
+          password: parsed.data.password,
           options: {
             data: {
-              full_name: displayName || undefined,
+              full_name: parsed.data.displayName || undefined,
               locale: detectClientLocale(),
             },
           },
@@ -48,12 +57,17 @@ export function AuthForm({ mode }: AuthFormProps) {
         router.push("/login");
         router.refresh();
       } else {
+        const parsed = loginSchema.safeParse({ email, password });
+        if (!parsed.success) {
+          throw new Error(parsed.error.issues[0]?.message ?? t("somethingWrong"));
+        }
+
         const { error } = await supabase.auth.signInWithPassword({
-          email,
-          password,
+          email: parsed.data.email,
+          password: parsed.data.password,
         });
         if (error) throw error;
-        router.push("/dashboard");
+        router.push(postLoginPath);
         router.refresh();
       }
     } catch (err) {
@@ -66,12 +80,13 @@ export function AuthForm({ mode }: AuthFormProps) {
   async function handleGoogleAuth() {
     setLoading(true);
     const signupLocale = detectClientLocale();
-    document.cookie = `${SIGNUP_LOCALE_COOKIE}=${signupLocale}; path=/; max-age=3600; SameSite=Lax`;
+    const secureFlag = window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie = `${SIGNUP_LOCALE_COOKIE}=${signupLocale}; path=/; max-age=3600; SameSite=Lax${secureFlag}`;
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "google",
       options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
+        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(postLoginPath)}`,
       },
     });
     if (error) {
@@ -132,7 +147,7 @@ export function AuthForm({ mode }: AuthFormProps) {
             id="password"
             type="password"
             required
-            minLength={6}
+            minLength={8}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             placeholder={t("passwordPlaceholder")}

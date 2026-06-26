@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 
 import { AppLogo } from "@/components/brand/app-logo";
 import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { ThemeSwitcher } from "@/components/theme/theme-switcher";
 import { buttonVariants } from "@/components/ui/button";
 import { PageTransition } from "@/components/motion/page-transition";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -22,19 +23,26 @@ export default async function LandingPage() {
     <main className="relative flex min-h-full flex-col overflow-hidden">
       <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-primary/10 via-background to-background" />
 
-      <header className="relative z-10 flex items-center justify-between px-6 py-6 md:px-10">
-        <AppLogo href="/" size="lg" />
-        <div className="flex items-center gap-2">
-          <LanguageSwitcher />
+      <header className="relative z-10 flex items-center justify-between gap-3 px-4 py-4 sm:px-6 sm:py-6 md:px-10">
+        <AppLogo href="/" size="lg" className="shrink-0 max-sm:text-2xl" />
+        <div className="flex shrink-0 items-center gap-0.5 sm:gap-2">
+          <ThemeSwitcher compact />
+          <LanguageSwitcher compact />
           <Link
             href="/login"
-            className={cn(buttonVariants({ variant: "ghost" }), "rounded-xl")}
+            className={cn(
+              buttonVariants({ variant: "ghost", size: "sm" }),
+              "hidden rounded-xl sm:inline-flex",
+            )}
           >
             {t("signIn")}
           </Link>
           <Link
             href="/signup"
-            className={cn(buttonVariants(), "rounded-xl")}
+            className={cn(
+              buttonVariants({ size: "sm" }),
+              "h-9 shrink-0 rounded-xl px-3 sm:h-10 sm:px-4",
+            )}
           >
             {t("getStarted")}
           </Link>

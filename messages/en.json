@@ -53,7 +53,7 @@
     "email": "Email",
     "emailPlaceholder": "you@example.com",
     "password": "Password",
-    "passwordPlaceholder": "At least 6 characters",
+    "passwordPlaceholder": "At least 8 characters with a letter and number",
     "createAccount": "Create account",
     "signIn": "Sign in",
     "privacyAgree": "By creating an account, you agree to our <link>Privacy Policy</link>.",
@@ -144,6 +144,7 @@
   },
   "appearance": {
     "title": "Appearance",
+    "changeTheme": "Change theme",
     "description": "Choose light, dark, or match your device settings.",
     "system": "System",
     "light": "Light",
@@ -166,7 +167,16 @@
     "displayName": "Display name",
     "defaultCurrency": "Default currency",
     "saveProfile": "Save profile",
-    "signOut": "Sign out"
+    "signOut": "Sign out",
+    "deleteAccountTitle": "Delete account",
+    "deleteAccountDesc": "Permanently delete your account and all payment data. This cannot be undone.",
+    "deleteAccount": "Delete account",
+    "deleteAccountConfirmTitle": "Delete your account?",
+    "deleteAccountConfirmDesc": "Type your email address to confirm. All your payments, categories, and profile data will be permanently removed.",
+    "deleteAccountEmailLabel": "Your email",
+    "deleteAccountPermanently": "Delete permanently",
+    "deleteAccountCancel": "Cancel",
+    "deleteAccountError": "Could not delete account"
   },
   "timezone": {
     "title": "Timezone",
@@ -178,17 +188,19 @@
   },
   "consent": {
     "title": "Cookies & privacy",
-    "description": "We use essential cookies to keep you signed in and run the app. With your permission, we also store preference cookies and may use analytics in the future. Read our {privacyLink} and {cookieLink}.",
+    "description": "We use essential cookies for sign-in, language, and theme. With your permission, we load analytics to measure usage. Read our <privacyLink>Privacy Policy</privacyLink> and <cookieLink>Cookie Policy</cookieLink>.",
     "acceptAll": "Accept all",
     "rejectNonEssential": "Reject non-essential",
+    "rejectAll": "Reject all",
     "managePreferences": "Manage preferences",
     "preferencesTitle": "Cookie preferences",
+    "preferencesDialogDesc": "Choose which cookies we may use. Essential cookies are required for sign-in and cannot be disabled.",
     "essential": "Essential",
     "essentialDesc": "Required for sign-in and core app functionality.",
     "preferences": "Preferences",
-    "preferencesDesc": "Remember settings like theme and language.",
+    "preferencesDesc": "Remember your cookie consent choices.",
     "analytics": "Analytics",
-    "analyticsDesc": "Help us understand how the app is used (not enabled yet).",
+    "analyticsDesc": "Anonymous usage and performance metrics via Vercel (only if you opt in).",
     "savePreferences": "Save preferences"
   },
   "footer": {

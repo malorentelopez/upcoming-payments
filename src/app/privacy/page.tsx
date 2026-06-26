@@ -30,8 +30,8 @@ export default function PrivacyPolicyPage() {
             identifiers (including when you sign in with Google).
           </li>
           <li>
-            <strong>Profile data:</strong> default currency, timezone, and preferences
-            you save in the app.
+            <strong>Profile data:</strong> default currency, timezone, language, and
+            preferences you save in the app.
           </li>
           <li>
             <strong>Payment data you enter:</strong> names, amounts, categories, due
@@ -39,7 +39,12 @@ export default function PrivacyPolicyPage() {
           </li>
           <li>
             <strong>Technical data:</strong> session cookies required to keep you
-            signed in, and cookie-consent choices stored locally in your browser.
+            signed in, language and theme preferences, and cookie-consent choices
+            stored in your browser.
+          </li>
+          <li>
+            <strong>Analytics data (with consent):</strong> anonymous page views and
+            performance metrics via Vercel Analytics and Speed Insights.
           </li>
         </ul>
         <p>We do not collect bank credentials or execute payments on your behalf.</p>
@@ -53,8 +58,8 @@ export default function PrivacyPolicyPage() {
             store your payments, and provide the service you request.
           </li>
           <li>
-            <strong>Consent (Art. 6(1)(a) GDPR):</strong> for non-essential cookies
-            such as analytics (only if you opt in).
+            <strong>Consent (Art. 6(1)(a) GDPR):</strong> for analytics cookies and
+            scripts (only if you opt in).
           </li>
           <li>
             <strong>Legitimate interests (Art. 6(1)(f) GDPR):</strong> to keep the
@@ -75,7 +80,8 @@ export default function PrivacyPolicyPage() {
             <strong>Google</strong> — optional OAuth sign-in if you choose it.
           </li>
           <li>
-            <strong>Vercel</strong> — application hosting and delivery.
+            <strong>Vercel</strong> — application hosting, delivery, and (with your
+            consent) analytics and performance monitoring.
           </li>
         </ul>
         <p>
@@ -94,11 +100,14 @@ export default function PrivacyPolicyPage() {
       </section>
 
       <section>
-        <h2>6. Retention</h2>
+        <h2>6. Retention and deletion</h2>
         <p>
-          We keep your account and payment data while your account is active. If you
-          delete your account or ask us to erase your data, we delete or anonymise it
-          within a reasonable period, except where law requires longer retention.
+          We keep your account and payment data while your account is active. You can
+          delete your account at any time from <strong>Me → Delete account</strong> in
+          the app. This permanently removes your profile, categories, payments, and
+          authentication record. If you cannot use the app, email us to request
+          erasure. We complete deletion within a reasonable period, except where law
+          requires longer retention.
         </p>
       </section>
 
@@ -129,8 +138,8 @@ export default function PrivacyPolicyPage() {
         <h2>8. Security</h2>
         <p>
           We use industry-standard measures including encrypted connections (HTTPS),
-          row-level security in our database, and access controls. No method of
-          transmission over the internet is 100% secure.
+          row-level security in our database, access controls, and HTTP security
+          headers. No method of transmission over the internet is 100% secure.
         </p>
       </section>
 

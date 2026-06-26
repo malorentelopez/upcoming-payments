@@ -7,10 +7,11 @@ import { toast } from "sonner";
 import { AddCategoryDialog } from "@/components/settings/add-category-dialog";
 import { Button } from "@/components/ui/button";
 import { deleteCategory } from "@/lib/actions/payments";
-import type { Category } from "@/lib/types";
+import { sanitizeHexColor } from "@/lib/security/colors";
+import type { CategoryView } from "@/lib/types";
 
 interface CategoriesSectionProps {
-  categories: Category[];
+  categories: CategoryView[];
 }
 
 export function CategoriesSection({ categories }: CategoriesSectionProps) {
@@ -47,7 +48,7 @@ export function CategoriesSection({ categories }: CategoriesSectionProps) {
               <span className="flex items-center gap-2 text-sm">
                 <span
                   className="size-3 rounded-full"
-                  style={{ backgroundColor: cat.color }}
+                  style={{ backgroundColor: sanitizeHexColor(cat.color) }}
                 />
                 {cat.name}
               </span>

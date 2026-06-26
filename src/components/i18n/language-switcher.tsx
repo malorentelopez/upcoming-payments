@@ -23,9 +23,10 @@ import { cn } from "@/lib/utils";
 
 interface LanguageSwitcherProps {
   className?: string;
+  compact?: boolean;
 }
 
-export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
+export function LanguageSwitcher({ className, compact = false }: LanguageSwitcherProps) {
   const t = useTranslations("language");
   const tAuth = useTranslations("auth");
   const currentLocale = useLocale() as SupportedLocale;
@@ -52,12 +53,15 @@ export function LanguageSwitcher({ className }: LanguageSwitcherProps) {
         aria-label={t("changeLanguage")}
         className={cn(
           buttonVariants({ variant: "ghost", size: "sm" }),
-          "h-9 gap-1.5 rounded-xl px-2.5",
+          "h-9 gap-1.5 rounded-xl",
+          compact ? "size-9 px-0 sm:size-auto sm:px-2.5" : "px-2.5",
           className,
         )}
       >
         <Globe className="size-4" />
-        <span className="text-sm">{LOCALE_LABELS[currentLocale].native}</span>
+        <span className={cn("text-sm", compact && "hidden sm:inline")}>
+          {LOCALE_LABELS[currentLocale].native}
+        </span>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-44">
         {SUPPORTED_LOCALES.map((locale) => {
