@@ -1,6 +1,6 @@
 export * from "./database";
 
-import type { PaymentFrequency, PaymentType } from "./database";
+import type { PaymentFrequency, PaymentLedger, PaymentType } from "./database";
 
 export type CategoryView = {
   id: string;
@@ -15,6 +15,7 @@ export type ProfileView = {
   default_currency: string;
   timezone: string;
   locale: string;
+  default_ledger: PaymentLedger;
 };
 
 export type PaymentView = {
@@ -35,5 +36,6 @@ export type PaymentView = {
   paid_installments: number;
   notes: string | null;
   is_active: boolean;
+  ledger: PaymentLedger;
   category?: CategoryView | null;
 };

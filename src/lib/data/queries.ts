@@ -9,15 +9,16 @@ import type {
   Profile,
   ProfileView,
 } from "@/lib/types";
+import type { LedgerFilter } from "@/lib/payments/ledger";
 import { uuidSchema } from "@/lib/payments/schemas";
 
 const PROFILE_COLUMNS =
-  "id, display_name, default_currency, timezone, locale, created_at";
+  "id, display_name, default_currency, timezone, locale, default_ledger, created_at";
 
 const CATEGORY_COLUMNS = "id, user_id, name, color, icon, created_at";
 
 const PAYMENT_COLUMNS =
-  "id, user_id, category_id, name, amount, currency, type, frequency, day_of_month, use_last_day_of_month, start_date, end_date, due_date, next_due_date, total_installments, paid_installments, notes, is_active, updated_at";
+  "id, user_id, category_id, name, amount, currency, type, frequency, day_of_month, use_last_day_of_month, start_date, end_date, due_date, next_due_date, total_installments, paid_installments, notes, is_active, ledger, updated_at";
 
 const NESTED_CATEGORY_COLUMNS = "id, name, color, icon";
 
@@ -37,6 +38,7 @@ function toProfileView(profile: Profile): ProfileView {
     default_currency: profile.default_currency,
     timezone: profile.timezone,
     locale: profile.locale,
+    default_ledger: profile.default_ledger ?? "personal",
   };
 }
 
@@ -61,6 +63,7 @@ type PaymentRow = {
   paid_installments: number;
   notes: string | null;
   is_active: boolean;
+  ledger: Payment["ledger"];
   category?: NestedCategoryRow | NestedCategoryRow[] | null;
 };
 
@@ -87,6 +90,7 @@ function toPaymentView(row: PaymentRow): PaymentView {
     paid_installments: row.paid_installments,
     notes: row.notes,
     is_active: row.is_active,
+    ledger: row.ledger ?? "personal",
     category: category ? toCategoryView(category) : null,
   };
 }
@@ -125,17 +129,24 @@ export async function getCategories(): Promise<CategoryView[]> {
   return (data ?? []).map(toCategoryView);
 }
 
-export async function getPayments(): Promise<PaymentView[]> {
+export async function getPayments(
+  ledgerFilter: LedgerFilter = "all",
+): Promise<PaymentView[]> {
   const user = await getAuthUser();
   if (!user) return [];
 
   const supabase = await createClient();
 
-  const { data } = await supabase
+  let query = supabase
     .from("payments")
     .select(`${PAYMENT_COLUMNS}, category:categories(${NESTED_CATEGORY_COLUMNS})`)
-    .eq("user_id", user.id)
-    .order("name");
+    .eq("user_id", user.id);
+
+  if (ledgerFilter !== "all") {
+    query = query.eq("ledger", ledgerFilter);
+  }
+
+  const { data } = await query.order("name");
 
   return (data ?? []).map((row) => toPaymentView(row as PaymentRow));
 }

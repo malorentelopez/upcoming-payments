@@ -37,6 +37,7 @@ function makePayment(overrides: Partial<Payment> = {}): Payment {
     paid_installments: 0,
     notes: null,
     is_active: true,
+    ledger: "personal",
     created_at: "2026-01-01T00:00:00Z",
     updated_at: "2026-01-01T00:00:00Z",
     ...overrides,

@@ -15,6 +15,7 @@ interface CollapsiblePaymentSectionProps {
   currency: string;
   intlLocale: string;
   defaultExpanded?: boolean;
+  showLedgerBadge?: boolean;
 }
 
 export function CollapsiblePaymentSection({
@@ -25,6 +26,7 @@ export function CollapsiblePaymentSection({
   currency,
   intlLocale,
   defaultExpanded = false,
+  showLedgerBadge = false,
 }: CollapsiblePaymentSectionProps) {
   const [expanded, setExpanded] = useState(defaultExpanded);
 
@@ -55,6 +57,7 @@ export function CollapsiblePaymentSection({
                 currency={currency}
                 intlLocale={intlLocale}
                 variant="pastDue"
+                showLedgerBadge={showLedgerBadge}
               />
             </StaggerItem>
           ))}

@@ -81,6 +81,9 @@
   --sidebar-accent-foreground: oklch(0.205 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
+  --bottom-nav-extra: 0.75rem;
+  --bottom-nav-inset: calc(env(safe-area-inset-bottom, 0px) + var(--bottom-nav-extra));
+  --mobile-bottom-clearance: calc(7rem + var(--bottom-nav-inset));
 }
 
 .dark {
@@ -144,5 +147,19 @@
       animation-iteration-count: 1 !important;
       transition-duration: 0.01ms !important;
     }
+  }
+}
+
+@layer utilities {
+  .pb-mobile-nav {
+    padding-bottom: var(--mobile-bottom-clearance);
+  }
+
+  .-mb-mobile-nav {
+    margin-bottom: calc(-1 * var(--mobile-bottom-clearance));
+  }
+
+  .h-mobile-nav-fade {
+    height: var(--mobile-bottom-clearance);
   }
 }

@@ -6,7 +6,17 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  ActiveToggle,
+  AmountCurrencyField,
+  CategoryChipPicker,
+  CompactNumberField,
+  DateField,
+  FrequencyPicker,
+  PaymentLedgerPicker,
+  PaymentTypePicker,
+  todayIsoDate,
+} from "@/components/payments/payment-form-shared";
 import type {
   CategoryView,
   PaymentFrequency,
@@ -18,41 +28,72 @@ interface PaymentFormFieldsProps {
   categories: CategoryView[];
   payment?: PaymentView;
   defaultCurrency?: string;
+  defaultLedger?: PaymentView["ledger"];
 }
 
 export function PaymentFormFields({
   categories,
   payment,
   defaultCurrency = "USD",
+  defaultLedger = "personal",
 }: PaymentFormFieldsProps) {
   const t = useTranslations("payments");
-  const tCommon = useTranslations("common");
+  const today = todayIsoDate();
+
   const [type, setType] = useState<PaymentType>(payment?.type ?? "recurring");
-  const isEditing = Boolean(payment);
+  const [ledger, setLedger] = useState<PaymentView["ledger"]>(
+    payment?.ledger ?? defaultLedger,
+  );
+  const [amount, setAmount] = useState(payment?.amount?.toString() ?? "");
+  const [currency, setCurrency] = useState(payment?.currency ?? defaultCurrency);
+  const [categoryId, setCategoryId] = useState(payment?.category_id ?? "");
+  const [frequency, setFrequency] = useState<PaymentFrequency>(
+    payment?.frequency ?? "monthly",
+  );
+  const [startDate, setStartDate] = useState(payment?.start_date ?? today);
+  const [endDate, setEndDate] = useState(payment?.end_date ?? "");
+  const [dayOfMonth, setDayOfMonth] = useState(
+    payment?.day_of_month?.toString() ?? "1",
+  );
+  const [useLastDayOfMonth, setUseLastDayOfMonth] = useState(
+    payment?.use_last_day_of_month ?? false,
+  );
+  const [totalInstallments, setTotalInstallments] = useState(
+    payment?.total_installments?.toString() ?? "",
+  );
+  const [paidInstallments, setPaidInstallments] = useState(
+    payment?.paid_installments?.toString() ?? "0",
+  );
+  const [nextDueDate, setNextDueDate] = useState(payment?.next_due_date ?? today);
+  const [dueDate, setDueDate] = useState(payment?.due_date ?? today);
+  const [notes, setNotes] = useState(payment?.notes ?? "");
+  const [isActive, setIsActive] = useState(payment?.is_active ?? true);
 
   return (
     <>
-      <Tabs
-        value={type}
-        onValueChange={(v) => setType(v as PaymentType)}
-        className="w-full"
-      >
-        <TabsList className="grid w-full grid-cols-3 rounded-xl">
-          <TabsTrigger value="recurring" className="rounded-lg">
-            {t("types.recurring")}
-          </TabsTrigger>
-          <TabsTrigger value="installment" className="rounded-lg">
-            {t("types.installment")}
-          </TabsTrigger>
-          <TabsTrigger value="one_off" className="rounded-lg">
-            {t("types.one_off")}
-          </TabsTrigger>
-        </TabsList>
-      </Tabs>
-
       <input type="hidden" name="type" value={type} />
+      <input type="hidden" name="ledger" value={ledger} />
+      <input type="hidden" name="amount" value={amount} />
+      <input type="hidden" name="currency" value={currency} />
+      <input type="hidden" name="categoryId" value={categoryId} />
+      <input type="hidden" name="frequency" value={frequency} />
+      <input type="hidden" name="startDate" value={startDate} />
+      <input type="hidden" name="endDate" value={endDate} />
+      <input type="hidden" name="dayOfMonth" value={dayOfMonth} />
+      {useLastDayOfMonth ? (
+        <input type="hidden" name="useLastDayOfMonth" value="true" />
+      ) : null}
+      <input type="hidden" name="totalInstallments" value={totalInstallments} />
+      <input type="hidden" name="paidInstallments" value={paidInstallments} />
+      <input type="hidden" name="nextDueDate" value={nextDueDate} />
+      <input type="hidden" name="dueDate" value={dueDate} />
+      <input type="hidden" name="notes" value={notes} />
+      {isActive ? <input type="hidden" name="isActive" value="true" /> : null}
 
-      <div className="space-y-4 rounded-2xl border border-border/60 bg-card p-5">
+      <section className="space-y-5 rounded-2xl border border-border/60 bg-card p-5">
+        <PaymentTypePicker value={type} onChange={setType} />
+        <PaymentLedgerPicker value={ledger} onChange={setLedger} />
+
         <div className="space-y-2">
           <Label htmlFor="name">{t("name")}</Label>
           <Input
@@ -65,243 +106,121 @@ export function PaymentFormFields({
           />
         </div>
 
-        <div className="grid grid-cols-2 gap-3">
-          <div className="space-y-2">
-            <Label htmlFor="amount">{t("amount")}</Label>
-            <Input
-              id="amount"
-              name="amount"
-              type="number"
-              step="0.01"
-              min="0.01"
+        <AmountCurrencyField
+          amount={amount}
+          currency={currency}
+          onAmountChange={setAmount}
+          onCurrencyChange={setCurrency}
+        />
+
+        <CategoryChipPicker
+          categories={categories}
+          value={categoryId}
+          onChange={setCategoryId}
+        />
+
+        {type === "recurring" ? (
+          <div className="space-y-4 border-t border-border/60 pt-4">
+            <FrequencyPicker value={frequency} onChange={setFrequency} />
+            <div className="grid grid-cols-2 gap-3">
+              <DateField
+                id="startDate"
+                label={t("startDate")}
+                value={startDate}
+                onChange={setStartDate}
+                required
+              />
+              <DateField
+                id="endDate"
+                label={t("endDateOptional")}
+                value={endDate}
+                onChange={setEndDate}
+              />
+            </div>
+            <div className="grid grid-cols-[1fr_auto] items-end gap-3">
+              <CompactNumberField
+                id="dayOfMonth"
+                label={t("dayOfMonth")}
+                value={dayOfMonth}
+                onChange={setDayOfMonth}
+                min={1}
+                max={31}
+                className={useLastDayOfMonth ? "opacity-50" : undefined}
+              />
+              <button
+                type="button"
+                onClick={() => setUseLastDayOfMonth((value) => !value)}
+                className={
+                  useLastDayOfMonth
+                    ? "mb-0.5 inline-flex h-11 items-center rounded-xl border border-primary/40 bg-primary/10 px-3 text-xs font-medium text-primary"
+                    : "mb-0.5 inline-flex h-11 items-center rounded-xl border border-border/60 px-3 text-xs font-medium text-muted-foreground"
+                }
+              >
+                {t("lastDayShort")}
+              </button>
+            </div>
+          </div>
+        ) : null}
+
+        {type === "installment" ? (
+          <div className="space-y-4 border-t border-border/60 pt-4">
+            <div className="grid grid-cols-2 gap-3">
+              <CompactNumberField
+                id="totalInstallments"
+                label={t("totalInstallments")}
+                value={totalInstallments}
+                onChange={setTotalInstallments}
+                min={1}
+                required
+              />
+              <CompactNumberField
+                id="paidInstallments"
+                label={t("alreadyPaid")}
+                value={paidInstallments}
+                onChange={setPaidInstallments}
+                min={0}
+              />
+            </div>
+            <DateField
+              id="nextDueDate"
+              label={t("nextDueDate")}
+              value={nextDueDate}
+              onChange={setNextDueDate}
               required
-              defaultValue={payment?.amount}
-              className="h-11 rounded-xl"
+            />
+            <FrequencyPicker value={frequency} onChange={setFrequency} />
+          </div>
+        ) : null}
+
+        {type === "one_off" ? (
+          <div className="border-t border-border/60 pt-4">
+            <DateField
+              id="dueDate"
+              label={t("dueDate")}
+              value={dueDate}
+              onChange={setDueDate}
+              required
             />
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="currency">{t("currency")}</Label>
-            <Input
-              id="currency"
-              name="currency"
-              maxLength={3}
-              required
-              defaultValue={payment?.currency ?? defaultCurrency}
-              className="h-11 rounded-xl uppercase"
-            />
-          </div>
-        </div>
+        ) : null}
 
-        <div className="space-y-2">
-          <Label htmlFor="categoryId">{t("category")}</Label>
-          <select
-            id="categoryId"
-            name="categoryId"
-            defaultValue={payment?.category_id ?? ""}
-            className="flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
-          >
-            <option value="">{tCommon("none")}</option>
-            {categories.map((cat) => (
-              <option key={cat.id} value={cat.id}>
-                {cat.name}
-              </option>
-            ))}
-          </select>
-        </div>
-
-        {type === "recurring" && <RecurringFields payment={payment} />}
-        {type === "installment" && <InstallmentFields payment={payment} />}
-        {type === "one_off" && <OneOffFields payment={payment} />}
-
-        <div className="space-y-2">
+        <div className="space-y-2 border-t border-border/60 pt-4">
           <Label htmlFor="notes">{t("notesOptional")}</Label>
           <Input
             id="notes"
-            name="notes"
-            defaultValue={payment?.notes ?? ""}
+            value={notes}
+            onChange={(event) => setNotes(event.target.value)}
             placeholder={t("notesPlaceholder")}
             className="h-11 rounded-xl"
           />
         </div>
 
-        <label className="flex items-center gap-2 text-sm">
-          <input
-            type="checkbox"
-            name="isActive"
-            value="true"
-            defaultChecked={payment?.is_active ?? true}
-            className="size-4 rounded border-border"
-          />
-          {t("activeForecast")}
-        </label>
-      </div>
+        <ActiveToggle checked={isActive} onChange={setIsActive} />
+      </section>
 
       <Button type="submit" className="h-11 w-full rounded-xl">
-        {isEditing ? t("saveChanges") : t("addPayment")}
+        {payment ? t("saveChanges") : t("addPayment")}
       </Button>
     </>
-  );
-}
-
-function FrequencySelect({
-  id,
-  name,
-  defaultValue,
-}: {
-  id: string;
-  name: string;
-  defaultValue?: PaymentFrequency | null;
-}) {
-  const t = useTranslations("payments.frequencies");
-  const frequencies: PaymentFrequency[] = ["weekly", "monthly", "yearly"];
-
-  return (
-    <select
-      id={id}
-      name={name}
-      defaultValue={defaultValue ?? "monthly"}
-      className="flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
-    >
-      {frequencies.map((frequency) => (
-        <option key={frequency} value={frequency}>
-          {t(frequency)}
-        </option>
-      ))}
-    </select>
-  );
-}
-
-function RecurringFields({ payment }: { payment?: PaymentView }) {
-  const t = useTranslations("payments");
-
-  return (
-    <div className="space-y-4 border-t border-border/60 pt-4">
-      <div className="space-y-2">
-        <Label htmlFor="frequency">{t("frequency")}</Label>
-        <FrequencySelect
-          id="frequency"
-          name="frequency"
-          defaultValue={payment?.frequency}
-        />
-      </div>
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-2">
-          <Label htmlFor="startDate">{t("startDate")}</Label>
-          <Input
-            id="startDate"
-            name="startDate"
-            type="date"
-            required
-            defaultValue={payment?.start_date ?? ""}
-            className="h-11 rounded-xl"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="endDate">{t("endDateOptional")}</Label>
-          <Input
-            id="endDate"
-            name="endDate"
-            type="date"
-            defaultValue={payment?.end_date ?? ""}
-            className="h-11 rounded-xl"
-          />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="dayOfMonth">{t("dayOfMonth")}</Label>
-        <Input
-          id="dayOfMonth"
-          name="dayOfMonth"
-          type="number"
-          min={1}
-          max={31}
-          defaultValue={payment?.day_of_month ?? 1}
-          className="h-11 rounded-xl"
-        />
-      </div>
-      <label className="flex items-center gap-2 text-sm">
-        <input
-          type="checkbox"
-          name="useLastDayOfMonth"
-          value="true"
-          defaultChecked={payment?.use_last_day_of_month}
-          className="size-4 rounded border-border"
-        />
-        {t("useLastDayOfMonth")}
-      </label>
-    </div>
-  );
-}
-
-function InstallmentFields({ payment }: { payment?: PaymentView }) {
-  const t = useTranslations("payments");
-
-  return (
-    <div className="space-y-4 border-t border-border/60 pt-4">
-      <div className="grid grid-cols-2 gap-3">
-        <div className="space-y-2">
-          <Label htmlFor="totalInstallments">{t("totalInstallments")}</Label>
-          <Input
-            id="totalInstallments"
-            name="totalInstallments"
-            type="number"
-            min={1}
-            required
-            defaultValue={payment?.total_installments ?? ""}
-            className="h-11 rounded-xl"
-          />
-        </div>
-        <div className="space-y-2">
-          <Label htmlFor="paidInstallments">{t("alreadyPaid")}</Label>
-          <Input
-            id="paidInstallments"
-            name="paidInstallments"
-            type="number"
-            min={0}
-            defaultValue={payment?.paid_installments ?? 0}
-            className="h-11 rounded-xl"
-          />
-        </div>
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="nextDueDate">{t("nextDueDate")}</Label>
-        <Input
-          id="nextDueDate"
-          name="nextDueDate"
-          type="date"
-          required
-          defaultValue={payment?.next_due_date ?? ""}
-          className="h-11 rounded-xl"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="installmentFrequency">{t("frequency")}</Label>
-        <FrequencySelect
-          id="installmentFrequency"
-          name="frequency"
-          defaultValue={payment?.frequency}
-        />
-      </div>
-    </div>
-  );
-}
-
-function OneOffFields({ payment }: { payment?: PaymentView }) {
-  const t = useTranslations("payments");
-
-  return (
-    <div className="space-y-4 border-t border-border/60 pt-4">
-      <div className="space-y-2">
-        <Label htmlFor="dueDate">{t("dueDate")}</Label>
-        <Input
-          id="dueDate"
-          name="dueDate"
-          type="date"
-          required
-          defaultValue={payment?.due_date ?? ""}
-          className="h-11 rounded-xl"
-        />
-      </div>
-    </div>
   );
 }

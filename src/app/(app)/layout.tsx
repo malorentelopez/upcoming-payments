@@ -17,7 +17,7 @@ export default async function AppLayout({
     <div className="flex min-h-full">
       <SideNav />
       <div className="flex min-h-full flex-1 flex-col">
-        <main className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-4 pb-28 pt-6 md:max-w-4xl md:px-8 md:pb-8">
+        <main className="mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-4 pb-mobile-nav pt-6 md:max-w-4xl md:px-8 md:pb-8">
           {children}
         </main>
         <ScrollBottomFade />

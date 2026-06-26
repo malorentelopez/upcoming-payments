@@ -135,6 +135,7 @@
     "amount": "Importe",
     "currency": "Moneda",
     "category": "Categoría",
+    "ledger": "Cuenta",
     "notesOptional": "Notas (opcional)",
     "notesPlaceholder": "Cualquier detalle adicional",
     "activeForecast": "Activo: incluir en las previsiones",
@@ -143,6 +144,7 @@
     "endDateOptional": "Fecha de fin (opcional)",
     "dayOfMonth": "Día del mes",
     "useLastDayOfMonth": "Usar el último día del mes",
+    "lastDayShort": "Último día",
     "totalInstallments": "Número de cuotas",
     "alreadyPaid": "Cuotas pagadas",
     "nextDueDate": "Próximo vencimiento",
@@ -167,6 +169,13 @@
       "weekly": "Semanal",
       "monthly": "Mensual",
       "yearly": "Anual"
+    },
+    "wizard": {
+      "stepBasics": "¿Qué es?",
+      "stepSchedule": "¿Cuándo vence?",
+      "stepFinish": "¿Algo más?",
+      "next": "Continuar",
+      "back": "Atrás"
     }
   },
   "settings": {
@@ -205,10 +214,17 @@
     "spanish": "Español",
     "german": "Alemán"
   },
+  "ledger": {
+    "personal": "Personal",
+    "business": "Negocio",
+    "combined": "Combinado",
+    "filterLabel": "Filtro de cuenta"
+  },
   "profile": {
     "title": "Perfil",
     "displayName": "Nombre visible",
     "defaultCurrency": "Moneda por defecto",
+    "defaultLedger": "Predeterminado para nuevos pagos",
     "saveProfile": "Guardar perfil",
     "signOut": "Cerrar sesión",
     "deleteAccountTitle": "Eliminar cuenta",

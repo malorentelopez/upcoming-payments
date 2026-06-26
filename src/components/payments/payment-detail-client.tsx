@@ -26,6 +26,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
   const router = useRouter();
   const t = useTranslations("payments");
   const tCommon = useTranslations("common");
+  const tLedger = useTranslations("ledger");
   const locale = useLocale();
   const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
 
@@ -69,6 +70,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
               <Badge variant="secondary">{t(`types.${payment.type}` as `types.${PaymentType}`)}</Badge>
+              <Badge variant="outline">{tLedger(payment.ledger)}</Badge>
               {payment.category && (
                 <Badge
                   style={{

@@ -89,6 +89,7 @@ interface DashboardMonthListProps {
   hasPayments: boolean;
   defaultCurrency: string;
   intlLocale: string;
+  showLedgerBadge?: boolean;
 }
 
 export function DashboardMonthList({
@@ -98,6 +99,7 @@ export function DashboardMonthList({
   hasPayments,
   defaultCurrency,
   intlLocale,
+  showLedgerBadge = false,
 }: DashboardMonthListProps) {
   const t = useTranslations("dashboard");
 
@@ -124,6 +126,7 @@ export function DashboardMonthList({
                 occurrence={occurrence}
                 currency={defaultCurrency}
                 intlLocale={intlLocale}
+                showLedgerBadge={showLedgerBadge}
               />
             </StaggerItem>
           ))}
@@ -141,6 +144,7 @@ export function DashboardMonthList({
         occurrences={collapsedOccurrences}
         currency={defaultCurrency}
         intlLocale={intlLocale}
+        showLedgerBadge={showLedgerBadge}
       />
     </div>
   );

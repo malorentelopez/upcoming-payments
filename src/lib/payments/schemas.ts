@@ -11,6 +11,7 @@ const currencySchema = z.enum(CURRENCIES);
 
 export const paymentTypeSchema = z.enum(["recurring", "installment", "one_off"]);
 export const frequencySchema = z.enum(["weekly", "monthly", "yearly"]);
+export const paymentLedgerSchema = z.enum(["personal", "business"]);
 
 const basePaymentSchema = z.object({
   name: z.string().min(1, "Name is required").max(100),
@@ -19,6 +20,7 @@ const basePaymentSchema = z.object({
   categoryId: z.string().uuid().nullable().optional(),
   notes: z.string().max(500).optional().nullable(),
   isActive: z.boolean().default(true),
+  ledger: paymentLedgerSchema.default("personal"),
 });
 
 export const recurringPaymentSchema = basePaymentSchema.extend({
@@ -80,6 +82,7 @@ export const profileSchema = z.object({
     .string()
     .min(1)
     .refine(isValidTimezone, "Invalid timezone"),
+  defaultLedger: paymentLedgerSchema.default("personal"),
 });
 
 export const passwordSchema = z

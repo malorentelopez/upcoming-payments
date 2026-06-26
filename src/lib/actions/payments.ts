@@ -25,6 +25,7 @@ function formValuesToRow(values: PaymentFormValues, userId: string): PaymentInse
     category_id: values.categoryId ?? null,
     notes: values.notes ?? null,
     is_active: values.isActive,
+    ledger: values.ledger,
     type: values.type,
   };
 
@@ -111,6 +112,7 @@ function parsePaymentFormData(formData: FormData) {
     totalInstallments: raw.totalInstallments ? Number(raw.totalInstallments) : undefined,
     paidInstallments: raw.paidInstallments ? Number(raw.paidInstallments) : 0,
     categoryId: raw.categoryId === "" ? null : raw.categoryId,
+    ledger: raw.ledger === "business" ? "business" : "personal",
     endDate: emptyToNull(raw.endDate),
     notes: raw.notes === "" ? null : raw.notes,
   });
@@ -314,6 +316,8 @@ export async function updateProfile(formData: FormData): Promise<void> {
     displayName: formData.get("displayName") || null,
     defaultCurrency: formData.get("defaultCurrency"),
     timezone: formData.get("timezone"),
+    defaultLedger:
+      formData.get("defaultLedger") === "business" ? "business" : "personal",
   });
 
   if (!parsed.success) {
@@ -326,6 +330,7 @@ export async function updateProfile(formData: FormData): Promise<void> {
       display_name: parsed.data.displayName ?? null,
       default_currency: parsed.data.defaultCurrency,
       timezone: parsed.data.timezone,
+      default_ledger: parsed.data.defaultLedger,
     })
     .eq("id", user.id);
 
