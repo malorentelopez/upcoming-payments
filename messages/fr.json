@@ -160,6 +160,8 @@
     "deleteConfirm": "Supprimer ce paiement ? Cette action est irréversible.",
     "paymentPaused": "Paiement mis en pause",
     "paymentActivated": "Paiement réactivé",
+    "notFound": "Paiement introuvable.",
+    "backToOverview": "Retour à l'aperçu",
     "types": {
       "recurring": "Récurrent",
       "installment": "Échelonné",

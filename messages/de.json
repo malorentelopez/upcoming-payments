@@ -160,6 +160,8 @@
     "deleteConfirm": "Diese Zahlung löschen? Das lässt sich nicht rückgängig machen.",
     "paymentPaused": "Zahlung pausiert",
     "paymentActivated": "Zahlung aktiviert",
+    "notFound": "Zahlung nicht gefunden.",
+    "backToOverview": "Zurück zur Übersicht",
     "types": {
       "recurring": "Wiederkehrend",
       "installment": "Ratenzahlung",

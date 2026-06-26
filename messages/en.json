@@ -160,6 +160,8 @@
     "deleteConfirm": "Delete this payment? This cannot be undone.",
     "paymentPaused": "Payment paused",
     "paymentActivated": "Payment activated",
+    "notFound": "Payment not found.",
+    "backToOverview": "Back to overview",
     "types": {
       "recurring": "Recurring",
       "installment": "Installment",

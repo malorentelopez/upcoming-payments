@@ -160,6 +160,8 @@
     "deleteConfirm": "¿Eliminar este pago? Esta acción no se puede deshacer.",
     "paymentPaused": "Pago pausado",
     "paymentActivated": "Pago activado",
+    "notFound": "Pago no encontrado.",
+    "backToOverview": "Volver al resumen",
     "types": {
       "recurring": "Recurrente",
       "installment": "A plazos",
