@@ -24,20 +24,30 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: t("title"),
     description: t("description"),
+    applicationName: "ahead",
+    appleWebApp: {
+      capable: true,
+      title: "ahead",
+      statusBarStyle: "black-translucent",
+    },
+    formatDetection: {
+      telephone: false,
+    },
     icons: {
       icon: [
         {
-          url: "/brand/ahead-icon-light.svg",
-          type: "image/svg+xml",
-          media: "(prefers-color-scheme: light)",
-        },
-        {
-          url: "/brand/ahead-icon-dark.svg",
-          type: "image/svg+xml",
-          media: "(prefers-color-scheme: dark)",
+          url: "/icon",
+          type: "image/png",
+          sizes: "512x512",
         },
       ],
-      apple: "/brand/ahead-icon-light.svg",
+      apple: [
+        {
+          url: "/apple-icon",
+          type: "image/png",
+          sizes: "180x180",
+        },
+      ],
     },
   };
 }
