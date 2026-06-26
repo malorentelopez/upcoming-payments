@@ -40,6 +40,31 @@
         "title": "Statistiques",
         "desc": "Des graphiques pour voir où va votre argent"
       }
+    },
+    "faq": {
+      "title": "Questions fréquentes",
+      "items": {
+        "what": {
+          "question": "Qu'est-ce qu'ahead ?",
+          "answer": "Une application simple pour suivre vos prochains paiements — abonnements, loyer, crédits et factures ponctuelles — organisés par mois. Vous saisissez les montants et les dates vous-même."
+        },
+        "bank": {
+          "question": "Est-ce connecté à ma banque ?",
+          "answer": "Non. ahead ne lit pas votre compte bancaire et ne déplace pas d'argent. Tout ce que vous voyez est ce que vous choisissez d'ajouter."
+        },
+        "free": {
+          "question": "Est-ce gratuit ?",
+          "answer": "Oui, pour un usage personnel. Nous pourrons proposer des offres payantes plus tard, mais le cœur de l'application restera simple."
+        },
+        "privacy": {
+          "question": "Qui peut voir mes données ?",
+          "answer": "Vous seul. Vos paiements sont privés et protégés par des contrôles d'accès au niveau de la base de données."
+        },
+        "delete": {
+          "question": "Comment supprimer mon compte ?",
+          "answer": "Allez dans Mon compte → Supprimer le compte, confirmez avec votre e-mail, et vos données seront définitivement effacées. Vous pouvez aussi nous écrire si besoin."
+        }
+      }
     }
   },
   "auth": {
@@ -61,6 +86,9 @@
     "alreadyHaveAccount": "Vous avez déjà un compte ?",
     "newHere": "Première visite ?",
     "accountCreated": "Compte créé. Vous pouvez vous connecter.",
+    "checkEmail": "Consultez votre e-mail pour confirmer votre compte avant de vous connecter.",
+    "checkEmailBanner": "Nous vous avons envoyé un lien de confirmation. Ouvrez-le, puis connectez-vous ici. Avec Google, cette étape n'est pas nécessaire.",
+    "emailNotConfirmed": "Confirmez d'abord votre e-mail. Vérifiez votre boîte de réception.",
     "somethingWrong": "Une erreur est survenue"
   },
   "dashboard": {

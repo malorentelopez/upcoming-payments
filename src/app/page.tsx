@@ -7,6 +7,7 @@ import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { ThemeSwitcher } from "@/components/theme/theme-switcher";
 import { buttonVariants } from "@/components/ui/button";
 import { PageTransition } from "@/components/motion/page-transition";
+import { LandingFaq } from "@/components/landing/landing-faq";
 import { SiteFooter } from "@/components/layout/site-footer";
 import { cn } from "@/lib/utils";
 
@@ -98,6 +99,8 @@ export default async function LandingPage() {
           ))}
         </div>
       </PageTransition>
+
+      <LandingFaq />
 
       <SiteFooter className="relative z-10" />
     </main>
