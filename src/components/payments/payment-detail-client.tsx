@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, Pause, Pencil, Play, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -127,7 +127,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
           href={`/payments/${payment.id}/edit`}
           className={cn(
             buttonVariants({ variant: "outline" }),
-            "h-11 flex-1 rounded-xl",
+            "h-11 w-full gap-1.5 rounded-xl sm:flex-1",
           )}
         >
           <Pencil className="size-4" />
@@ -136,18 +136,29 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
         <Button
           type="button"
           variant="outline"
-          className="h-11 flex-1 rounded-xl"
+          className="h-11 w-full gap-1.5 rounded-xl sm:flex-1"
           onClick={handleToggle}
         >
-          {payment.is_active ? t("pause") : t("activate")}
+          {payment.is_active ? (
+            <>
+              <Pause className="size-4" />
+              {t("pause")}
+            </>
+          ) : (
+            <>
+              <Play className="size-4" />
+              {t("activate")}
+            </>
+          )}
         </Button>
         <Button
           type="button"
           variant="destructive"
-          className="h-11 rounded-xl"
+          className="h-11 w-full gap-1.5 rounded-xl sm:flex-1"
           onClick={handleDelete}
         >
           <Trash2 className="size-4" />
+          {tCommon("delete")}
         </Button>
       </div>
     </div>

@@ -138,6 +138,40 @@ describe("expandPaymentOccurrences — installment", () => {
     const { start, end } = getMonthRange(2026, 6);
     expect(expandPaymentOccurrences(payment, start, end)).toHaveLength(0);
   });
+
+  it("includes remaining installment summary after the shown payment", () => {
+    const payment = makePayment({
+      type: "installment",
+      amount: 200,
+      total_installments: 6,
+      paid_installments: 3,
+      next_due_date: "2026-06-01",
+      day_of_month: 1,
+    });
+    const { start, end } = getMonthRange(2026, 6);
+    const occurrences = expandPaymentOccurrences(payment, start, end);
+
+    expect(occurrences).toHaveLength(1);
+    expect(occurrences[0].installmentRemainingCount).toBe(2);
+    expect(occurrences[0].installmentPendingAmount).toBe(400);
+  });
+
+  it("omits summary on the final installment", () => {
+    const payment = makePayment({
+      type: "installment",
+      amount: 200,
+      total_installments: 6,
+      paid_installments: 5,
+      next_due_date: "2026-06-01",
+      day_of_month: 1,
+    });
+    const { start, end } = getMonthRange(2026, 6);
+    const occurrences = expandPaymentOccurrences(payment, start, end);
+
+    expect(occurrences).toHaveLength(1);
+    expect(occurrences[0].installmentRemainingCount).toBeUndefined();
+    expect(occurrences[0].installmentPendingAmount).toBeUndefined();
+  });
 });
 
 describe("expandPaymentOccurrences — one_off", () => {

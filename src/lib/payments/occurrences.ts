@@ -121,7 +121,9 @@ function expandInstallment(
       !isBefore(cursor, rangeStart) &&
       isWithinInterval(cursor, { start: rangeStart, end: rangeEnd })
     ) {
-      occurrences.push(buildOccurrence(payment, cursor));
+      const occurrence = buildOccurrence(payment, cursor);
+      applyInstallmentSummary(occurrence, payment, i);
+      occurrences.push(occurrence);
     }
 
     cursor = addByFrequency(cursor, frequency);
@@ -165,6 +167,23 @@ function buildOccurrence(payment: PaymentView, dueDate: Date): PaymentOccurrence
     category: payment.category ?? null,
     type: payment.type,
   };
+}
+
+/** Installments still due after the occurrence at `installmentIndexFromNext` (0 = next due). */
+function applyInstallmentSummary(
+  occurrence: PaymentOccurrence,
+  payment: PaymentView,
+  installmentIndexFromNext: number,
+): void {
+  const total = payment.total_installments ?? 0;
+  const paid = payment.paid_installments ?? 0;
+  const remainingOnLoan = total - paid;
+  const remainingAfterThis = remainingOnLoan - installmentIndexFromNext - 1;
+
+  if (remainingAfterThis > 0) {
+    occurrence.installmentRemainingCount = remainingAfterThis;
+    occurrence.installmentPendingAmount = remainingAfterThis * Number(payment.amount);
+  }
 }
 
 export function expandPaymentOccurrences(
