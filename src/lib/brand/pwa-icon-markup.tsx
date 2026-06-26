@@ -5,7 +5,7 @@ import { AHEAD_ACCENT_COLOR } from "@/lib/brand/ahead-mark";
  * Matches `AheadWordmark` / ahead-wordmark-light.svg.
  */
 export function aheadLetterMarkup(size: number) {
-  const fontSize = Math.round(size * 0.68);
+  const fontSize = Math.round(size * 0.9);
 
   return (
     <div
@@ -20,6 +20,9 @@ export function aheadLetterMarkup(size: number) {
     >
       <div
         style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
           fontFamily: "DM Sans",
           fontSize,
           fontWeight: 600,
@@ -27,7 +30,6 @@ export function aheadLetterMarkup(size: number) {
           letterSpacing: `${-0.02 * fontSize}px`,
           lineHeight: 1,
           textTransform: "lowercase",
-          marginTop: Math.round(size * 0.03),
         }}
       >
         a
