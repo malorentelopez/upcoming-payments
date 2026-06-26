@@ -3,7 +3,7 @@
 import { Check } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 
 import {
   DropdownMenu,
@@ -24,14 +24,14 @@ interface ThemeSwitcherProps {
   compact?: boolean;
 }
 
+function subscribe() {
+  return () => {};
+}
+
 export function ThemeSwitcher({ className, compact = false }: ThemeSwitcherProps) {
   const t = useTranslations("appearance");
   const { theme, setTheme, resolvedTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(subscribe, () => true, () => false);
 
   const activeTheme =
     mounted && theme && isThemeOption(theme) ? theme : "system";
@@ -46,22 +46,37 @@ export function ThemeSwitcher({ className, compact = false }: ThemeSwitcherProps
     setTheme(value);
   }
 
+  const triggerClassName = cn(
+    buttonVariants({ variant: "ghost", size: "sm" }),
+    "h-9 gap-1.5 rounded-xl",
+    compact ? "size-9 px-0 sm:size-auto sm:px-2.5" : "px-2.5",
+    className,
+  );
+
+  const triggerLabel = (
+    <>
+      <TriggerIcon className="size-4" />
+      <span className={cn("text-sm", compact && "hidden sm:inline")}>
+        {t(triggerOption.labelKey)}
+      </span>
+    </>
+  );
+
+  if (!mounted) {
+    return (
+      <div aria-hidden className={triggerClassName}>
+        {triggerLabel}
+      </div>
+    );
+  }
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
-        disabled={!mounted}
         aria-label={t("changeTheme")}
-        className={cn(
-          buttonVariants({ variant: "ghost", size: "sm" }),
-          "h-9 gap-1.5 rounded-xl",
-          compact ? "size-9 px-0 sm:size-auto sm:px-2.5" : "px-2.5",
-          className,
-        )}
+        className={triggerClassName}
       >
-        <TriggerIcon className="size-4" />
-        <span className={cn("text-sm", compact && "hidden sm:inline")}>
-          {t(triggerOption.labelKey)}
-        </span>
+        {triggerLabel}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="min-w-40">
         {THEME_OPTIONS.map(({ value, labelKey, icon: Icon }) => {
