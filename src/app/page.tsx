@@ -3,6 +3,7 @@ import { ArrowRight, CalendarDays, Sparkles } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { AppLogo } from "@/components/brand/app-logo";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
 import { buttonVariants } from "@/components/ui/button";
 import { PageTransition } from "@/components/motion/page-transition";
 import { SiteFooter } from "@/components/layout/site-footer";
@@ -24,6 +25,7 @@ export default async function LandingPage() {
       <header className="relative z-10 flex items-center justify-between px-6 py-6 md:px-10">
         <AppLogo href="/" size="lg" />
         <div className="flex items-center gap-2">
+          <LanguageSwitcher />
           <Link
             href="/login"
             className={cn(buttonVariants({ variant: "ghost" }), "rounded-xl")}

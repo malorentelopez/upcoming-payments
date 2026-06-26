@@ -153,6 +153,7 @@
   },
   "language": {
     "title": "Sprache",
+    "changeLanguage": "Sprache ändern",
     "description": "Sprache der App-Oberfläche wählen. Kategorien und Zahlungsnamen bleiben, wie Sie sie eingeben.",
     "detectedNote": "Bei der Registrierung haben wir {language} auf Ihrem Gerät erkannt.",
     "english": "Englisch",

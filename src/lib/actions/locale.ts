@@ -2,7 +2,6 @@
 
 import { revalidatePath } from "next/cache";
 import { cookies } from "next/headers";
-import { redirect } from "next/navigation";
 
 import {
   isSupportedLocale,
@@ -23,14 +22,14 @@ export async function updateLocale(locale: string): Promise<void> {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) redirect("/login");
+  if (user) {
+    const { error } = await supabase
+      .from("profiles")
+      .update({ locale: normalized })
+      .eq("id", user.id);
 
-  const { error } = await supabase
-    .from("profiles")
-    .update({ locale: normalized })
-    .eq("id", user.id);
-
-  if (error) throw new Error(error.message);
+    if (error) throw new Error(error.message);
+  }
 
   const cookieStore = await cookies();
   cookieStore.set("NEXT_LOCALE", normalized, {

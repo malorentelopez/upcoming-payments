@@ -153,6 +153,7 @@
   },
   "language": {
     "title": "Language",
+    "changeLanguage": "Change language",
     "description": "Choose the language for the app interface. Your categories and payment names stay as you enter them.",
     "detectedNote": "We detected {language} from your device when you signed up.",
     "english": "English",

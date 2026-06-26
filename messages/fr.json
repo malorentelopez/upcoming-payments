@@ -153,6 +153,7 @@
   },
   "language": {
     "title": "Langue",
+    "changeLanguage": "Changer de langue",
     "description": "Choisissez la langue de l'interface. Vos catégories et noms de paiements restent tels que vous les saisissez.",
     "detectedNote": "Nous avons détecté {language} sur votre appareil lors de votre inscription.",
     "english": "Anglais",

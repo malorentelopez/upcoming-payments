@@ -153,6 +153,7 @@
   },
   "language": {
     "title": "Idioma",
+    "changeLanguage": "Cambiar idioma",
     "description": "Elige el idioma de la interfaz. Tus categorías y nombres de pagos se mantienen como los escribes.",
     "detectedNote": "Detectamos {language} en tu dispositivo al registrarte.",
     "english": "Inglés",
