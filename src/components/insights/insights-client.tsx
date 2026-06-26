@@ -2,6 +2,7 @@
 
 import { useRouter, useSearchParams } from "next/navigation";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useTransition } from "react";
 
 import {
@@ -19,6 +20,7 @@ import {
   sumOccurrences,
 } from "@/lib/payments/occurrences";
 import { formatCurrency, formatMonthYear } from "@/lib/payments/formatters";
+import { localeToIntl } from "@/lib/i18n/locale";
 import type { Payment } from "@/lib/types";
 
 interface InsightsClientProps {
@@ -35,31 +37,37 @@ export function InsightsClient({
   const router = useRouter();
   const searchParams = useSearchParams();
   const [, startTransition] = useTransition();
+  const t = useTranslations("insights");
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
+  const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
 
   const monthParam = searchParams.get("month") ?? initialMonth;
   const { year, month } = parseMonthParam(monthParam);
   const { start, end } = getMonthRange(year, month);
 
   const monthlyData = useMemo(() => {
-    return getMonthsWindow(year, month, 6).map(({ year: y, month: m, label }) => {
-      const range = getMonthRange(y, m);
-      const occurrences = expandAllOccurrences(payments, range.start, range.end);
-      return {
-        label,
-        total: sumOccurrences(occurrences, defaultCurrency),
-      };
-    });
-  }, [payments, year, month, defaultCurrency]);
+    return getMonthsWindow(year, month, 6, intlLocale).map(
+      ({ year: y, month: m, label }) => {
+        const range = getMonthRange(y, m);
+        const occurrences = expandAllOccurrences(payments, range.start, range.end);
+        return {
+          label,
+          total: sumOccurrences(occurrences, defaultCurrency),
+        };
+      },
+    );
+  }, [payments, year, month, defaultCurrency, intlLocale]);
 
   const categoryData = useMemo(() => {
     const occurrences = expandAllOccurrences(payments, start, end);
     const grouped = groupByCategory(occurrences);
     return Array.from(grouped.values()).map(({ category, total }) => ({
-      name: category?.name ?? "Uncategorized",
+      name: category?.name ?? t("uncategorized"),
       value: total,
       color: category?.color,
     }));
-  }, [payments, start, end]);
+  }, [payments, start, end, t]);
 
   const monthTotal = sumOccurrences(
     expandAllOccurrences(payments, start, end),
@@ -77,25 +85,25 @@ export function InsightsClient({
   return (
     <PageTransition className="space-y-8">
       <header className="space-y-1">
-        <p className="text-sm text-muted-foreground">Trends</p>
-        <h1 className="text-2xl font-semibold tracking-tight">Insights</h1>
+        <p className="text-sm text-muted-foreground">{t("trends")}</p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       </header>
 
       <section className="rounded-2xl border border-border/60 bg-card p-5">
         <h2 className="mb-4 text-sm font-medium text-muted-foreground">
-          Last 6 months
+          {t("lastSixMonths")}
         </h2>
-        <MonthlyBarChart data={monthlyData} currency={defaultCurrency} />
+        <MonthlyBarChart data={monthlyData} currency={defaultCurrency} intlLocale={intlLocale} />
       </section>
 
       <section className="rounded-2xl border border-border/60 bg-card p-5">
         <div className="mb-4 flex items-center justify-between">
           <div>
             <h2 className="text-sm font-medium text-muted-foreground">
-              By category
+              {t("byCategory")}
             </h2>
             <p className="text-lg font-semibold tabular-nums">
-              {formatCurrency(monthTotal, defaultCurrency)}
+              {formatCurrency(monthTotal, defaultCurrency, intlLocale)}
             </p>
           </div>
           <div className="flex items-center gap-1">
@@ -103,24 +111,24 @@ export function InsightsClient({
               type="button"
               onClick={() => navigateMonth(-1)}
               className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted"
-              aria-label="Previous month"
+              aria-label={tCommon("previousMonth")}
             >
               <ChevronLeft className="size-4" />
             </button>
             <span className="min-w-28 text-center text-sm font-medium">
-              {formatMonthYear(year, month)}
+              {formatMonthYear(year, month, intlLocale)}
             </span>
             <button
               type="button"
               onClick={() => navigateMonth(1)}
               className="flex size-9 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted"
-              aria-label="Next month"
+              aria-label={tCommon("nextMonth")}
             >
               <ChevronRight className="size-4" />
             </button>
           </div>
         </div>
-        <CategoryDonut data={categoryData} currency={defaultCurrency} />
+        <CategoryDonut data={categoryData} currency={defaultCurrency} intlLocale={intlLocale} />
         <ul className="mt-4 space-y-2">
           {categoryData.map((item) => (
             <li
@@ -135,7 +143,7 @@ export function InsightsClient({
                 {item.name}
               </span>
               <span className="font-medium tabular-nums">
-                {formatCurrency(item.value, defaultCurrency)}
+                {formatCurrency(item.value, defaultCurrency, intlLocale)}
               </span>
             </li>
           ))}

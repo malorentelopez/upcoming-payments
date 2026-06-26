@@ -1,0 +1,202 @@
+{
+  "common": {
+    "add": "Ajouter",
+    "remove": "Supprimer",
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "edit": "Modifier",
+    "none": "Aucune",
+    "or": "ou",
+    "previousMonth": "Mois précédent",
+    "nextMonth": "Mois suivant",
+    "addPayment": "Ajouter un paiement",
+    "legal": "Mentions légales",
+    "copyright": "© {year} ahead. Tous droits réservés."
+  },
+  "nav": {
+    "overview": "Aperçu",
+    "insights": "Analyses",
+    "settings": "Paramètres",
+    "me": "Moi"
+  },
+  "landing": {
+    "signIn": "Se connecter",
+    "getStarted": "Commencer",
+    "tagline": "Sachez ce qui arrive, avant l'échéance",
+    "headline": "Vos paiements à venir, magnifiquement organisés",
+    "description": "Suivez abonnements, loyer, prêts et factures ponctuelles. Voyez exactement ce que vous devrez chaque mois — clair, serein, en un coup d'œil.",
+    "createAccount": "Créer un compte gratuit",
+    "haveAccount": "J'ai déjà un compte",
+    "features": {
+      "byMonth": {
+        "title": "Par mois",
+        "desc": "Totaux et échéances en un coup d'œil"
+      },
+      "anyType": {
+        "title": "Tous types",
+        "desc": "Récurrents, échéances ou ponctuels"
+      },
+      "insights": {
+        "title": "Analyses",
+        "desc": "Des graphiques pour voir où va l'argent"
+      }
+    }
+  },
+  "auth": {
+    "welcomeBack": "Bon retour",
+    "signInSubtitle": "Connectez-vous pour voir vos paiements à venir",
+    "createAccountTitle": "Créez votre compte",
+    "createAccountSubtitle": "Commencez à suivre ce qui arrive",
+    "continueGoogle": "Continuer avec Google",
+    "name": "Nom",
+    "namePlaceholder": "Votre nom",
+    "email": "E-mail",
+    "emailPlaceholder": "vous@exemple.com",
+    "password": "Mot de passe",
+    "passwordPlaceholder": "Au moins 6 caractères",
+    "createAccount": "Créer un compte",
+    "signIn": "Se connecter",
+    "privacyAgree": "En créant un compte, vous acceptez notre <link>Politique de confidentialité</link>.",
+    "privacyPolicy": "Politique de confidentialité",
+    "alreadyHaveAccount": "Vous avez déjà un compte ?",
+    "newHere": "Nouveau ici ?",
+    "accountCreated": "Compte créé. Vous pouvez vous connecter.",
+    "somethingWrong": "Une erreur s'est produite"
+  },
+  "dashboard": {
+    "title": "Aperçu",
+    "dueThisMonth": "Dû ce mois-ci",
+    "searchPlaceholder": "Rechercher des paiements...",
+    "allTypes": "Tous les types",
+    "allCategories": "Toutes les catégories",
+    "paymentCount": "{count, plural, one {# paiement ce mois-ci} other {# paiements ce mois-ci}}",
+    "emptyNoneDue": "Rien dû ce mois-ci",
+    "emptyNoPayments": "Aucun paiement",
+    "emptyTryFilters": "Essayez un autre mois ou ajustez vos filtres.",
+    "emptyGetStarted": "Ajoutez votre premier abonnement, loyer ou facture pour commencer."
+  },
+  "insights": {
+    "trends": "Tendances",
+    "title": "Analyses",
+    "lastSixMonths": "6 derniers mois",
+    "byCategory": "Par catégorie",
+    "uncategorized": "Sans catégorie"
+  },
+  "payments": {
+    "new": "Nouveau",
+    "addPayment": "Ajouter un paiement",
+    "edit": "Modifier",
+    "payment": "Paiement",
+    "saveChanges": "Enregistrer",
+    "name": "Nom",
+    "namePlaceholder": "Netflix, Loyer, Prêt auto...",
+    "amount": "Montant",
+    "currency": "Devise",
+    "category": "Catégorie",
+    "notesOptional": "Notes (optionnel)",
+    "notesPlaceholder": "Détails supplémentaires",
+    "activeForecast": "Actif — inclure dans les prévisions",
+    "frequency": "Fréquence",
+    "startDate": "Date de début",
+    "endDateOptional": "Date de fin (optionnel)",
+    "dayOfMonth": "Jour du mois",
+    "useLastDayOfMonth": "Utiliser le dernier jour du mois",
+    "totalInstallments": "Total des échéances",
+    "alreadyPaid": "Déjà payé",
+    "nextDueDate": "Prochaine échéance",
+    "dueDate": "Date d'échéance",
+    "type": "Type",
+    "progress": "Progression",
+    "progressValue": "{paid} / {total} payé(s)",
+    "nextDue": "Prochaine échéance",
+    "paused": "En pause",
+    "pause": "Mettre en pause",
+    "activate": "Activer",
+    "deleteConfirm": "Supprimer ce paiement ? Cette action est irréversible.",
+    "paymentPaused": "Paiement mis en pause",
+    "paymentActivated": "Paiement activé",
+    "types": {
+      "recurring": "Récurrent",
+      "installment": "Échéances",
+      "one_off": "Ponctuel"
+    },
+    "frequencies": {
+      "weekly": "Hebdomadaire",
+      "monthly": "Mensuel",
+      "yearly": "Annuel"
+    }
+  },
+  "settings": {
+    "app": "Application",
+    "title": "Paramètres",
+    "categories": "Catégories",
+    "addCategory": "Ajouter une catégorie",
+    "addCategoryTitle": "Nouvelle catégorie",
+    "addCategoryDescription": "Donnez un nom à votre catégorie et choisissez une couleur.",
+    "categoryNamePlaceholder": "Nom de la catégorie",
+    "categoryColor": "Couleur",
+    "categoryAdded": "Catégorie ajoutée",
+    "categoryRemoved": "Catégorie supprimée",
+    "noCategories": "Aucune catégorie pour le moment.",
+    "privacyCookies": "Confidentialité et cookies",
+    "privacyCookiesDesc": "Consultez comment nous traitons vos données et mettez à jour vos préférences cookies à tout moment.",
+    "cookieSettings": "Paramètres cookies"
+  },
+  "appearance": {
+    "title": "Apparence",
+    "description": "Choisissez clair, sombre, ou suivez les réglages de votre appareil.",
+    "system": "Système",
+    "light": "Clair",
+    "dark": "Sombre",
+    "currentlyUsing": "Mode {mode} actuellement{systemNote}.",
+    "fromSystem": " (depuis le système)"
+  },
+  "language": {
+    "title": "Langue",
+    "description": "Choisissez la langue de l'interface. Vos catégories et noms de paiements restent tels que vous les saisissez.",
+    "detectedNote": "Nous avons détecté {language} sur votre appareil lors de votre inscription.",
+    "english": "Anglais",
+    "french": "Français",
+    "spanish": "Espagnol",
+    "german": "Allemand"
+  },
+  "profile": {
+    "title": "Profil",
+    "displayName": "Nom affiché",
+    "defaultCurrency": "Devise par défaut",
+    "saveProfile": "Enregistrer le profil",
+    "signOut": "Se déconnecter"
+  },
+  "timezone": {
+    "title": "Fuseau horaire",
+    "searchPlaceholder": "Rechercher une ville ou une région…",
+    "noResults": "Aucun fuseau horaire ne correspond.",
+    "useDevice": "Utiliser le fuseau de l'appareil ({timezone})",
+    "detectedSave": "Détecté depuis votre appareil. Enregistrez votre profil pour conserver ce fuseau.",
+    "currentlyUsing": "Mode {mode} actuellement{systemNote}."
+  },
+  "consent": {
+    "title": "Cookies et confidentialité",
+    "description": "Nous utilisons des cookies essentiels pour vous garder connecté et faire fonctionner l'app. Avec votre accord, nous stockons aussi des cookies de préférences et pourrons utiliser des analyses à l'avenir. Consultez notre {privacyLink} et notre {cookieLink}.",
+    "acceptAll": "Tout accepter",
+    "rejectNonEssential": "Refuser les non essentiels",
+    "managePreferences": "Gérer les préférences",
+    "preferencesTitle": "Préférences cookies",
+    "essential": "Essentiels",
+    "essentialDesc": "Nécessaires à la connexion et au fonctionnement de l'app.",
+    "preferences": "Préférences",
+    "preferencesDesc": "Mémoriser les réglages comme le thème et la langue.",
+    "analytics": "Analytique",
+    "analyticsDesc": "Nous aider à comprendre l'utilisation (pas encore activé).",
+    "savePreferences": "Enregistrer les préférences"
+  },
+  "footer": {
+    "privacy": "Confidentialité",
+    "cookies": "Cookies",
+    "cookieSettings": "Paramètres cookies"
+  },
+  "metadata": {
+    "title": "ahead — sachez ce qui arrive",
+    "description": "Suivez abonnements, loyer, prêts et factures. Voyez vos paiements à venir par mois."
+  }
+}

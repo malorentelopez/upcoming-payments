@@ -1,12 +1,13 @@
 "use client";
 
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import type { Category, Payment, PaymentType } from "@/lib/types";
+import type { Category, Payment, PaymentFrequency, PaymentType } from "@/lib/types";
 
 interface PaymentFormFieldsProps {
   categories: Category[];
@@ -19,6 +20,8 @@ export function PaymentFormFields({
   payment,
   defaultCurrency = "USD",
 }: PaymentFormFieldsProps) {
+  const t = useTranslations("payments");
+  const tCommon = useTranslations("common");
   const [type, setType] = useState<PaymentType>(payment?.type ?? "recurring");
   const isEditing = Boolean(payment);
 
@@ -31,13 +34,13 @@ export function PaymentFormFields({
       >
         <TabsList className="grid w-full grid-cols-3 rounded-xl">
           <TabsTrigger value="recurring" className="rounded-lg">
-            Recurring
+            {t("types.recurring")}
           </TabsTrigger>
           <TabsTrigger value="installment" className="rounded-lg">
-            Installment
+            {t("types.installment")}
           </TabsTrigger>
           <TabsTrigger value="one_off" className="rounded-lg">
-            One-off
+            {t("types.one_off")}
           </TabsTrigger>
         </TabsList>
       </Tabs>
@@ -46,20 +49,20 @@ export function PaymentFormFields({
 
       <div className="space-y-4 rounded-2xl border border-border/60 bg-card p-5">
         <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="name">{t("name")}</Label>
           <Input
             id="name"
             name="name"
             required
             defaultValue={payment?.name}
-            placeholder="Netflix, Rent, Car loan..."
+            placeholder={t("namePlaceholder")}
             className="h-11 rounded-xl"
           />
         </div>
 
         <div className="grid grid-cols-2 gap-3">
           <div className="space-y-2">
-            <Label htmlFor="amount">Amount</Label>
+            <Label htmlFor="amount">{t("amount")}</Label>
             <Input
               id="amount"
               name="amount"
@@ -72,7 +75,7 @@ export function PaymentFormFields({
             />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="currency">Currency</Label>
+            <Label htmlFor="currency">{t("currency")}</Label>
             <Input
               id="currency"
               name="currency"
@@ -85,14 +88,14 @@ export function PaymentFormFields({
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="categoryId">Category</Label>
+          <Label htmlFor="categoryId">{t("category")}</Label>
           <select
             id="categoryId"
             name="categoryId"
             defaultValue={payment?.category_id ?? ""}
             className="flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
           >
-            <option value="">None</option>
+            <option value="">{tCommon("none")}</option>
             {categories.map((cat) => (
               <option key={cat.id} value={cat.id}>
                 {cat.name}
@@ -106,12 +109,12 @@ export function PaymentFormFields({
         {type === "one_off" && <OneOffFields payment={payment} />}
 
         <div className="space-y-2">
-          <Label htmlFor="notes">Notes (optional)</Label>
+          <Label htmlFor="notes">{t("notesOptional")}</Label>
           <Input
             id="notes"
             name="notes"
             defaultValue={payment?.notes ?? ""}
-            placeholder="Any extra details"
+            placeholder={t("notesPlaceholder")}
             className="h-11 rounded-xl"
           />
         </div>
@@ -124,36 +127,61 @@ export function PaymentFormFields({
             defaultChecked={payment?.is_active ?? true}
             className="size-4 rounded border-border"
           />
-          Active — include in forecasts
+          {t("activeForecast")}
         </label>
       </div>
 
       <Button type="submit" className="h-11 w-full rounded-xl">
-        {isEditing ? "Save changes" : "Add payment"}
+        {isEditing ? t("saveChanges") : t("addPayment")}
       </Button>
     </>
   );
 }
 
+function FrequencySelect({
+  id,
+  name,
+  defaultValue,
+}: {
+  id: string;
+  name: string;
+  defaultValue?: PaymentFrequency | null;
+}) {
+  const t = useTranslations("payments.frequencies");
+  const frequencies: PaymentFrequency[] = ["weekly", "monthly", "yearly"];
+
+  return (
+    <select
+      id={id}
+      name={name}
+      defaultValue={defaultValue ?? "monthly"}
+      className="flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
+    >
+      {frequencies.map((frequency) => (
+        <option key={frequency} value={frequency}>
+          {t(frequency)}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 function RecurringFields({ payment }: { payment?: Payment }) {
+  const t = useTranslations("payments");
+
   return (
     <div className="space-y-4 border-t border-border/60 pt-4">
       <div className="space-y-2">
-        <Label htmlFor="frequency">Frequency</Label>
-        <select
+        <Label htmlFor="frequency">{t("frequency")}</Label>
+        <FrequencySelect
           id="frequency"
           name="frequency"
-          defaultValue={payment?.frequency ?? "monthly"}
-          className="flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm capitalize"
-        >
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="yearly">Yearly</option>
-        </select>
+          defaultValue={payment?.frequency}
+        />
       </div>
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="startDate">Start date</Label>
+          <Label htmlFor="startDate">{t("startDate")}</Label>
           <Input
             id="startDate"
             name="startDate"
@@ -164,7 +192,7 @@ function RecurringFields({ payment }: { payment?: Payment }) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="endDate">End date (optional)</Label>
+          <Label htmlFor="endDate">{t("endDateOptional")}</Label>
           <Input
             id="endDate"
             name="endDate"
@@ -175,7 +203,7 @@ function RecurringFields({ payment }: { payment?: Payment }) {
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="dayOfMonth">Day of month</Label>
+        <Label htmlFor="dayOfMonth">{t("dayOfMonth")}</Label>
         <Input
           id="dayOfMonth"
           name="dayOfMonth"
@@ -194,18 +222,20 @@ function RecurringFields({ payment }: { payment?: Payment }) {
           defaultChecked={payment?.use_last_day_of_month}
           className="size-4 rounded border-border"
         />
-        Use last day of month instead
+        {t("useLastDayOfMonth")}
       </label>
     </div>
   );
 }
 
 function InstallmentFields({ payment }: { payment?: Payment }) {
+  const t = useTranslations("payments");
+
   return (
     <div className="space-y-4 border-t border-border/60 pt-4">
       <div className="grid grid-cols-2 gap-3">
         <div className="space-y-2">
-          <Label htmlFor="totalInstallments">Total installments</Label>
+          <Label htmlFor="totalInstallments">{t("totalInstallments")}</Label>
           <Input
             id="totalInstallments"
             name="totalInstallments"
@@ -217,7 +247,7 @@ function InstallmentFields({ payment }: { payment?: Payment }) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="paidInstallments">Already paid</Label>
+          <Label htmlFor="paidInstallments">{t("alreadyPaid")}</Label>
           <Input
             id="paidInstallments"
             name="paidInstallments"
@@ -229,7 +259,7 @@ function InstallmentFields({ payment }: { payment?: Payment }) {
         </div>
       </div>
       <div className="space-y-2">
-        <Label htmlFor="nextDueDate">Next due date</Label>
+        <Label htmlFor="nextDueDate">{t("nextDueDate")}</Label>
         <Input
           id="nextDueDate"
           name="nextDueDate"
@@ -240,27 +270,24 @@ function InstallmentFields({ payment }: { payment?: Payment }) {
         />
       </div>
       <div className="space-y-2">
-        <Label htmlFor="installmentFrequency">Frequency</Label>
-        <select
+        <Label htmlFor="installmentFrequency">{t("frequency")}</Label>
+        <FrequencySelect
           id="installmentFrequency"
           name="frequency"
-          defaultValue={payment?.frequency ?? "monthly"}
-          className="flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm capitalize"
-        >
-          <option value="weekly">Weekly</option>
-          <option value="monthly">Monthly</option>
-          <option value="yearly">Yearly</option>
-        </select>
+          defaultValue={payment?.frequency}
+        />
       </div>
     </div>
   );
 }
 
 function OneOffFields({ payment }: { payment?: Payment }) {
+  const t = useTranslations("payments");
+
   return (
     <div className="space-y-4 border-t border-border/60 pt-4">
       <div className="space-y-2">
-        <Label htmlFor="dueDate">Due date</Label>
+        <Label htmlFor="dueDate">{t("dueDate")}</Label>
         <Input
           id="dueDate"
           name="dueDate"

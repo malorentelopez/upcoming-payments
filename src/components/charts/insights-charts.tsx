@@ -26,9 +26,10 @@ const CHART_COLORS = [
 interface MonthlyBarChartProps {
   data: Array<{ label: string; total: number }>;
   currency: string;
+  intlLocale?: string;
 }
 
-export function MonthlyBarChart({ data, currency }: MonthlyBarChartProps) {
+export function MonthlyBarChart({ data, currency, intlLocale = "en-US" }: MonthlyBarChartProps) {
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -46,7 +47,7 @@ export function MonthlyBarChart({ data, currency }: MonthlyBarChartProps) {
             tickFormatter={(v) => `$${v}`}
           />
           <Tooltip
-            formatter={(value) => formatCurrency(Number(value), currency)}
+            formatter={(value) => formatCurrency(Number(value), currency, intlLocale)}
             contentStyle={{
               borderRadius: 12,
               border: "1px solid var(--border)",
@@ -63,13 +64,14 @@ export function MonthlyBarChart({ data, currency }: MonthlyBarChartProps) {
 interface CategoryDonutProps {
   data: Array<{ name: string; value: number; color?: string }>;
   currency: string;
+  intlLocale?: string;
 }
 
-export function CategoryDonut({ data, currency }: CategoryDonutProps) {
+export function CategoryDonut({ data, currency, intlLocale = "en-US" }: CategoryDonutProps) {
   if (data.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center text-sm text-muted-foreground">
-        No data for this month
+        —
       </div>
     );
   }
@@ -94,7 +96,7 @@ export function CategoryDonut({ data, currency }: CategoryDonutProps) {
             ))}
           </Pie>
           <Tooltip
-            formatter={(value) => formatCurrency(Number(value), currency)}
+            formatter={(value) => formatCurrency(Number(value), currency, intlLocale)}
             contentStyle={{
               borderRadius: 12,
               border: "1px solid var(--border)",

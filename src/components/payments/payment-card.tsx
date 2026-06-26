@@ -1,20 +1,25 @@
+"use client";
+
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
-import {
-  formatCurrency,
-  formatShortDate,
-  paymentTypeLabel,
-} from "@/lib/payments/formatters";
-import type { PaymentOccurrence } from "@/lib/types";
+import { formatCurrency, formatShortDate } from "@/lib/payments/formatters";
+import type { PaymentOccurrence, PaymentType } from "@/lib/types";
 
 interface PaymentCardProps {
   occurrence: PaymentOccurrence;
   currency?: string;
+  intlLocale?: string;
 }
 
-export function PaymentCard({ occurrence, currency }: PaymentCardProps) {
+export function PaymentCard({
+  occurrence,
+  currency,
+  intlLocale = "en-US",
+}: PaymentCardProps) {
+  const t = useTranslations("payments.types");
   const displayCurrency = currency ?? occurrence.currency;
 
   return (
@@ -30,17 +35,17 @@ export function PaymentCard({ occurrence, currency }: PaymentCardProps) {
         <div className="flex items-center gap-2">
           <p className="truncate font-medium">{occurrence.name}</p>
           <Badge variant="secondary" className="hidden shrink-0 text-[10px] sm:inline-flex">
-            {paymentTypeLabel(occurrence.type)}
+            {t(occurrence.type as PaymentType)}
           </Badge>
         </div>
         <p className="text-sm text-muted-foreground">
-          {formatShortDate(occurrence.dueDate)}
+          {formatShortDate(occurrence.dueDate, intlLocale)}
           {occurrence.category ? ` · ${occurrence.category.name}` : ""}
         </p>
       </div>
       <div className="flex items-center gap-2">
         <span className="font-semibold tabular-nums">
-          {formatCurrency(occurrence.amount, displayCurrency)}
+          {formatCurrency(occurrence.amount, displayCurrency, intlLocale)}
         </span>
         <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
       </div>

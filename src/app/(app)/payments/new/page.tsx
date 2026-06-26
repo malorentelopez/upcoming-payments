@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { PaymentForm } from "@/components/payments/payment-form";
 import { PageTransition } from "@/components/motion/page-transition";
@@ -10,6 +11,7 @@ export default async function NewPaymentPage() {
     getCategories(),
     getProfile(),
   ]);
+  const t = await getTranslations("payments");
 
   return (
     <PageTransition className="space-y-6">
@@ -21,8 +23,8 @@ export default async function NewPaymentPage() {
           <ArrowLeft className="size-5" />
         </Link>
         <div>
-          <p className="text-sm text-muted-foreground">New</p>
-          <h1 className="text-xl font-semibold tracking-tight">Add payment</h1>
+          <p className="text-sm text-muted-foreground">{t("new")}</p>
+          <h1 className="text-xl font-semibold tracking-tight">{t("addPayment")}</h1>
         </div>
       </div>
       <PaymentForm

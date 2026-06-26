@@ -6,6 +6,7 @@ export interface Profile {
   display_name: string | null;
   default_currency: string;
   timezone: string;
+  locale: string;
   created_at: string;
 }
 

@@ -1,0 +1,202 @@
+{
+  "common": {
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten",
+    "none": "Keine",
+    "or": "oder",
+    "previousMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "addPayment": "Zahlung hinzufügen",
+    "legal": "Rechtliches",
+    "copyright": "© {year} ahead. Alle Rechte vorbehalten."
+  },
+  "nav": {
+    "overview": "Übersicht",
+    "insights": "Einblicke",
+    "settings": "Einstellungen",
+    "me": "Ich"
+  },
+  "landing": {
+    "signIn": "Anmelden",
+    "getStarted": "Loslegen",
+    "tagline": "Wissen, was fällig ist, bevor es fällig ist",
+    "headline": "Ihre anstehenden Zahlungen, schön organisiert",
+    "description": "Verfolgen Sie Abos, Miete, Kredite und einmalige Rechnungen. Sehen Sie genau, was Sie jeden Monat schulden — klar, ruhig und auf einen Blick.",
+    "createAccount": "Kostenloses Konto erstellen",
+    "haveAccount": "Ich habe ein Konto",
+    "features": {
+      "byMonth": {
+        "title": "Nach Monat",
+        "desc": "Summen und Fälligkeiten auf einen Blick"
+      },
+      "anyType": {
+        "title": "Jeder Typ",
+        "desc": "Wiederkehrend, Raten oder einmalig"
+      },
+      "insights": {
+        "title": "Einblicke",
+        "desc": "Diagramme zeigen, wohin das Geld geht"
+      }
+    }
+  },
+  "auth": {
+    "welcomeBack": "Willkommen zurück",
+    "signInSubtitle": "Melden Sie sich an, um anstehende Zahlungen zu sehen",
+    "createAccountTitle": "Konto erstellen",
+    "createAccountSubtitle": "Beginnen Sie, anstehende Zahlungen zu verfolgen",
+    "continueGoogle": "Mit Google fortfahren",
+    "name": "Name",
+    "namePlaceholder": "Ihr Name",
+    "email": "E-Mail",
+    "emailPlaceholder": "sie@beispiel.de",
+    "password": "Passwort",
+    "passwordPlaceholder": "Mindestens 6 Zeichen",
+    "createAccount": "Konto erstellen",
+    "signIn": "Anmelden",
+    "privacyAgree": "Mit der Kontoerstellung stimmen Sie unserer <link>Datenschutzerklärung</link> zu.",
+    "privacyPolicy": "Datenschutzerklärung",
+    "alreadyHaveAccount": "Bereits ein Konto?",
+    "newHere": "Neu hier?",
+    "accountCreated": "Konto erstellt. Sie können sich jetzt anmelden.",
+    "somethingWrong": "Etwas ist schiefgelaufen"
+  },
+  "dashboard": {
+    "title": "Übersicht",
+    "dueThisMonth": "Fällig diesen Monat",
+    "searchPlaceholder": "Zahlungen suchen...",
+    "allTypes": "Alle Typen",
+    "allCategories": "Alle Kategorien",
+    "paymentCount": "{count, plural, one {# Zahlung diesen Monat} other {# Zahlungen diesen Monat}}",
+    "emptyNoneDue": "Nichts fällig diesen Monat",
+    "emptyNoPayments": "Noch keine Zahlungen",
+    "emptyTryFilters": "Anderen Monat wählen oder Filter anpassen.",
+    "emptyGetStarted": "Fügen Sie Ihr erstes Abo, Ihre Miete oder Rechnung hinzu."
+  },
+  "insights": {
+    "trends": "Trends",
+    "title": "Einblicke",
+    "lastSixMonths": "Letzte 6 Monate",
+    "byCategory": "Nach Kategorie",
+    "uncategorized": "Ohne Kategorie"
+  },
+  "payments": {
+    "new": "Neu",
+    "addPayment": "Zahlung hinzufügen",
+    "edit": "Bearbeiten",
+    "payment": "Zahlung",
+    "saveChanges": "Änderungen speichern",
+    "name": "Name",
+    "namePlaceholder": "Netflix, Miete, Autokredit...",
+    "amount": "Betrag",
+    "currency": "Währung",
+    "category": "Kategorie",
+    "notesOptional": "Notizen (optional)",
+    "notesPlaceholder": "Zusätzliche Details",
+    "activeForecast": "Aktiv — in Prognosen einbeziehen",
+    "frequency": "Häufigkeit",
+    "startDate": "Startdatum",
+    "endDateOptional": "Enddatum (optional)",
+    "dayOfMonth": "Tag im Monat",
+    "useLastDayOfMonth": "Stattdessen letzten Tag des Monats",
+    "totalInstallments": "Gesamte Raten",
+    "alreadyPaid": "Bereits bezahlt",
+    "nextDueDate": "Nächstes Fälligkeitsdatum",
+    "dueDate": "Fälligkeitsdatum",
+    "type": "Typ",
+    "progress": "Fortschritt",
+    "progressValue": "{paid} / {total} bezahlt",
+    "nextDue": "Nächste Fälligkeit",
+    "paused": "Pausiert",
+    "pause": "Pausieren",
+    "activate": "Aktivieren",
+    "deleteConfirm": "Diese Zahlung löschen? Das kann nicht rückgängig gemacht werden.",
+    "paymentPaused": "Zahlung pausiert",
+    "paymentActivated": "Zahlung aktiviert",
+    "types": {
+      "recurring": "Wiederkehrend",
+      "installment": "Raten",
+      "one_off": "Einmalig"
+    },
+    "frequencies": {
+      "weekly": "Wöchentlich",
+      "monthly": "Monatlich",
+      "yearly": "Jährlich"
+    }
+  },
+  "settings": {
+    "app": "App",
+    "title": "Einstellungen",
+    "categories": "Kategorien",
+    "addCategory": "Kategorie hinzufügen",
+    "addCategoryTitle": "Neue Kategorie",
+    "addCategoryDescription": "Geben Sie einen Namen ein und wählen Sie eine Farbe.",
+    "categoryNamePlaceholder": "Kategoriename",
+    "categoryColor": "Farbe",
+    "categoryAdded": "Kategorie hinzugefügt",
+    "categoryRemoved": "Kategorie entfernt",
+    "noCategories": "Noch keine Kategorien.",
+    "privacyCookies": "Datenschutz & Cookies",
+    "privacyCookiesDesc": "Erfahren Sie, wie wir Ihre Daten behandeln, und aktualisieren Sie Ihre Cookie-Einstellungen jederzeit.",
+    "cookieSettings": "Cookie-Einstellungen"
+  },
+  "appearance": {
+    "title": "Darstellung",
+    "description": "Hell, dunkel oder an die Geräteeinstellungen anpassen.",
+    "system": "System",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "currentlyUsing": "Derzeit {mode}-Modus{systemNote}.",
+    "fromSystem": " (vom System)"
+  },
+  "language": {
+    "title": "Sprache",
+    "description": "Sprache der App-Oberfläche wählen. Kategorien und Zahlungsnamen bleiben, wie Sie sie eingeben.",
+    "detectedNote": "Bei der Registrierung haben wir {language} auf Ihrem Gerät erkannt.",
+    "english": "Englisch",
+    "french": "Französisch",
+    "spanish": "Spanisch",
+    "german": "Deutsch"
+  },
+  "profile": {
+    "title": "Profil",
+    "displayName": "Anzeigename",
+    "defaultCurrency": "Standardwährung",
+    "saveProfile": "Profil speichern",
+    "signOut": "Abmelden"
+  },
+  "timezone": {
+    "title": "Zeitzone",
+    "searchPlaceholder": "Stadt oder Region suchen…",
+    "noResults": "Keine Zeitzone passt zur Suche.",
+    "useDevice": "Gerätezeitzone verwenden ({timezone})",
+    "detectedSave": "Vom Gerät erkannt. Profil speichern, um diese Zeitzone zu behalten.",
+    "currentlyUsing": "Derzeit {mode}-Modus{systemNote}."
+  },
+  "consent": {
+    "title": "Cookies & Datenschutz",
+    "description": "Wir verwenden essenzielle Cookies für die Anmeldung und den Betrieb der App. Mit Ihrer Erlaubnis speichern wir auch Präferenz-Cookies und können künftig Analysen nutzen. Lesen Sie unsere {privacyLink} und {cookieLink}.",
+    "acceptAll": "Alle akzeptieren",
+    "rejectNonEssential": "Nicht essenzielle ablehnen",
+    "managePreferences": "Einstellungen verwalten",
+    "preferencesTitle": "Cookie-Einstellungen",
+    "essential": "Essenziell",
+    "essentialDesc": "Erforderlich für Anmeldung und Kernfunktionen.",
+    "preferences": "Präferenzen",
+    "preferencesDesc": "Einstellungen wie Theme und Sprache merken.",
+    "analytics": "Analyse",
+    "analyticsDesc": "Nutzung verstehen (noch nicht aktiv).",
+    "savePreferences": "Einstellungen speichern"
+  },
+  "footer": {
+    "privacy": "Datenschutz",
+    "cookies": "Cookies",
+    "cookieSettings": "Cookie-Einstellungen"
+  },
+  "metadata": {
+    "title": "ahead — wissen, was ansteht",
+    "description": "Verfolgen Sie Abos, Miete, Kredite und Rechnungen. Sehen Sie anstehende Zahlungen nach Monat."
+  }
+}

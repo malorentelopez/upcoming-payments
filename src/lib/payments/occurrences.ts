@@ -265,6 +265,7 @@ export function getMonthsWindow(
   anchorYear: number,
   anchorMonth: number,
   count: number,
+  locale = "en-US",
 ): Array<{ year: number; month: number; key: string; label: string }> {
   const months: Array<{ year: number; month: number; key: string; label: string }> = [];
   const startOffset = -(count - 1);
@@ -276,7 +277,7 @@ export function getMonthsWindow(
       year,
       month,
       key: getMonthKey(date),
-      label: date.toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+      label: date.toLocaleDateString(locale, { month: "short", year: "numeric" }),
     });
   }
 
