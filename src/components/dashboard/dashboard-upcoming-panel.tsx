@@ -4,7 +4,7 @@ import { useTranslations } from "next-intl";
 
 import { PaymentCard } from "@/components/payments/payment-card";
 import { StaggerItem, StaggerList } from "@/components/motion/page-transition";
-import { formatCurrency } from "@/lib/payments/formatters";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 import type { PaymentOccurrence } from "@/lib/types";
 
 export type HorizonDays = 7 | 14;
@@ -25,18 +25,19 @@ export function DashboardUpcomingHero({
   intlLocale,
 }: DashboardUpcomingHeroProps) {
   const t = useTranslations("dashboard");
+  const { formatAmount } = useFormatCurrency();
 
   return (
-    <section className="relative z-10 rounded-2xl border border-border/60 bg-card p-5 max-md:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.18)] dark:max-md:shadow-[0_14px_28px_-8px_rgba(0,0,0,0.45)]">
-      <div className="flex items-start justify-between gap-4">
+    <section className="relative z-10 overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/15 via-primary/5 to-card p-5 max-md:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.18)] before:pointer-events-none before:absolute before:-right-8 before:-top-8 before:size-32 before:rounded-full before:bg-primary/10 dark:max-md:shadow-[0_14px_28px_-8px_rgba(0,0,0,0.45)]">
+      <div className="relative flex items-start justify-between gap-4">
         <div>
-          <p className="text-sm font-medium">{t("comingUp")}</p>
+          <p className="text-sm font-medium text-primary">{t("comingUp")}</p>
           <p className="mt-1 text-xs text-muted-foreground">{t("nextDays", { days: horizonDays })}</p>
         </div>
         <HorizonToggle days={horizonDays} onChange={onHorizonDaysChange} />
       </div>
-      <p className="mt-4 text-3xl font-semibold tabular-nums tracking-tight">
-        {formatCurrency(total, defaultCurrency, intlLocale)}
+      <p className="relative mt-4 text-3xl font-semibold tabular-nums tracking-tight text-primary">
+        {formatAmount(total, defaultCurrency, intlLocale)}
       </p>
     </section>
   );

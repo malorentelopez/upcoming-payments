@@ -204,6 +204,13 @@
     "currentlyUsing": "Modo {mode} activo{systemNote}.",
     "fromSystem": " (según el sistema)"
   },
+  "privacy": {
+    "title": "Privacidad en pantalla",
+    "description": "Oculta los importes reales cuando enseñes la app a otra persona. Los números permanecen ocultos en este dispositivo hasta que lo desactives.",
+    "toggleLabel": "Ocultar importes",
+    "hideAmounts": "Ocultar importes",
+    "showAmounts": "Mostrar importes"
+  },
   "language": {
     "title": "Idioma",
     "changeLanguage": "Cambiar idioma",

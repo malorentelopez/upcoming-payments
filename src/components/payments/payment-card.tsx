@@ -5,7 +5,8 @@ import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
-import { formatCurrency, formatDueDateParts } from "@/lib/payments/formatters";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
+import { formatDueDateParts } from "@/lib/payments/formatters";
 import { sanitizeHexColor } from "@/lib/security/colors";
 import type { PaymentOccurrence, PaymentType } from "@/lib/types";
 
@@ -27,6 +28,7 @@ export function PaymentCard({
   const t = useTranslations("payments.types");
   const tPayments = useTranslations("payments");
   const tLedger = useTranslations("ledger");
+  const { formatAmount } = useFormatCurrency();
   const displayCurrency = currency ?? occurrence.currency;
   const isPastDue = variant === "pastDue";
   const { month, day } = formatDueDateParts(occurrence.dueDate, intlLocale);
@@ -74,7 +76,7 @@ export function PaymentCard({
         {showInstallmentSummary ? (
           <p className="text-xs text-muted-foreground/80">
             {tPayments("installmentPending", {
-              amount: formatCurrency(
+              amount: formatAmount(
                 occurrence.installmentPendingAmount!,
                 displayCurrency,
                 intlLocale,
@@ -92,7 +94,7 @@ export function PaymentCard({
               : "font-semibold tabular-nums"
           }
         >
-          {formatCurrency(occurrence.amount, displayCurrency, intlLocale)}
+          {formatAmount(occurrence.amount, displayCurrency, intlLocale)}
         </span>
         <ChevronRight className="size-4 text-muted-foreground transition-transform group-hover:translate-x-0.5" />
       </div>

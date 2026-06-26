@@ -16,6 +16,7 @@ import {
 import { LedgerFilterSwitcher } from "@/components/ledger/ledger-filter";
 import { PageTransition } from "@/components/motion/page-transition";
 import { MotionEntranceProvider } from "@/components/motion/motion-entrance";
+import { PrivacyToggle } from "@/components/privacy/privacy-toggle";
 import { ScrollFadeOverlay } from "@/components/layout/scroll-fade-overlay";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
@@ -174,7 +175,10 @@ export function DashboardClient({
       <div className="relative z-10 shrink-0 space-y-4 md:space-y-6">
         <header className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
-          <LedgerFilterSwitcher value={ledger} onChange={setLedger} />
+          <div className="flex shrink-0 items-center gap-1">
+            <PrivacyToggle />
+            <LedgerFilterSwitcher value={ledger} onChange={setLedger} />
+          </div>
         </header>
 
         <Tabs value={view} onValueChange={(value) => setView(value as DashboardView)} className="gap-4">

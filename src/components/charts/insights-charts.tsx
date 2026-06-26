@@ -12,7 +12,7 @@ import {
   YAxis,
 } from "recharts";
 
-import { formatCurrency, formatCurrencyAxis } from "@/lib/payments/formatters";
+import { useFormatCurrency } from "@/hooks/use-format-currency";
 
 const CHART_COLORS = [
   "#0d9488",
@@ -30,6 +30,8 @@ interface MonthlyBarChartProps {
 }
 
 export function MonthlyBarChart({ data, currency, intlLocale = "en-US" }: MonthlyBarChartProps) {
+  const { formatAmount, formatAxisAmount } = useFormatCurrency();
+
   return (
     <div className="h-64 w-full">
       <ResponsiveContainer width="100%" height="100%">
@@ -45,10 +47,10 @@ export function MonthlyBarChart({ data, currency, intlLocale = "en-US" }: Monthl
             axisLine={false}
             tickLine={false}
             width={56}
-            tickFormatter={(v) => formatCurrencyAxis(Number(v), currency, intlLocale)}
+            tickFormatter={(v) => formatAxisAmount(Number(v), currency, intlLocale)}
           />
           <Tooltip
-            formatter={(value) => formatCurrency(Number(value), currency, intlLocale)}
+            formatter={(value) => formatAmount(Number(value), currency, intlLocale)}
             contentStyle={{
               borderRadius: 12,
               border: "1px solid var(--border)",
@@ -69,6 +71,8 @@ interface CategoryDonutProps {
 }
 
 export function CategoryDonut({ data, currency, intlLocale = "en-US" }: CategoryDonutProps) {
+  const { formatAmount } = useFormatCurrency();
+
   if (data.length === 0) {
     return (
       <div className="flex h-64 items-center justify-center text-sm text-muted-foreground">
@@ -97,7 +101,7 @@ export function CategoryDonut({ data, currency, intlLocale = "en-US" }: Category
             ))}
           </Pie>
           <Tooltip
-            formatter={(value) => formatCurrency(Number(value), currency, intlLocale)}
+            formatter={(value) => formatAmount(Number(value), currency, intlLocale)}
             contentStyle={{
               borderRadius: 12,
               border: "1px solid var(--border)",
