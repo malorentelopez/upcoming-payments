@@ -116,7 +116,7 @@ export const getProfile = cache(async (): Promise<ProfileView | null> => {
   return data ? toProfileView(data) : null;
 });
 
-export async function getCategories(): Promise<CategoryView[]> {
+export const getCategories = cache(async (): Promise<CategoryView[]> => {
   const user = await getAuthUser();
   if (!user) return [];
 
@@ -129,7 +129,7 @@ export async function getCategories(): Promise<CategoryView[]> {
     .order("name");
 
   return (data ?? []).map(toCategoryView);
-}
+});
 
 export const getPayments = cache(async function getPayments(
   ledgerFilter: LedgerFilter = "all",
@@ -171,14 +171,32 @@ export async function getPayment(id: string): Promise<PaymentView | null> {
   return data ? toPaymentView(data as PaymentRow) : null;
 }
 
-export interface DashboardData {
+export interface AppShellData {
   payments: PaymentView[];
   profile: ProfileView | null;
+  categories: CategoryView[];
+  userEmail: string | null;
 }
 
-/** Single auth check, parallel payments + profile fetch for the dashboard. */
-export const getDashboardData = cache(async (): Promise<DashboardData> => {
-  const [payments, profile] = await Promise.all([getPayments(), getProfile()]);
+/** @deprecated Use AppShellData */
+export type DashboardData = AppShellData;
 
-  return { payments, profile };
+/** Parallel fetch of all data needed by main app tabs. */
+export const getAppShellData = cache(async (): Promise<AppShellData> => {
+  const [payments, profile, categories, user] = await Promise.all([
+    getPayments(),
+    getProfile(),
+    getCategories(),
+    getCurrentUser(),
+  ]);
+
+  return {
+    payments,
+    profile,
+    categories,
+    userEmail: user?.email ?? null,
+  };
 });
+
+/** @deprecated Use getAppShellData */
+export const getDashboardData = getAppShellData;

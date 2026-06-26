@@ -1,7 +1,7 @@
 "use server";
 
-import { getDashboardData, type DashboardData } from "@/lib/data/queries";
+import { getAppShellData, type AppShellData } from "@/lib/data/queries";
 
-export async function fetchAppData(): Promise<DashboardData> {
-  return getDashboardData();
+export async function fetchAppData(): Promise<AppShellData> {
+  return getAppShellData();
 }
