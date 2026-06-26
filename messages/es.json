@@ -1,0 +1,215 @@
+{
+  "common": {
+    "add": "Añadir",
+    "remove": "Eliminar",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "edit": "Editar",
+    "none": "Ninguna",
+    "or": "o",
+    "previousMonth": "Mes anterior",
+    "nextMonth": "Mes siguiente",
+    "addPayment": "Añadir pago",
+    "legal": "Legal",
+    "copyright": "© {year} ahead. Todos los derechos reservados."
+  },
+  "nav": {
+    "overview": "Resumen",
+    "insights": "Estadísticas",
+    "settings": "Ajustes",
+    "me": "Mi cuenta"
+  },
+  "landing": {
+    "signIn": "Iniciar sesión",
+    "getStarted": "Empezar",
+    "tagline": "Anticípate a tus vencimientos",
+    "headline": "Tus próximos pagos, claros y bajo control",
+    "description": "Lleva el control de suscripciones, alquiler, préstamos y facturas puntuales. Consulta cada mes lo que tendrás que pagar, de un vistazo y sin líos.",
+    "createAccount": "Crear cuenta gratis",
+    "haveAccount": "Ya tengo cuenta",
+    "features": {
+      "byMonth": {
+        "title": "Por mes",
+        "desc": "Importes y vencimientos de un vistazo"
+      },
+      "anyType": {
+        "title": "Cualquier tipo",
+        "desc": "Recurrentes, a plazos o pago único"
+      },
+      "insights": {
+        "title": "Estadísticas",
+        "desc": "Gráficos para ver en qué se te va el dinero"
+      }
+    }
+  },
+  "auth": {
+    "welcomeBack": "Hola de nuevo",
+    "signInSubtitle": "Inicia sesión para ver tus próximos pagos",
+    "createAccountTitle": "Crea tu cuenta",
+    "createAccountSubtitle": "Empieza a anticipar tus gastos",
+    "continueGoogle": "Continuar con Google",
+    "name": "Nombre",
+    "namePlaceholder": "Tu nombre",
+    "email": "Correo electrónico",
+    "emailPlaceholder": "tu@ejemplo.com",
+    "password": "Contraseña",
+    "passwordPlaceholder": "Mínimo 8 caracteres, con letra y número",
+    "createAccount": "Crear cuenta",
+    "signIn": "Iniciar sesión",
+    "privacyAgree": "Al crear una cuenta, aceptas nuestra <link>política de privacidad</link>.",
+    "privacyPolicy": "Política de privacidad",
+    "alreadyHaveAccount": "¿Ya tienes cuenta?",
+    "newHere": "¿Primera vez aquí?",
+    "accountCreated": "Cuenta creada. Ya puedes iniciar sesión.",
+    "somethingWrong": "Ha ocurrido un error"
+  },
+  "dashboard": {
+    "title": "Resumen",
+    "dueThisMonth": "Vence este mes",
+    "searchPlaceholder": "Buscar pagos...",
+    "allTypes": "Todos los tipos",
+    "allCategories": "Todas las categorías",
+    "paymentCount": "{count, plural, one {# pago este mes} other {# pagos este mes}}",
+    "emptyNoneDue": "Nada que pagar este mes",
+    "emptyNoPayments": "Todavía no tienes pagos",
+    "emptyTryFilters": "Prueba otro mes o cambia los filtros.",
+    "emptyGetStarted": "Añade tu primera suscripción, el alquiler o una factura para empezar."
+  },
+  "insights": {
+    "trends": "Tendencias",
+    "title": "Estadísticas",
+    "lastSixMonths": "Últimos 6 meses",
+    "byCategory": "Por categoría",
+    "uncategorized": "Sin categoría"
+  },
+  "payments": {
+    "new": "Nuevo",
+    "addPayment": "Añadir pago",
+    "edit": "Editar",
+    "payment": "Pago",
+    "saveChanges": "Guardar cambios",
+    "name": "Nombre",
+    "namePlaceholder": "Netflix, Alquiler, Coche...",
+    "amount": "Importe",
+    "currency": "Moneda",
+    "category": "Categoría",
+    "notesOptional": "Notas (opcional)",
+    "notesPlaceholder": "Cualquier detalle adicional",
+    "activeForecast": "Activo: incluir en las previsiones",
+    "frequency": "Frecuencia",
+    "startDate": "Fecha de inicio",
+    "endDateOptional": "Fecha de fin (opcional)",
+    "dayOfMonth": "Día del mes",
+    "useLastDayOfMonth": "Usar el último día del mes",
+    "totalInstallments": "Número de cuotas",
+    "alreadyPaid": "Cuotas pagadas",
+    "nextDueDate": "Próximo vencimiento",
+    "dueDate": "Fecha de vencimiento",
+    "type": "Tipo",
+    "progress": "Progreso",
+    "progressValue": "{paid} de {total} pagadas",
+    "nextDue": "Próximo vencimiento",
+    "paused": "Pausado",
+    "pause": "Pausar",
+    "activate": "Activar",
+    "deleteConfirm": "¿Eliminar este pago? Esta acción no se puede deshacer.",
+    "paymentPaused": "Pago pausado",
+    "paymentActivated": "Pago activado",
+    "types": {
+      "recurring": "Recurrente",
+      "installment": "A plazos",
+      "one_off": "Pago único"
+    },
+    "frequencies": {
+      "weekly": "Semanal",
+      "monthly": "Mensual",
+      "yearly": "Anual"
+    }
+  },
+  "settings": {
+    "app": "Aplicación",
+    "title": "Ajustes",
+    "categories": "Categorías",
+    "addCategory": "Añadir categoría",
+    "addCategoryTitle": "Nueva categoría",
+    "addCategoryDescription": "Ponle nombre a la categoría y elige un color.",
+    "categoryNamePlaceholder": "Nombre de la categoría",
+    "categoryColor": "Color",
+    "categoryAdded": "Categoría añadida",
+    "categoryRemoved": "Categoría eliminada",
+    "noCategories": "Todavía no hay categorías.",
+    "privacyCookies": "Privacidad y cookies",
+    "privacyCookiesDesc": "Consulta cómo tratamos tus datos y cambia tus preferencias de cookies cuando quieras.",
+    "cookieSettings": "Ajustes de cookies"
+  },
+  "appearance": {
+    "title": "Apariencia",
+    "changeTheme": "Cambiar tema",
+    "description": "Elige modo claro, oscuro o el del sistema.",
+    "system": "Sistema",
+    "light": "Claro",
+    "dark": "Oscuro",
+    "currentlyUsing": "Modo {mode} activo{systemNote}.",
+    "fromSystem": " (según el sistema)"
+  },
+  "language": {
+    "title": "Idioma",
+    "changeLanguage": "Cambiar idioma",
+    "description": "Elige el idioma de la interfaz. Las categorías y los nombres de los pagos se quedan como los escribes tú.",
+    "detectedNote": "Detectamos el {language} de tu dispositivo al registrarte.",
+    "english": "Inglés",
+    "french": "Francés",
+    "spanish": "Español",
+    "german": "Alemán"
+  },
+  "profile": {
+    "title": "Perfil",
+    "displayName": "Nombre visible",
+    "defaultCurrency": "Moneda por defecto",
+    "saveProfile": "Guardar perfil",
+    "signOut": "Cerrar sesión",
+    "deleteAccountTitle": "Eliminar cuenta",
+    "deleteAccountDesc": "Elimina tu cuenta y todos los datos de pagos de forma permanente. No se puede deshacer.",
+    "deleteAccount": "Eliminar cuenta",
+    "deleteAccountConfirmTitle": "¿Eliminar tu cuenta?",
+    "deleteAccountConfirmDesc": "Escribe tu correo electrónico para confirmar. Se eliminarán de forma permanente tus pagos, categorías y perfil.",
+    "deleteAccountEmailLabel": "Tu correo electrónico",
+    "deleteAccountPermanently": "Eliminar definitivamente",
+    "deleteAccountCancel": "Cancelar",
+    "deleteAccountError": "No se ha podido eliminar la cuenta"
+  },
+  "timezone": {
+    "title": "Zona horaria",
+    "searchPlaceholder": "Buscar ciudad o región…",
+    "noResults": "Ninguna zona horaria coincide con la búsqueda.",
+    "useDevice": "Usar la zona horaria del dispositivo ({timezone})",
+    "detectedSave": "Detectada en tu dispositivo. Guarda el perfil para mantenerla.",
+    "currentlyUsing": "Zona horaria actual: {timezone}."
+  },
+  "consent": {
+    "title": "Cookies y privacidad",
+    "description": "Usamos cookies esenciales para iniciar sesión, idioma y tema. Si lo autorizas, cargamos analítica para medir el uso. Consulta nuestra <privacyLink>política de privacidad</privacyLink> y la <cookieLink>política de cookies</cookieLink>.",
+    "acceptAll": "Aceptar todo",
+    "rejectNonEssential": "Rechazar no esenciales",
+    "rejectAll": "Rechazar todo",
+    "managePreferences": "Gestionar preferencias",
+    "preferencesTitle": "Preferencias de cookies",
+    "preferencesDialogDesc": "Elige qué cookies podemos usar. Las esenciales son necesarias para iniciar sesión y no se pueden desactivar.",
+    "essential": "Esenciales",
+    "essentialDesc": "Necesarias para iniciar sesión y el funcionamiento básico.",
+    "preferences": "Preferencias",
+    "preferencesDesc": "Guardar tus elecciones sobre cookies.",
+    "analytics": "Analítica",
+    "analyticsDesc": "Métricas anónimas de uso y rendimiento con Vercel (solo si las aceptas).",
+    "savePreferences": "Guardar preferencias"
+  },
+  "footer": {
+    "privacy": "Privacidad",
+    "cookies": "Cookies",
+    "cookieSettings": "Ajustes de cookies"
+  },
+  "metadata": {
+    "title": "ahead — anticipa lo que vence",
+    "description": "Controla suscripciones, alquiler, préstamos y facturas. Consulta tus próximos pagos por mes."
+  }
+}

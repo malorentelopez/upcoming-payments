@@ -2,25 +2,28 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { BarChart3, LayoutGrid, Plus, Settings } from "lucide-react";
+import { BarChart3, LayoutGrid, Plus, Settings, User } from "lucide-react";
+import { useTranslations } from "next-intl";
 
+import { AppLogo } from "@/components/brand/app-logo";
 import { cn } from "@/lib/utils";
-
-const links = [
-  { href: "/dashboard", label: "Overview", icon: LayoutGrid },
-  { href: "/insights", label: "Insights", icon: BarChart3 },
-  { href: "/settings", label: "Settings", icon: Settings },
-];
 
 export function SideNav() {
   const pathname = usePathname();
+  const t = useTranslations("nav");
+  const tCommon = useTranslations("common");
+
+  const links = [
+    { href: "/dashboard", label: t("overview"), icon: LayoutGrid },
+    { href: "/insights", label: t("insights"), icon: BarChart3 },
+    { href: "/settings", label: t("settings"), icon: Settings },
+    { href: "/me", label: t("me"), icon: User },
+  ];
 
   return (
     <aside className="hidden w-56 shrink-0 border-r border-border/60 md:block">
       <div className="sticky top-0 flex h-screen flex-col px-4 py-8">
-        <Link href="/dashboard" className="mb-8 px-2 text-lg font-semibold tracking-tight">
-          Upcoming
-        </Link>
+        <AppLogo href="/dashboard" className="mb-8 px-2" />
         <nav className="flex flex-1 flex-col gap-1">
           {links.map(({ href, label, icon: Icon }) => {
             const active = pathname === href || pathname.startsWith(`${href}/`);
@@ -46,7 +49,7 @@ export function SideNav() {
           className="mt-auto flex items-center justify-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-medium text-primary-foreground transition-transform hover:opacity-90 active:scale-[0.98]"
         >
           <Plus className="size-4" />
-          Add payment
+          {tCommon("addPayment")}
         </Link>
       </div>
     </aside>

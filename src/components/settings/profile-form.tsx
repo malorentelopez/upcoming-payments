@@ -1,22 +1,28 @@
+"use client";
+
+import { useTranslations } from "next-intl";
+
+import { TimezoneSelect } from "@/components/settings/timezone-select";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { updateProfile } from "@/lib/actions/payments";
-import type { Profile } from "@/lib/types";
-
-const CURRENCIES = ["USD", "EUR", "GBP", "CAD", "AUD", "MXN"];
+import { CURRENCIES } from "@/lib/payments/constants";
+import type { ProfileView } from "@/lib/types";
 
 interface ProfileFormProps {
-  profile: Profile;
+  profile: ProfileView;
 }
 
 export function ProfileForm({ profile }: ProfileFormProps) {
+  const t = useTranslations("profile");
+
   return (
     <section className="rounded-2xl border border-border/60 bg-card p-5">
-      <h2 className="mb-4 font-medium">Profile</h2>
+      <h2 className="mb-4 font-medium">{t("title")}</h2>
       <form action={updateProfile} className="space-y-4">
         <div className="space-y-2">
-          <Label htmlFor="displayName">Display name</Label>
+          <Label htmlFor="displayName">{t("displayName")}</Label>
           <Input
             id="displayName"
             name="displayName"
@@ -25,7 +31,7 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           />
         </div>
         <div className="space-y-2">
-          <Label htmlFor="defaultCurrency">Default currency</Label>
+          <Label htmlFor="defaultCurrency">{t("defaultCurrency")}</Label>
           <select
             id="defaultCurrency"
             name="defaultCurrency"
@@ -39,17 +45,9 @@ export function ProfileForm({ profile }: ProfileFormProps) {
             ))}
           </select>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="timezone">Timezone</Label>
-          <Input
-            id="timezone"
-            name="timezone"
-            defaultValue={profile.timezone}
-            className="h-11 rounded-xl"
-          />
-        </div>
+        <TimezoneSelect defaultValue={profile.timezone} />
         <Button type="submit" className="h-11 rounded-xl">
-          Save profile
+          {t("saveProfile")}
         </Button>
       </form>
     </section>

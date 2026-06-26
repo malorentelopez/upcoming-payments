@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Pencil, Trash2 } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -11,32 +12,35 @@ import {
   deletePayment,
   togglePaymentActive,
 } from "@/lib/actions/payments";
-import {
-  formatCurrency,
-  paymentTypeLabel,
-} from "@/lib/payments/formatters";
-import type { Payment } from "@/lib/types";
+import { sanitizeHexColor } from "@/lib/security/colors";
+import { formatCurrency } from "@/lib/payments/formatters";
+import { localeToIntl } from "@/lib/i18n/locale";
+import type { PaymentFrequency, PaymentType, PaymentView } from "@/lib/types";
 import { cn } from "@/lib/utils";
 
 interface PaymentDetailClientProps {
-  payment: Payment;
+  payment: PaymentView;
 }
 
 export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
   const router = useRouter();
+  const t = useTranslations("payments");
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
+  const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
 
   async function handleToggle() {
     const result = await togglePaymentActive(payment.id, !payment.is_active);
     if (result.error) {
       toast.error(result.error);
     } else {
-      toast.success(payment.is_active ? "Payment paused" : "Payment activated");
+      toast.success(payment.is_active ? t("paymentPaused") : t("paymentActivated"));
       router.refresh();
     }
   }
 
   async function handleDelete() {
-    if (!confirm("Delete this payment? This cannot be undone.")) return;
+    if (!confirm(t("deleteConfirm"))) return;
     await deletePayment(payment.id);
   }
 
@@ -50,7 +54,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
           <ArrowLeft className="size-5" />
         </Link>
         <div className="min-w-0 flex-1">
-          <p className="text-sm text-muted-foreground">Payment</p>
+          <p className="text-sm text-muted-foreground">{t("payment")}</p>
           <h1 className="truncate text-xl font-semibold tracking-tight">
             {payment.name}
           </h1>
@@ -61,19 +65,22 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-3xl font-semibold tabular-nums">
-              {formatCurrency(payment.amount, payment.currency)}
+              {formatCurrency(payment.amount, payment.currency, intlLocale)}
             </p>
             <div className="mt-2 flex flex-wrap gap-2">
-              <Badge variant="secondary">{paymentTypeLabel(payment.type)}</Badge>
+              <Badge variant="secondary">{t(`types.${payment.type}` as `types.${PaymentType}`)}</Badge>
               {payment.category && (
                 <Badge
-                  style={{ backgroundColor: payment.category.color, color: "white" }}
+                  style={{
+                    backgroundColor: sanitizeHexColor(payment.category.color),
+                    color: "white",
+                  }}
                 >
                   {payment.category.name}
                 </Badge>
               )}
               {!payment.is_active && (
-                <Badge variant="outline">Paused</Badge>
+                <Badge variant="outline">{t("paused")}</Badge>
               )}
             </div>
           </div>
@@ -84,27 +91,33 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
         )}
 
         <dl className="mt-6 space-y-3 text-sm">
-          <DetailRow label="Type" value={paymentTypeLabel(payment.type)} />
+          <DetailRow label={t("type")} value={t(`types.${payment.type}` as `types.${PaymentType}`)} />
           {payment.type === "recurring" && (
             <>
-              <DetailRow label="Frequency" value={payment.frequency ?? "monthly"} />
-              <DetailRow label="Start date" value={payment.start_date ?? "—"} />
+              <DetailRow
+                label={t("frequency")}
+                value={t(`frequencies.${payment.frequency ?? "monthly"}` as `frequencies.${PaymentFrequency}`)}
+              />
+              <DetailRow label={t("startDate")} value={payment.start_date ?? "—"} />
               {payment.end_date && (
-                <DetailRow label="End date" value={payment.end_date} />
+                <DetailRow label={t("endDateOptional")} value={payment.end_date} />
               )}
             </>
           )}
           {payment.type === "installment" && (
             <>
               <DetailRow
-                label="Progress"
-                value={`${payment.paid_installments} / ${payment.total_installments} paid`}
+                label={t("progress")}
+                value={t("progressValue", {
+                  paid: payment.paid_installments,
+                  total: payment.total_installments ?? 0,
+                })}
               />
-              <DetailRow label="Next due" value={payment.next_due_date ?? "—"} />
+              <DetailRow label={t("nextDue")} value={payment.next_due_date ?? "—"} />
             </>
           )}
           {payment.type === "one_off" && (
-            <DetailRow label="Due date" value={payment.due_date ?? "—"} />
+            <DetailRow label={t("dueDate")} value={payment.due_date ?? "—"} />
           )}
         </dl>
       </section>
@@ -118,7 +131,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
           )}
         >
           <Pencil className="size-4" />
-          Edit
+          {tCommon("edit")}
         </Link>
         <Button
           type="button"
@@ -126,7 +139,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
           className="h-11 flex-1 rounded-xl"
           onClick={handleToggle}
         >
-          {payment.is_active ? "Pause" : "Activate"}
+          {payment.is_active ? t("pause") : t("activate")}
         </Button>
         <Button
           type="button"
@@ -145,7 +158,7 @@ function DetailRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className="font-medium capitalize">{value}</dd>
+      <dd className="font-medium">{value}</dd>
     </div>
   );
 }

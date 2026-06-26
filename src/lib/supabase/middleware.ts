@@ -36,7 +36,8 @@ export async function updateSession(request: NextRequest) {
     pathname.startsWith("/dashboard") ||
     pathname.startsWith("/payments") ||
     pathname.startsWith("/insights") ||
-    pathname.startsWith("/settings");
+    pathname.startsWith("/settings") ||
+    pathname.startsWith("/me");
 
   if (!user && isProtected) {
     const url = request.nextUrl.clone();

@@ -1,33 +1,58 @@
 "use client";
 
+import Link from "next/link";
+import { useTranslations } from "next-intl";
+
+import { CookiePreferencesTrigger } from "@/components/consent/cookie-preferences-dialog";
 import { PageTransition } from "@/components/motion/page-transition";
 import { CategoriesSection } from "@/components/settings/categories-section";
-import { ProfileForm } from "@/components/settings/profile-form";
-import { Button } from "@/components/ui/button";
-import { signOut } from "@/lib/actions/payments";
-import type { Category, Profile } from "@/lib/types";
+import { ThemeSettings } from "@/components/theme/theme-settings";
+import { buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
+import type { CategoryView } from "@/lib/types";
 
 interface SettingsClientProps {
-  profile: Profile;
-  categories: Category[];
+  categories: CategoryView[];
 }
 
-export function SettingsClient({ profile, categories }: SettingsClientProps) {
+export function SettingsClient({ categories }: SettingsClientProps) {
+  const t = useTranslations("settings");
+  const tFooter = useTranslations("footer");
+
   return (
     <PageTransition className="space-y-8">
       <header className="space-y-1">
-        <p className="text-sm text-muted-foreground">Account</p>
-        <h1 className="text-2xl font-semibold tracking-tight">Settings</h1>
+        <p className="text-sm text-muted-foreground">{t("app")}</p>
+        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
       </header>
 
-      <ProfileForm profile={profile} />
+      <ThemeSettings />
+
       <CategoriesSection categories={categories} />
 
-      <form action={signOut}>
-        <Button type="submit" variant="outline" className="h-11 w-full rounded-xl">
-          Sign out
-        </Button>
-      </form>
+      <section className="rounded-2xl border border-border/60 bg-card p-5">
+        <h2 className="mb-2 font-medium">{t("privacyCookies")}</h2>
+        <p className="mb-4 text-sm text-muted-foreground">
+          {t("privacyCookiesDesc")}
+        </p>
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Link
+            href="/privacy"
+            className={cn(buttonVariants({ variant: "outline" }), "h-10 rounded-xl")}
+          >
+            {tFooter("privacy")}
+          </Link>
+          <Link
+            href="/cookies"
+            className={cn(buttonVariants({ variant: "outline" }), "h-10 rounded-xl")}
+          >
+            {tFooter("cookies")}
+          </Link>
+          <CookiePreferencesTrigger className="inline-flex h-10 items-center justify-center rounded-xl border border-border bg-background px-4 text-sm font-medium hover:bg-muted">
+            {t("cookieSettings")}
+          </CookiePreferencesTrigger>
+        </div>
+      </section>
     </PageTransition>
   );
 }

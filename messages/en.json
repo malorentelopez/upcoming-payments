@@ -1,0 +1,215 @@
+{
+  "common": {
+    "add": "Add",
+    "remove": "Remove",
+    "save": "Save",
+    "cancel": "Cancel",
+    "edit": "Edit",
+    "none": "None",
+    "or": "or",
+    "previousMonth": "Previous month",
+    "nextMonth": "Next month",
+    "addPayment": "Add payment",
+    "legal": "Legal",
+    "copyright": "© {year} ahead. All rights reserved."
+  },
+  "nav": {
+    "overview": "Overview",
+    "insights": "Insights",
+    "settings": "Settings",
+    "me": "Me"
+  },
+  "landing": {
+    "signIn": "Sign in",
+    "getStarted": "Get started",
+    "tagline": "Know what's due, before it's due",
+    "headline": "Your upcoming payments, beautifully organized",
+    "description": "Track subscriptions, rent, loans, and one-off bills. See exactly what you'll owe each month — clean, calm, and always at a glance.",
+    "createAccount": "Create free account",
+    "haveAccount": "I have an account",
+    "features": {
+      "byMonth": {
+        "title": "By month",
+        "desc": "See totals and due dates at a glance"
+      },
+      "anyType": {
+        "title": "Any type",
+        "desc": "Recurring, installments, or one-offs"
+      },
+      "insights": {
+        "title": "Insights",
+        "desc": "Charts to spot where money goes"
+      }
+    }
+  },
+  "auth": {
+    "welcomeBack": "Welcome back",
+    "signInSubtitle": "Sign in to see your upcoming payments",
+    "createAccountTitle": "Create your account",
+    "createAccountSubtitle": "Start tracking what's due ahead",
+    "continueGoogle": "Continue with Google",
+    "name": "Name",
+    "namePlaceholder": "Your name",
+    "email": "Email",
+    "emailPlaceholder": "you@example.com",
+    "password": "Password",
+    "passwordPlaceholder": "At least 8 characters with a letter and number",
+    "createAccount": "Create account",
+    "signIn": "Sign in",
+    "privacyAgree": "By creating an account, you agree to our <link>Privacy Policy</link>.",
+    "privacyPolicy": "Privacy Policy",
+    "alreadyHaveAccount": "Already have an account?",
+    "newHere": "New here?",
+    "accountCreated": "Account created. You can sign in now.",
+    "somethingWrong": "Something went wrong"
+  },
+  "dashboard": {
+    "title": "Overview",
+    "dueThisMonth": "Due this month",
+    "searchPlaceholder": "Search payments...",
+    "allTypes": "All types",
+    "allCategories": "All categories",
+    "paymentCount": "{count, plural, one {# payment this month} other {# payments this month}}",
+    "emptyNoneDue": "Nothing due this month",
+    "emptyNoPayments": "No payments yet",
+    "emptyTryFilters": "Try another month or adjust your filters.",
+    "emptyGetStarted": "Add your first subscription, rent, or bill to get started."
+  },
+  "insights": {
+    "trends": "Trends",
+    "title": "Insights",
+    "lastSixMonths": "Last 6 months",
+    "byCategory": "By category",
+    "uncategorized": "Uncategorized"
+  },
+  "payments": {
+    "new": "New",
+    "addPayment": "Add payment",
+    "edit": "Edit",
+    "payment": "Payment",
+    "saveChanges": "Save changes",
+    "name": "Name",
+    "namePlaceholder": "Netflix, Rent, Car loan...",
+    "amount": "Amount",
+    "currency": "Currency",
+    "category": "Category",
+    "notesOptional": "Notes (optional)",
+    "notesPlaceholder": "Any extra details",
+    "activeForecast": "Active — include in forecasts",
+    "frequency": "Frequency",
+    "startDate": "Start date",
+    "endDateOptional": "End date (optional)",
+    "dayOfMonth": "Day of month",
+    "useLastDayOfMonth": "Use last day of month instead",
+    "totalInstallments": "Total installments",
+    "alreadyPaid": "Already paid",
+    "nextDueDate": "Next due date",
+    "dueDate": "Due date",
+    "type": "Type",
+    "progress": "Progress",
+    "progressValue": "{paid} / {total} paid",
+    "nextDue": "Next due",
+    "paused": "Paused",
+    "pause": "Pause",
+    "activate": "Activate",
+    "deleteConfirm": "Delete this payment? This cannot be undone.",
+    "paymentPaused": "Payment paused",
+    "paymentActivated": "Payment activated",
+    "types": {
+      "recurring": "Recurring",
+      "installment": "Installment",
+      "one_off": "One-off"
+    },
+    "frequencies": {
+      "weekly": "Weekly",
+      "monthly": "Monthly",
+      "yearly": "Yearly"
+    }
+  },
+  "settings": {
+    "app": "App",
+    "title": "Settings",
+    "categories": "Categories",
+    "addCategory": "Add category",
+    "addCategoryTitle": "New category",
+    "addCategoryDescription": "Give your category a name and pick a color.",
+    "categoryNamePlaceholder": "Category name",
+    "categoryColor": "Color",
+    "categoryAdded": "Category added",
+    "categoryRemoved": "Category removed",
+    "noCategories": "No categories yet.",
+    "privacyCookies": "Privacy & cookies",
+    "privacyCookiesDesc": "Review how we handle your data and update your cookie preferences at any time.",
+    "cookieSettings": "Cookie settings"
+  },
+  "appearance": {
+    "title": "Appearance",
+    "changeTheme": "Change theme",
+    "description": "Choose light, dark, or match your device settings.",
+    "system": "System",
+    "light": "Light",
+    "dark": "Dark",
+    "currentlyUsing": "Currently using {mode} mode{systemNote}.",
+    "fromSystem": " (from system)"
+  },
+  "language": {
+    "title": "Language",
+    "changeLanguage": "Change language",
+    "description": "Choose the language for the app interface. Your categories and payment names stay as you enter them.",
+    "detectedNote": "We detected {language} from your device when you signed up.",
+    "english": "English",
+    "french": "French",
+    "spanish": "Spanish",
+    "german": "German"
+  },
+  "profile": {
+    "title": "Profile",
+    "displayName": "Display name",
+    "defaultCurrency": "Default currency",
+    "saveProfile": "Save profile",
+    "signOut": "Sign out",
+    "deleteAccountTitle": "Delete account",
+    "deleteAccountDesc": "Permanently delete your account and all payment data. This cannot be undone.",
+    "deleteAccount": "Delete account",
+    "deleteAccountConfirmTitle": "Delete your account?",
+    "deleteAccountConfirmDesc": "Type your email address to confirm. All your payments, categories, and profile data will be permanently removed.",
+    "deleteAccountEmailLabel": "Your email",
+    "deleteAccountPermanently": "Delete permanently",
+    "deleteAccountCancel": "Cancel",
+    "deleteAccountError": "Could not delete account"
+  },
+  "timezone": {
+    "title": "Timezone",
+    "searchPlaceholder": "Search city or region…",
+    "noResults": "No timezones match your search.",
+    "useDevice": "Use device timezone ({timezone})",
+    "detectedSave": "Detected from your device. Save your profile to keep this timezone.",
+    "currentlyUsing": "Currently using {mode} mode{systemNote}."
+  },
+  "consent": {
+    "title": "Cookies & privacy",
+    "description": "We use essential cookies for sign-in, language, and theme. With your permission, we load analytics to measure usage. Read our <privacyLink>Privacy Policy</privacyLink> and <cookieLink>Cookie Policy</cookieLink>.",
+    "acceptAll": "Accept all",
+    "rejectNonEssential": "Reject non-essential",
+    "rejectAll": "Reject all",
+    "managePreferences": "Manage preferences",
+    "preferencesTitle": "Cookie preferences",
+    "preferencesDialogDesc": "Choose which cookies we may use. Essential cookies are required for sign-in and cannot be disabled.",
+    "essential": "Essential",
+    "essentialDesc": "Required for sign-in and core app functionality.",
+    "preferences": "Preferences",
+    "preferencesDesc": "Remember your cookie consent choices.",
+    "analytics": "Analytics",
+    "analyticsDesc": "Anonymous usage and performance metrics via Vercel (only if you opt in).",
+    "savePreferences": "Save preferences"
+  },
+  "footer": {
+    "privacy": "Privacy",
+    "cookies": "Cookies",
+    "cookieSettings": "Cookie settings"
+  },
+  "metadata": {
+    "title": "ahead — know what's due ahead",
+    "description": "Track subscriptions, rent, loans, and bills. See your upcoming payments by month."
+  }
+}

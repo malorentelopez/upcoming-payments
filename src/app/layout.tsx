@@ -1,7 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { DM_Sans, Geist_Mono } from "next/font/google";
+import { NextIntlClientProvider } from "next-intl";
+import { getLocale, getMessages, getTranslations } from "next-intl/server";
 
-import { Toaster } from "@/components/ui/sonner";
+import { ConsentShell } from "@/components/consent/consent-shell";
+import { AppToaster } from "@/components/theme/app-toaster";
+import { ThemeProvider } from "@/components/theme/theme-provider";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -14,32 +18,61 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "Upcoming — Know what's due ahead",
-  description:
-    "Track subscriptions, rent, loans, and bills. See your upcoming payments by month.",
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const t = await getTranslations("metadata");
+
+  return {
+    title: t("title"),
+    description: t("description"),
+    icons: {
+      icon: [
+        {
+          url: "/brand/ahead-icon-light.svg",
+          type: "image/svg+xml",
+          media: "(prefers-color-scheme: light)",
+        },
+        {
+          url: "/brand/ahead-icon-dark.svg",
+          type: "image/svg+xml",
+          media: "(prefers-color-scheme: dark)",
+        },
+      ],
+      apple: "/brand/ahead-icon-light.svg",
+    },
+  };
+}
 
 export const viewport: Viewport = {
-  themeColor: "#fafaf8",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafaf8" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a1a1a" },
+  ],
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const locale = await getLocale();
+  const messages = await getMessages();
+
   return (
     <html
-      lang="en"
+      lang={locale}
+      suppressHydrationWarning
       className={`${dmSans.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-background font-sans text-base">
-        {children}
-        <Toaster position="top-center" richColors />
+        <NextIntlClientProvider messages={messages}>
+          <ThemeProvider>
+            <ConsentShell>{children}</ConsentShell>
+            <AppToaster />
+          </ThemeProvider>
+        </NextIntlClientProvider>
       </body>
     </html>
   );

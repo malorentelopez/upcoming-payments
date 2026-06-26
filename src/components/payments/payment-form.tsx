@@ -1,11 +1,12 @@
 import { createPayment, updatePayment } from "@/lib/actions/payments";
-import type { Category, Payment } from "@/lib/types";
+import { sanitizeHexColor } from "@/lib/security/colors";
+import type { CategoryView, PaymentView } from "@/lib/types";
 
 import { PaymentFormFields } from "./payment-form-fields";
 
 interface PaymentFormProps {
-  categories: Category[];
-  payment?: Payment;
+  categories: CategoryView[];
+  payment?: PaymentView;
   defaultCurrency?: string;
 }
 

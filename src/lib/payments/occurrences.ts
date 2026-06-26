@@ -13,7 +13,7 @@ import {
   endOfMonth as endOfMonthFn,
 } from "date-fns";
 
-import type { Category, Payment, PaymentOccurrence } from "@/lib/types";
+import type { CategoryView, PaymentOccurrence, PaymentView } from "@/lib/types";
 
 function parseDate(value: string | null): Date | null {
   if (!value) return null;
@@ -34,7 +34,7 @@ function resolveDayOfMonth(
   return setDate(base, Math.min(day, lastDay));
 }
 
-function addByFrequency(date: Date, frequency: Payment["frequency"]): Date {
+function addByFrequency(date: Date, frequency: PaymentView["frequency"]): Date {
   switch (frequency) {
     case "weekly":
       return addWeeks(date, 1);
@@ -48,7 +48,7 @@ function addByFrequency(date: Date, frequency: Payment["frequency"]): Date {
 }
 
 function expandRecurring(
-  payment: Payment,
+  payment: PaymentView,
   rangeStart: Date,
   rangeEnd: Date,
 ): PaymentOccurrence[] {
@@ -98,7 +98,7 @@ function expandRecurring(
 }
 
 function expandInstallment(
-  payment: Payment,
+  payment: PaymentView,
   rangeStart: Date,
   rangeEnd: Date,
 ): PaymentOccurrence[] {
@@ -137,7 +137,7 @@ function expandInstallment(
 }
 
 function expandOneOff(
-  payment: Payment,
+  payment: PaymentView,
   rangeStart: Date,
   rangeEnd: Date,
 ): PaymentOccurrence[] {
@@ -154,7 +154,7 @@ function expandOneOff(
   return [buildOccurrence(payment, due)];
 }
 
-function buildOccurrence(payment: Payment, dueDate: Date): PaymentOccurrence {
+function buildOccurrence(payment: PaymentView, dueDate: Date): PaymentOccurrence {
   return {
     paymentId: payment.id,
     name: payment.name,
@@ -167,7 +167,7 @@ function buildOccurrence(payment: Payment, dueDate: Date): PaymentOccurrence {
 }
 
 export function expandPaymentOccurrences(
-  payment: Payment,
+  payment: PaymentView,
   rangeStart: Date,
   rangeEnd: Date,
 ): PaymentOccurrence[] {
@@ -191,7 +191,7 @@ export function expandPaymentOccurrences(
 }
 
 export function expandAllOccurrences(
-  payments: Payment[],
+  payments: PaymentView[],
   rangeStart: Date,
   rangeEnd: Date,
 ): PaymentOccurrence[] {
@@ -217,8 +217,8 @@ export function sumOccurrences(
 
 export function groupByCategory(
   occurrences: PaymentOccurrence[],
-): Map<string, { category: Category | null; total: number }> {
-  const map = new Map<string, { category: Category | null; total: number }>();
+): Map<string, { category: CategoryView | null; total: number }> {
+  const map = new Map<string, { category: CategoryView | null; total: number }>();
 
   for (const occurrence of occurrences) {
     const key = occurrence.category?.id ?? "uncategorized";
@@ -265,6 +265,7 @@ export function getMonthsWindow(
   anchorYear: number,
   anchorMonth: number,
   count: number,
+  locale = "en-US",
 ): Array<{ year: number; month: number; key: string; label: string }> {
   const months: Array<{ year: number; month: number; key: string; label: string }> = [];
   const startOffset = -(count - 1);
@@ -276,7 +277,7 @@ export function getMonthsWindow(
       year,
       month,
       key: getMonthKey(date),
-      label: date.toLocaleDateString("en-US", { month: "short", year: "numeric" }),
+      label: date.toLocaleDateString(locale, { month: "short", year: "numeric" }),
     });
   }
 

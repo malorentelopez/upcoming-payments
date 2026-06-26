@@ -6,6 +6,7 @@ export interface Profile {
   display_name: string | null;
   default_currency: string;
   timezone: string;
+  locale: string;
   created_at: string;
 }
 
@@ -48,7 +49,7 @@ export interface PaymentOccurrence {
   amount: number;
   currency: string;
   dueDate: Date;
-  category: Category | null;
+  category: Pick<Category, "id" | "name" | "color" | "icon"> | null;
   type: PaymentType;
 }
 

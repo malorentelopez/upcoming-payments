@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 
 import { PaymentForm } from "@/components/payments/payment-form";
 import { PageTransition } from "@/components/motion/page-transition";
@@ -20,6 +21,8 @@ export default async function EditPaymentPage({ params }: EditPaymentPageProps) 
 
   if (!payment) notFound();
 
+  const t = await getTranslations("payments");
+
   return (
     <PageTransition className="space-y-6">
       <div className="flex items-center gap-3">
@@ -30,7 +33,7 @@ export default async function EditPaymentPage({ params }: EditPaymentPageProps) 
           <ArrowLeft className="size-5" />
         </Link>
         <div>
-          <p className="text-sm text-muted-foreground">Edit</p>
+          <p className="text-sm text-muted-foreground">{t("edit")}</p>
           <h1 className="text-xl font-semibold tracking-tight">{payment.name}</h1>
         </div>
       </div>

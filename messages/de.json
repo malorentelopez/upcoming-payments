@@ -1,0 +1,215 @@
+{
+  "common": {
+    "add": "Hinzufügen",
+    "remove": "Entfernen",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "edit": "Bearbeiten",
+    "none": "Keine",
+    "or": "oder",
+    "previousMonth": "Vorheriger Monat",
+    "nextMonth": "Nächster Monat",
+    "addPayment": "Zahlung hinzufügen",
+    "legal": "Rechtliches",
+    "copyright": "© {year} ahead. Alle Rechte vorbehalten."
+  },
+  "nav": {
+    "overview": "Übersicht",
+    "insights": "Statistik",
+    "settings": "Einstellungen",
+    "me": "Mein Konto"
+  },
+  "landing": {
+    "signIn": "Anmelden",
+    "getStarted": "Loslegen",
+    "tagline": "Behalte deine Fälligkeiten im Blick",
+    "headline": "Deine anstehenden Zahlungen – klar und im Griff",
+    "description": "Verwalte Abos, Miete, Kredite und einmalige Rechnungen. Sieh auf einen Blick, was du jeden Monat zahlen musst – übersichtlich und ohne Stress.",
+    "createAccount": "Kostenloses Konto erstellen",
+    "haveAccount": "Ich habe bereits ein Konto",
+    "features": {
+      "byMonth": {
+        "title": "Nach Monat",
+        "desc": "Beträge und Fälligkeiten auf einen Blick"
+      },
+      "anyType": {
+        "title": "Alle Arten",
+        "desc": "Wiederkehrend, in Raten oder einmalig"
+      },
+      "insights": {
+        "title": "Statistik",
+        "desc": "Diagramme zeigen, wofür dein Geld draufgeht"
+      }
+    }
+  },
+  "auth": {
+    "welcomeBack": "Willkommen zurück",
+    "signInSubtitle": "Melde dich an, um deine anstehenden Zahlungen zu sehen",
+    "createAccountTitle": "Konto erstellen",
+    "createAccountSubtitle": "Behalte deine Ausgaben im Voraus im Blick",
+    "continueGoogle": "Mit Google fortfahren",
+    "name": "Name",
+    "namePlaceholder": "Dein Name",
+    "email": "E-Mail-Adresse",
+    "emailPlaceholder": "du@beispiel.de",
+    "password": "Passwort",
+    "passwordPlaceholder": "Mindestens 8 Zeichen, mit Buchstabe und Zahl",
+    "createAccount": "Konto erstellen",
+    "signIn": "Anmelden",
+    "privacyAgree": "Mit der Kontoerstellung stimmst du unserer <link>Datenschutzerklärung</link> zu.",
+    "privacyPolicy": "Datenschutzerklärung",
+    "alreadyHaveAccount": "Du hast bereits ein Konto?",
+    "newHere": "Neu hier?",
+    "accountCreated": "Konto erstellt. Du kannst dich jetzt anmelden.",
+    "somethingWrong": "Es ist ein Fehler aufgetreten"
+  },
+  "dashboard": {
+    "title": "Übersicht",
+    "dueThisMonth": "Fällig diesen Monat",
+    "searchPlaceholder": "Zahlungen suchen...",
+    "allTypes": "Alle Typen",
+    "allCategories": "Alle Kategorien",
+    "paymentCount": "{count, plural, one {# Zahlung diesen Monat} other {# Zahlungen diesen Monat}}",
+    "emptyNoneDue": "Diesen Monat nichts fällig",
+    "emptyNoPayments": "Du hast noch keine Zahlungen",
+    "emptyTryFilters": "Wähle einen anderen Monat oder passe die Filter an.",
+    "emptyGetStarted": "Füge dein erstes Abo, deine Miete oder eine Rechnung hinzu."
+  },
+  "insights": {
+    "trends": "Trends",
+    "title": "Statistik",
+    "lastSixMonths": "Letzte 6 Monate",
+    "byCategory": "Nach Kategorie",
+    "uncategorized": "Ohne Kategorie"
+  },
+  "payments": {
+    "new": "Neu",
+    "addPayment": "Zahlung hinzufügen",
+    "edit": "Bearbeiten",
+    "payment": "Zahlung",
+    "saveChanges": "Änderungen speichern",
+    "name": "Name",
+    "namePlaceholder": "Netflix, Miete, Autokredit...",
+    "amount": "Betrag",
+    "currency": "Währung",
+    "category": "Kategorie",
+    "notesOptional": "Notizen (optional)",
+    "notesPlaceholder": "Weitere Details",
+    "activeForecast": "Aktiv – in Prognosen einbeziehen",
+    "frequency": "Intervall",
+    "startDate": "Startdatum",
+    "endDateOptional": "Enddatum (optional)",
+    "dayOfMonth": "Tag im Monat",
+    "useLastDayOfMonth": "Letzten Tag des Monats verwenden",
+    "totalInstallments": "Anzahl der Raten",
+    "alreadyPaid": "Bereits gezahlt",
+    "nextDueDate": "Nächste Fälligkeit",
+    "dueDate": "Fälligkeitsdatum",
+    "type": "Art",
+    "progress": "Fortschritt",
+    "progressValue": "{paid} von {total} gezahlt",
+    "nextDue": "Nächste Fälligkeit",
+    "paused": "Pausiert",
+    "pause": "Pausieren",
+    "activate": "Aktivieren",
+    "deleteConfirm": "Diese Zahlung löschen? Das lässt sich nicht rückgängig machen.",
+    "paymentPaused": "Zahlung pausiert",
+    "paymentActivated": "Zahlung aktiviert",
+    "types": {
+      "recurring": "Wiederkehrend",
+      "installment": "Ratenzahlung",
+      "one_off": "Einmalzahlung"
+    },
+    "frequencies": {
+      "weekly": "Wöchentlich",
+      "monthly": "Monatlich",
+      "yearly": "Jährlich"
+    }
+  },
+  "settings": {
+    "app": "App",
+    "title": "Einstellungen",
+    "categories": "Kategorien",
+    "addCategory": "Kategorie hinzufügen",
+    "addCategoryTitle": "Neue Kategorie",
+    "addCategoryDescription": "Gib der Kategorie einen Namen und wähle eine Farbe.",
+    "categoryNamePlaceholder": "Kategoriename",
+    "categoryColor": "Farbe",
+    "categoryAdded": "Kategorie hinzugefügt",
+    "categoryRemoved": "Kategorie entfernt",
+    "noCategories": "Noch keine Kategorien.",
+    "privacyCookies": "Datenschutz & Cookies",
+    "privacyCookiesDesc": "Erfahre, wie wir mit deinen Daten umgehen, und passe deine Cookie-Einstellungen jederzeit an.",
+    "cookieSettings": "Cookie-Einstellungen"
+  },
+  "appearance": {
+    "title": "Darstellung",
+    "changeTheme": "Design ändern",
+    "description": "Hell, dunkel oder an dein Gerät anpassen.",
+    "system": "System",
+    "light": "Hell",
+    "dark": "Dunkel",
+    "currentlyUsing": "{mode}-Modus aktiv{systemNote}.",
+    "fromSystem": " (vom System)"
+  },
+  "language": {
+    "title": "Sprache",
+    "changeLanguage": "Sprache ändern",
+    "description": "Wähle die Sprache der Oberfläche. Kategorien und Zahlungsnamen bleiben so, wie du sie eingibst.",
+    "detectedNote": "Bei der Registrierung haben wir {language} auf deinem Gerät erkannt.",
+    "english": "Englisch",
+    "french": "Französisch",
+    "spanish": "Spanisch",
+    "german": "Deutsch"
+  },
+  "profile": {
+    "title": "Profil",
+    "displayName": "Anzeigename",
+    "defaultCurrency": "Standardwährung",
+    "saveProfile": "Profil speichern",
+    "signOut": "Abmelden",
+    "deleteAccountTitle": "Konto löschen",
+    "deleteAccountDesc": "Löscht dein Konto und alle Zahlungsdaten dauerhaft. Das lässt sich nicht rückgängig machen.",
+    "deleteAccount": "Konto löschen",
+    "deleteAccountConfirmTitle": "Konto wirklich löschen?",
+    "deleteAccountConfirmDesc": "Gib zur Bestätigung deine E-Mail-Adresse ein. Alle Zahlungen, Kategorien und Profildaten werden dauerhaft entfernt.",
+    "deleteAccountEmailLabel": "Deine E-Mail-Adresse",
+    "deleteAccountPermanently": "Endgültig löschen",
+    "deleteAccountCancel": "Abbrechen",
+    "deleteAccountError": "Konto konnte nicht gelöscht werden"
+  },
+  "timezone": {
+    "title": "Zeitzone",
+    "searchPlaceholder": "Stadt oder Region suchen…",
+    "noResults": "Keine Zeitzone passt zu deiner Suche.",
+    "useDevice": "Zeitzone des Geräts verwenden ({timezone})",
+    "detectedSave": "Vom Gerät erkannt. Speichere dein Profil, um sie beizubehalten.",
+    "currentlyUsing": "Aktuelle Zeitzone: {timezone}."
+  },
+  "consent": {
+    "title": "Cookies & Datenschutz",
+    "description": "Wir verwenden notwendige Cookies für Anmeldung, Sprache und Design. Mit deiner Einwilligung laden wir Analyse-Tools. Lies unsere <privacyLink>Datenschutzerklärung</privacyLink> und <cookieLink>Cookie-Richtlinie</cookieLink>.",
+    "acceptAll": "Alle akzeptieren",
+    "rejectNonEssential": "Nicht notwendige ablehnen",
+    "rejectAll": "Alle ablehnen",
+    "managePreferences": "Einstellungen verwalten",
+    "preferencesTitle": "Cookie-Einstellungen",
+    "preferencesDialogDesc": "Wähle, welche Cookies wir verwenden dürfen. Notwendige Cookies sind für die Anmeldung erforderlich und können nicht deaktiviert werden.",
+    "essential": "Notwendig",
+    "essentialDesc": "Erforderlich für Anmeldung und Grundfunktionen.",
+    "preferences": "Präferenzen",
+    "preferencesDesc": "Deine Cookie-Einstellungen speichern.",
+    "analytics": "Analyse",
+    "analyticsDesc": "Anonyme Nutzungs- und Leistungsdaten über Vercel (nur mit deiner Zustimmung).",
+    "savePreferences": "Einstellungen speichern"
+  },
+  "footer": {
+    "privacy": "Datenschutz",
+    "cookies": "Cookies",
+    "cookieSettings": "Cookie-Einstellungen"
+  },
+  "metadata": {
+    "title": "ahead — anstehende Zahlungen im Blick",
+    "description": "Verwalte Abos, Miete, Kredite und Rechnungen. Sieh deine anstehenden Zahlungen nach Monat."
+  }
+}

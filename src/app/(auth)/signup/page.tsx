@@ -1,19 +1,28 @@
-import Link from "next/link";
+import { getTranslations } from "next-intl/server";
 
+import { AppLogo } from "@/components/brand/app-logo";
 import { AuthForm } from "@/components/auth/auth-form";
+import { LanguageSwitcher } from "@/components/i18n/language-switcher";
+import { ThemeSwitcher } from "@/components/theme/theme-switcher";
 import { PageTransition } from "@/components/motion/page-transition";
 
-export default function SignupPage() {
+export default async function SignupPage() {
+  const t = await getTranslations("auth");
+
   return (
-    <main className="flex min-h-full flex-col items-center justify-center px-4 py-12">
+    <main className="relative flex min-h-full flex-col items-center justify-center px-4 py-12">
+      <div className="absolute right-4 top-4 flex items-center gap-1 md:right-8 md:top-6">
+        <ThemeSwitcher />
+        <LanguageSwitcher />
+      </div>
       <PageTransition className="w-full max-w-sm space-y-8">
         <div className="space-y-2 text-center">
-          <Link href="/" className="text-sm text-muted-foreground hover:text-foreground">
-            ← Upcoming
-          </Link>
-          <h1 className="text-2xl font-semibold tracking-tight">Create account</h1>
+          <AppLogo href="/" size="sm" className="justify-center" />
+          <h1 className="text-2xl font-semibold tracking-tight">
+            {t("createAccountTitle")}
+          </h1>
           <p className="text-sm text-muted-foreground">
-            Start tracking what&apos;s due ahead
+            {t("createAccountSubtitle")}
           </p>
         </div>
         <div className="rounded-2xl border border-border/60 bg-card p-6 shadow-sm">
