@@ -166,6 +166,7 @@ function buildOccurrence(payment: PaymentView, dueDate: Date): PaymentOccurrence
     dueDate: startOfDay(dueDate),
     category: payment.category ?? null,
     type: payment.type,
+    ledger: payment.ledger,
   };
 }
 

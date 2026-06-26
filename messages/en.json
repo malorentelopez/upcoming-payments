@@ -135,6 +135,7 @@
     "amount": "Amount",
     "currency": "Currency",
     "category": "Category",
+    "ledger": "Account",
     "notesOptional": "Notes (optional)",
     "notesPlaceholder": "Any extra details",
     "activeForecast": "Active — include in forecasts",
@@ -143,6 +144,7 @@
     "endDateOptional": "End date (optional)",
     "dayOfMonth": "Day of month",
     "useLastDayOfMonth": "Use last day of month instead",
+    "lastDayShort": "Last day",
     "totalInstallments": "Total installments",
     "alreadyPaid": "Already paid",
     "nextDueDate": "Next due date",
@@ -167,6 +169,13 @@
       "weekly": "Weekly",
       "monthly": "Monthly",
       "yearly": "Yearly"
+    },
+    "wizard": {
+      "stepBasics": "What is it?",
+      "stepSchedule": "When is it due?",
+      "stepFinish": "Anything else?",
+      "next": "Continue",
+      "back": "Back"
     }
   },
   "settings": {
@@ -205,10 +214,17 @@
     "spanish": "Spanish",
     "german": "German"
   },
+  "ledger": {
+    "personal": "Personal",
+    "business": "Business",
+    "combined": "Combined",
+    "filterLabel": "Account filter"
+  },
   "profile": {
     "title": "Profile",
     "displayName": "Display name",
     "defaultCurrency": "Default currency",
+    "defaultLedger": "Default for new payments",
     "saveProfile": "Save profile",
     "signOut": "Sign out",
     "deleteAccountTitle": "Delete account",

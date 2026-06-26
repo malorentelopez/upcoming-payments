@@ -56,8 +56,8 @@ export function BottomNav() {
   ];
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/90 backdrop-blur-lg md:hidden">
-      <div className="relative mx-auto max-w-lg pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2">
+    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/90 pb-[var(--bottom-nav-inset)] backdrop-blur-lg md:hidden">
+      <div className="relative mx-auto max-w-lg pt-2">
         <div className="grid grid-cols-[1fr_auto_1fr] items-end px-2">
           <ul className="flex items-end justify-evenly">
             {leftTabs.map(({ href, label, icon }) => {

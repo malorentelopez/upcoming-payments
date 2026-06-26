@@ -13,6 +13,7 @@ import {
   DashboardUpcomingList,
   type HorizonDays,
 } from "@/components/dashboard/dashboard-upcoming-panel";
+import { LedgerFilterSwitcher } from "@/components/ledger/ledger-filter";
 import { PageTransition } from "@/components/motion/page-transition";
 import { MotionEntranceProvider } from "@/components/motion/motion-entrance";
 import { ScrollFadeOverlay } from "@/components/layout/scroll-fade-overlay";
@@ -32,6 +33,12 @@ import {
   sumOccurrences,
 } from "@/lib/payments/occurrences";
 import { localeToIntl } from "@/lib/i18n/locale";
+import {
+  appendLedgerParam,
+  filterPaymentsByLedger,
+  parseLedgerFilter,
+  type LedgerFilter,
+} from "@/lib/payments/ledger";
 import type { PaymentView } from "@/lib/types";
 
 interface DashboardClientProps {
@@ -46,12 +53,17 @@ function parseViewParam(value: string | null): DashboardView {
   return value === "month" ? "month" : "upcoming";
 }
 
-function buildDashboardUrl(view: DashboardView, monthKey?: string): string {
+function buildDashboardUrl(options: {
+  view: DashboardView;
+  monthKey?: string;
+  ledger: LedgerFilter;
+}): string {
   const params = new URLSearchParams();
-  if (view === "month") {
+  appendLedgerParam(params, options.ledger);
+  if (options.view === "month") {
     params.set("view", "month");
-    if (monthKey) {
-      params.set("month", monthKey);
+    if (options.monthKey) {
+      params.set("month", options.monthKey);
     }
   }
   const query = params.toString();
@@ -71,11 +83,17 @@ export function DashboardClient({
   const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
 
   const view = parseViewParam(searchParams.get("view"));
+  const ledger = parseLedgerFilter(searchParams.get("ledger"));
   const monthParam = searchParams.get("month") ?? initialMonth;
   const { year, month } = parseMonthParam(monthParam);
   const monthKey = `${year}-${String(month).padStart(2, "0")}`;
 
   const [horizonDays, setHorizonDays] = useState<HorizonDays>(14);
+
+  const filteredPayments = useMemo(
+    () => filterPaymentsByLedger(payments, ledger),
+    [payments, ledger],
+  );
 
   const today = useMemo(() => startOfToday(), []);
   const viewingCurrentMonth = isCurrentMonth(year, month, today);
@@ -89,13 +107,13 @@ export function DashboardClient({
   );
 
   const horizonOccurrences = useMemo(
-    () => expandAllOccurrences(payments, horizonRange.start, horizonRange.end),
-    [payments, horizonRange.start, horizonRange.end],
+    () => expandAllOccurrences(filteredPayments, horizonRange.start, horizonRange.end),
+    [filteredPayments, horizonRange.start, horizonRange.end],
   );
 
   const monthOccurrences = useMemo(
-    () => expandAllOccurrences(payments, start, end),
-    [payments, start, end],
+    () => expandAllOccurrences(filteredPayments, start, end),
+    [filteredPayments, start, end],
   );
 
   const { upcoming: monthUpcoming, pastDue: monthPastDue } = useMemo(
@@ -116,7 +134,26 @@ export function DashboardClient({
     }
     startTransition(() => {
       router.replace(
-        buildDashboardUrl(nextView, nextView === "month" ? monthKey : undefined),
+        buildDashboardUrl({
+          view: nextView,
+          monthKey: nextView === "month" ? monthKey : undefined,
+          ledger,
+        }),
+      );
+    });
+  }
+
+  function setLedger(nextLedger: LedgerFilter) {
+    if (nextLedger === ledger) {
+      return;
+    }
+    startTransition(() => {
+      router.replace(
+        buildDashboardUrl({
+          view,
+          monthKey: view === "month" ? monthKey : undefined,
+          ledger: nextLedger,
+        }),
       );
     });
   }
@@ -125,7 +162,9 @@ export function DashboardClient({
     const next = shiftMonth(year, month, delta);
     const key = `${next.year}-${String(next.month).padStart(2, "0")}`;
     startTransition(() => {
-      router.replace(buildDashboardUrl("month", key));
+      router.replace(
+        buildDashboardUrl({ view: "month", monthKey: key, ledger }),
+      );
     });
   }
 
@@ -133,8 +172,9 @@ export function DashboardClient({
     <MotionEntranceProvider entrance={false}>
       <PageTransition className="flex h-full min-h-0 flex-col overflow-hidden md:h-auto md:space-y-6 md:overflow-visible">
       <div className="shrink-0 space-y-4 md:space-y-6">
-        <header>
+        <header className="flex items-center justify-between gap-3">
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+          <LedgerFilterSwitcher value={ledger} onChange={setLedger} />
         </header>
 
         <Tabs value={view} onValueChange={(value) => setView(value as DashboardView)} className="gap-4">
@@ -181,15 +221,17 @@ export function DashboardClient({
                 horizonDays={horizonDays}
                 defaultCurrency={defaultCurrency}
                 intlLocale={intlLocale}
+                showLedgerBadge={ledger === "all"}
               />
             ) : (
               <DashboardMonthList
                 visibleOccurrences={visibleMonthList}
                 collapsedOccurrences={collapsedMonthList}
                 viewingPastMonth={viewingPastMonth}
-                hasPayments={payments.length > 0}
+                hasPayments={filteredPayments.length > 0}
                 defaultCurrency={defaultCurrency}
                 intlLocale={intlLocale}
+                showLedgerBadge={ledger === "all"}
               />
             )}
 

@@ -16,6 +16,6 @@ export function ScrollBottomFade() {
   }
 
   return (
-    <ScrollFadeOverlay className="fixed inset-x-0 bottom-0 z-40 h-28 md:hidden" />
+    <ScrollFadeOverlay className="fixed inset-x-0 bottom-0 z-40 h-mobile-nav-fade md:hidden" />
   );
 }

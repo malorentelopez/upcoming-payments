@@ -14,6 +14,7 @@ interface PaymentCardProps {
   currency?: string;
   intlLocale?: string;
   variant?: "default" | "pastDue";
+  showLedgerBadge?: boolean;
 }
 
 export function PaymentCard({
@@ -21,9 +22,11 @@ export function PaymentCard({
   currency,
   intlLocale = "en-US",
   variant = "default",
+  showLedgerBadge = false,
 }: PaymentCardProps) {
   const t = useTranslations("payments.types");
   const tPayments = useTranslations("payments");
+  const tLedger = useTranslations("ledger");
   const displayCurrency = currency ?? occurrence.currency;
   const isPastDue = variant === "pastDue";
   const { month, day } = formatDueDateParts(occurrence.dueDate, intlLocale);
@@ -52,9 +55,21 @@ export function PaymentCard({
           <Badge variant="secondary" className="hidden shrink-0 text-[10px] sm:inline-flex">
             {t(occurrence.type as PaymentType)}
           </Badge>
+          {showLedgerBadge ? (
+            <Badge variant="outline" className="hidden shrink-0 text-[10px] sm:inline-flex">
+              {tLedger(occurrence.ledger)}
+            </Badge>
+          ) : null}
         </div>
         {occurrence.category ? (
-          <p className="text-sm text-muted-foreground">{occurrence.category.name}</p>
+          <p className="flex items-center gap-1.5 text-sm text-muted-foreground">
+            <span
+              className="size-2 shrink-0 rounded-full"
+              style={{ backgroundColor: categoryColor }}
+              aria-hidden
+            />
+            {occurrence.category.name}
+          </p>
         ) : null}
         {showInstallmentSummary ? (
           <p className="text-xs text-muted-foreground/80">

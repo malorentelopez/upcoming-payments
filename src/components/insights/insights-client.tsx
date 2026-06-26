@@ -9,6 +9,7 @@ import {
   CategoryDonut,
   MonthlyBarChart,
 } from "@/components/charts/insights-charts";
+import { LedgerFilterSwitcher } from "@/components/ledger/ledger-filter";
 import { PageTransition } from "@/components/motion/page-transition";
 import {
   expandAllOccurrences,
@@ -21,6 +22,12 @@ import {
 } from "@/lib/payments/occurrences";
 import { formatCurrency, formatMonthYear } from "@/lib/payments/formatters";
 import { localeToIntl } from "@/lib/i18n/locale";
+import {
+  appendLedgerParam,
+  filterPaymentsByLedger,
+  parseLedgerFilter,
+  type LedgerFilter,
+} from "@/lib/payments/ledger";
 import { sanitizeHexColor } from "@/lib/security/colors";
 import type { PaymentView } from "@/lib/types";
 
@@ -44,50 +51,72 @@ export function InsightsClient({
   const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
 
   const monthParam = searchParams.get("month") ?? initialMonth;
+  const ledger = parseLedgerFilter(searchParams.get("ledger"));
   const { year, month } = parseMonthParam(monthParam);
   const { start, end } = getMonthRange(year, month);
+
+  const filteredPayments = useMemo(
+    () => filterPaymentsByLedger(payments, ledger),
+    [payments, ledger],
+  );
 
   const monthlyData = useMemo(() => {
     return getMonthsWindow(year, month, 6, intlLocale).map(
       ({ year: y, month: m, label }) => {
         const range = getMonthRange(y, m);
-        const occurrences = expandAllOccurrences(payments, range.start, range.end);
+        const occurrences = expandAllOccurrences(filteredPayments, range.start, range.end);
         return {
           label,
           total: sumOccurrences(occurrences, defaultCurrency),
         };
       },
     );
-  }, [payments, year, month, defaultCurrency, intlLocale]);
+  }, [filteredPayments, year, month, defaultCurrency, intlLocale]);
 
   const categoryData = useMemo(() => {
-    const occurrences = expandAllOccurrences(payments, start, end);
+    const occurrences = expandAllOccurrences(filteredPayments, start, end);
     const grouped = groupByCategory(occurrences);
     return Array.from(grouped.values()).map(({ category, total }) => ({
       name: category?.name ?? t("uncategorized"),
       value: total,
       color: category?.color,
     }));
-  }, [payments, start, end, t]);
+  }, [filteredPayments, start, end, t]);
 
   const monthTotal = sumOccurrences(
-    expandAllOccurrences(payments, start, end),
+    expandAllOccurrences(filteredPayments, start, end),
     defaultCurrency,
   );
+
+  function setLedger(nextLedger: LedgerFilter) {
+    if (nextLedger === ledger) {
+      return;
+    }
+    const params = new URLSearchParams({ month: monthParam });
+    appendLedgerParam(params, nextLedger);
+    startTransition(() => {
+      router.push(`/insights?${params.toString()}`);
+    });
+  }
 
   function navigateMonth(delta: number) {
     const next = shiftMonth(year, month, delta);
     const key = `${next.year}-${String(next.month).padStart(2, "0")}`;
+    const params = new URLSearchParams({ month: key });
+    appendLedgerParam(params, ledger);
     startTransition(() => {
-      router.push(`/insights?month=${key}`);
+      router.push(`/insights?${params.toString()}`);
     });
   }
 
   return (
     <PageTransition className="space-y-8">
-      <header className="space-y-1">
-        <p className="text-sm text-muted-foreground">{t("trends")}</p>
-        <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+      <header className="flex items-start justify-between gap-3">
+        <div className="min-w-0 space-y-1">
+          <p className="text-sm text-muted-foreground">{t("trends")}</p>
+          <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
+        </div>
+        <LedgerFilterSwitcher value={ledger} onChange={setLedger} className="mt-1" />
       </header>
 
       <section className="rounded-2xl border border-border/60 bg-card p-5">

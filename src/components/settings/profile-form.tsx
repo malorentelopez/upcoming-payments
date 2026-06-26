@@ -16,6 +16,7 @@ interface ProfileFormProps {
 
 export function ProfileForm({ profile }: ProfileFormProps) {
   const t = useTranslations("profile");
+  const tLedger = useTranslations("ledger");
 
   return (
     <section className="rounded-2xl border border-border/60 bg-card p-5">
@@ -43,6 +44,18 @@ export function ProfileForm({ profile }: ProfileFormProps) {
                 {c}
               </option>
             ))}
+          </select>
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="defaultLedger">{t("defaultLedger")}</Label>
+          <select
+            id="defaultLedger"
+            name="defaultLedger"
+            defaultValue={profile.default_ledger}
+            className="flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
+          >
+            <option value="personal">{tLedger("personal")}</option>
+            <option value="business">{tLedger("business")}</option>
           </select>
         </div>
         <TimezoneSelect defaultValue={profile.timezone} />

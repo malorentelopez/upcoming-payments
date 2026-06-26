@@ -47,6 +47,7 @@ interface DashboardUpcomingListProps {
   horizonDays: HorizonDays;
   defaultCurrency: string;
   intlLocale: string;
+  showLedgerBadge?: boolean;
 }
 
 export function DashboardUpcomingList({
@@ -54,6 +55,7 @@ export function DashboardUpcomingList({
   horizonDays,
   defaultCurrency,
   intlLocale,
+  showLedgerBadge = false,
 }: DashboardUpcomingListProps) {
   const t = useTranslations("dashboard");
 
@@ -73,6 +75,7 @@ export function DashboardUpcomingList({
             occurrence={occurrence}
             currency={defaultCurrency}
             intlLocale={intlLocale}
+            showLedgerBadge={showLedgerBadge}
           />
         </StaggerItem>
       ))}

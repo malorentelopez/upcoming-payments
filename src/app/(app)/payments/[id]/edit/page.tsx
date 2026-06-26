@@ -41,6 +41,7 @@ export default async function EditPaymentPage({ params }: EditPaymentPageProps) 
         categories={categories}
         payment={payment}
         defaultCurrency={profile?.default_currency ?? "USD"}
+        defaultLedger={profile?.default_ledger ?? "personal"}
       />
     </PageTransition>
   );

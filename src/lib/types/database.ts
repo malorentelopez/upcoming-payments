@@ -1,5 +1,6 @@
 export type PaymentType = "recurring" | "installment" | "one_off";
 export type PaymentFrequency = "weekly" | "monthly" | "yearly";
+export type PaymentLedger = "personal" | "business";
 
 export interface Profile {
   id: string;
@@ -7,6 +8,7 @@ export interface Profile {
   default_currency: string;
   timezone: string;
   locale: string;
+  default_ledger: PaymentLedger;
   created_at: string;
 }
 
@@ -38,6 +40,7 @@ export interface Payment {
   paid_installments: number;
   notes: string | null;
   is_active: boolean;
+  ledger: PaymentLedger;
   created_at: string;
   updated_at: string;
   category?: Category | null;
@@ -51,6 +54,7 @@ export interface PaymentOccurrence {
   dueDate: Date;
   category: Pick<Category, "id" | "name" | "color" | "icon"> | null;
   type: PaymentType;
+  ledger: PaymentLedger;
   installmentRemainingCount?: number;
   installmentPendingAmount?: number;
 }
@@ -84,6 +88,7 @@ export interface Database {
     Enums: {
       payment_type: PaymentType;
       payment_frequency: PaymentFrequency;
+      payment_ledger: PaymentLedger;
     };
   };
 }

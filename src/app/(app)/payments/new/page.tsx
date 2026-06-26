@@ -30,6 +30,7 @@ export default async function NewPaymentPage() {
       <PaymentForm
         categories={categories}
         defaultCurrency={profile?.default_currency ?? "USD"}
+        defaultLedger={profile?.default_ledger ?? "personal"}
       />
     </PageTransition>
   );
