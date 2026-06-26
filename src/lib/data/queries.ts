@@ -1,3 +1,5 @@
+import { cache } from "react";
+
 import { getAuthUser } from "@/lib/data/auth";
 import { sanitizeHexColor } from "@/lib/security/colors";
 import { createClient } from "@/lib/supabase/server";
@@ -99,7 +101,7 @@ export async function getCurrentUser() {
   return getAuthUser();
 }
 
-export async function getProfile(): Promise<ProfileView | null> {
+export const getProfile = cache(async (): Promise<ProfileView | null> => {
   const user = await getAuthUser();
   if (!user) return null;
 
@@ -112,7 +114,7 @@ export async function getProfile(): Promise<ProfileView | null> {
     .single();
 
   return data ? toProfileView(data) : null;
-}
+});
 
 export async function getCategories(): Promise<CategoryView[]> {
   const user = await getAuthUser();
@@ -129,7 +131,7 @@ export async function getCategories(): Promise<CategoryView[]> {
   return (data ?? []).map(toCategoryView);
 }
 
-export async function getPayments(
+export const getPayments = cache(async function getPayments(
   ledgerFilter: LedgerFilter = "all",
 ): Promise<PaymentView[]> {
   const user = await getAuthUser();
@@ -149,7 +151,7 @@ export async function getPayments(
   const { data } = await query.order("name");
 
   return (data ?? []).map((row) => toPaymentView(row as PaymentRow));
-}
+});
 
 export async function getPayment(id: string): Promise<PaymentView | null> {
   const parsedId = uuidSchema.safeParse(id);
@@ -175,26 +177,8 @@ export interface DashboardData {
 }
 
 /** Single auth check, parallel payments + profile fetch for the dashboard. */
-export async function getDashboardData(): Promise<DashboardData> {
-  const user = await getAuthUser();
-  if (!user) {
-    return { payments: [], profile: null };
-  }
+export const getDashboardData = cache(async (): Promise<DashboardData> => {
+  const [payments, profile] = await Promise.all([getPayments(), getProfile()]);
 
-  const supabase = await createClient();
-  const [paymentsResult, profileResult] = await Promise.all([
-    supabase
-      .from("payments")
-      .select(`${PAYMENT_COLUMNS}, category:categories(${NESTED_CATEGORY_COLUMNS})`)
-      .eq("user_id", user.id)
-      .order("name"),
-    supabase.from("profiles").select(PROFILE_COLUMNS).eq("id", user.id).single(),
-  ]);
-
-  return {
-    payments: (paymentsResult.data ?? []).map((row) =>
-      toPaymentView(row as PaymentRow),
-    ),
-    profile: profileResult.data ? toProfileView(profileResult.data) : null,
-  };
-}
+  return { payments, profile };
+});
