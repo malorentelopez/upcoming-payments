@@ -11,15 +11,23 @@ interface InsightsPageProps {
 
 export default async function InsightsPage({ searchParams }: InsightsPageProps) {
   const params = await searchParams;
-  const [payments, profile] = await Promise.all([getPayments(), getProfile()]);
+  const initialMonth = params.month ?? getMonthKey(new Date());
 
   return (
     <Suspense fallback={<DashboardSkeleton />}>
-      <InsightsClient
-        payments={payments}
-        defaultCurrency={profile?.default_currency ?? "USD"}
-        initialMonth={params.month ?? getMonthKey(new Date())}
-      />
+      <InsightsContent initialMonth={initialMonth} />
     </Suspense>
+  );
+}
+
+async function InsightsContent({ initialMonth }: { initialMonth: string }) {
+  const [payments, profile] = await Promise.all([getPayments(), getProfile()]);
+
+  return (
+    <InsightsClient
+      payments={payments}
+      defaultCurrency={profile?.default_currency ?? "USD"}
+      initialMonth={initialMonth}
+    />
   );
 }

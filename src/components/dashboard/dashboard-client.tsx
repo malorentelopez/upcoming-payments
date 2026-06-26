@@ -1,8 +1,8 @@
 "use client";
 
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { useLocale, useTranslations } from "next-intl";
-import { useMemo, useState, useTransition } from "react";
+import { useMemo, useState } from "react";
 
 import {
   DashboardMonthHero,
@@ -40,6 +40,7 @@ import {
   parseLedgerFilter,
   type LedgerFilter,
 } from "@/lib/payments/ledger";
+import { replaceAppUrl } from "@/lib/navigation/replace-app-url";
 import type { PaymentView } from "@/lib/types";
 
 interface DashboardClientProps {
@@ -54,11 +55,11 @@ function parseViewParam(value: string | null): DashboardView {
   return value === "month" ? "month" : "upcoming";
 }
 
-function buildDashboardUrl(options: {
+function syncDashboardUrl(options: {
   view: DashboardView;
   monthKey?: string;
   ledger: LedgerFilter;
-}): string {
+}) {
   const params = new URLSearchParams();
   appendLedgerParam(params, options.ledger);
   if (options.view === "month") {
@@ -67,8 +68,7 @@ function buildDashboardUrl(options: {
       params.set("month", options.monthKey);
     }
   }
-  const query = params.toString();
-  return query ? `/dashboard?${query}` : "/dashboard";
+  replaceAppUrl("/dashboard", params);
 }
 
 export function DashboardClient({
@@ -76,20 +76,23 @@ export function DashboardClient({
   defaultCurrency,
   initialMonth,
 }: DashboardClientProps) {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const [, startTransition] = useTransition();
   const t = useTranslations("dashboard");
   const locale = useLocale();
   const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
 
-  const view = parseViewParam(searchParams.get("view"));
-  const ledger = parseLedgerFilter(searchParams.get("ledger"));
-  const monthParam = searchParams.get("month") ?? initialMonth;
-  const { year, month } = parseMonthParam(monthParam);
-  const monthKey = `${year}-${String(month).padStart(2, "0")}`;
-
+  const [view, setViewState] = useState<DashboardView>(() =>
+    parseViewParam(searchParams.get("view")),
+  );
+  const [ledger, setLedger] = useState<LedgerFilter>(() =>
+    parseLedgerFilter(searchParams.get("ledger")),
+  );
+  const [monthKey, setMonthKey] = useState(
+    () => searchParams.get("month") ?? initialMonth,
+  );
   const [horizonDays, setHorizonDays] = useState<HorizonDays>(14);
+
+  const { year, month } = parseMonthParam(monthKey);
 
   const filteredPayments = useMemo(
     () => filterPaymentsByLedger(payments, ledger),
@@ -107,15 +110,21 @@ export function DashboardClient({
     [horizonDays, today],
   );
 
-  const horizonOccurrences = useMemo(
-    () => expandAllOccurrences(filteredPayments, horizonRange.start, horizonRange.end),
-    [filteredPayments, horizonRange.start, horizonRange.end],
-  );
+  const horizonOccurrences = useMemo(() => {
+    if (view !== "upcoming") {
+      return [];
+    }
 
-  const monthOccurrences = useMemo(
-    () => expandAllOccurrences(filteredPayments, start, end),
-    [filteredPayments, start, end],
-  );
+    return expandAllOccurrences(filteredPayments, horizonRange.start, horizonRange.end);
+  }, [view, filteredPayments, horizonRange.start, horizonRange.end]);
+
+  const monthOccurrences = useMemo(() => {
+    if (view !== "month") {
+      return [];
+    }
+
+    return expandAllOccurrences(filteredPayments, start, end);
+  }, [view, filteredPayments, start, end]);
 
   const { upcoming: monthUpcoming, pastDue: monthPastDue } = useMemo(
     () => splitOccurrencesByDueDate(monthOccurrences, today),
@@ -133,40 +142,33 @@ export function DashboardClient({
     if (nextView === view) {
       return;
     }
-    startTransition(() => {
-      router.replace(
-        buildDashboardUrl({
-          view: nextView,
-          monthKey: nextView === "month" ? monthKey : undefined,
-          ledger,
-        }),
-      );
+
+    setViewState(nextView);
+    syncDashboardUrl({
+      view: nextView,
+      monthKey: nextView === "month" ? monthKey : undefined,
+      ledger,
     });
   }
 
-  function setLedger(nextLedger: LedgerFilter) {
+  function setLedgerFilter(nextLedger: LedgerFilter) {
     if (nextLedger === ledger) {
       return;
     }
-    startTransition(() => {
-      router.replace(
-        buildDashboardUrl({
-          view,
-          monthKey: view === "month" ? monthKey : undefined,
-          ledger: nextLedger,
-        }),
-      );
+
+    setLedger(nextLedger);
+    syncDashboardUrl({
+      view,
+      monthKey: view === "month" ? monthKey : undefined,
+      ledger: nextLedger,
     });
   }
 
   function navigateMonth(delta: number) {
     const next = shiftMonth(year, month, delta);
     const key = `${next.year}-${String(next.month).padStart(2, "0")}`;
-    startTransition(() => {
-      router.replace(
-        buildDashboardUrl({ view: "month", monthKey: key, ledger }),
-      );
-    });
+    setMonthKey(key);
+    syncDashboardUrl({ view: "month", monthKey: key, ledger });
   }
 
   return (
@@ -177,7 +179,7 @@ export function DashboardClient({
           <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
           <div className="flex shrink-0 items-center gap-1">
             <PrivacyToggle />
-            <LedgerFilterSwitcher value={ledger} onChange={setLedger} />
+            <LedgerFilterSwitcher value={ledger} onChange={setLedgerFilter} />
           </div>
         </header>
 

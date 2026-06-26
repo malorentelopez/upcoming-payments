@@ -21,7 +21,7 @@ export function SettingsClient({ categories }: SettingsClientProps) {
   const tFooter = useTranslations("footer");
 
   return (
-    <PageTransition className="space-y-8">
+    <PageTransition entrance={false} className="space-y-8">
       <header className="space-y-1">
         <p className="text-sm text-muted-foreground">{t("app")}</p>
         <h1 className="text-2xl font-semibold tracking-tight">{t("title")}</h1>
