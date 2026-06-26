@@ -1,3 +1,4 @@
+import { getAuthUser } from "@/lib/data/auth";
 import { sanitizeHexColor } from "@/lib/security/colors";
 import { createClient } from "@/lib/supabase/server";
 import type {
@@ -91,19 +92,14 @@ function toPaymentView(row: PaymentRow): PaymentView {
 }
 
 export async function getCurrentUser() {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-  return user;
+  return getAuthUser();
 }
 
 export async function getProfile(): Promise<ProfileView | null> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   if (!user) return null;
+
+  const supabase = await createClient();
 
   const { data } = await supabase
     .from("profiles")
@@ -115,11 +111,10 @@ export async function getProfile(): Promise<ProfileView | null> {
 }
 
 export async function getCategories(): Promise<CategoryView[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   if (!user) return [];
+
+  const supabase = await createClient();
 
   const { data } = await supabase
     .from("categories")
@@ -131,11 +126,10 @@ export async function getCategories(): Promise<CategoryView[]> {
 }
 
 export async function getPayments(): Promise<PaymentView[]> {
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   if (!user) return [];
+
+  const supabase = await createClient();
 
   const { data } = await supabase
     .from("payments")
@@ -150,12 +144,10 @@ export async function getPayment(id: string): Promise<PaymentView | null> {
   const parsedId = uuidSchema.safeParse(id);
   if (!parsedId.success) return null;
 
-  const supabase = await createClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const user = await getAuthUser();
   if (!user) return null;
 
+  const supabase = await createClient();
   const { data } = await supabase
     .from("payments")
     .select(`${PAYMENT_COLUMNS}, category:categories(${NESTED_CATEGORY_COLUMNS})`)
@@ -164,4 +156,34 @@ export async function getPayment(id: string): Promise<PaymentView | null> {
     .single();
 
   return data ? toPaymentView(data as PaymentRow) : null;
+}
+
+export interface DashboardData {
+  payments: PaymentView[];
+  profile: ProfileView | null;
+}
+
+/** Single auth check, parallel payments + profile fetch for the dashboard. */
+export async function getDashboardData(): Promise<DashboardData> {
+  const user = await getAuthUser();
+  if (!user) {
+    return { payments: [], profile: null };
+  }
+
+  const supabase = await createClient();
+  const [paymentsResult, profileResult] = await Promise.all([
+    supabase
+      .from("payments")
+      .select(`${PAYMENT_COLUMNS}, category:categories(${NESTED_CATEGORY_COLUMNS})`)
+      .eq("user_id", user.id)
+      .order("name"),
+    supabase.from("profiles").select(PROFILE_COLUMNS).eq("id", user.id).single(),
+  ]);
+
+  return {
+    payments: (paymentsResult.data ?? []).map((row) =>
+      toPaymentView(row as PaymentRow),
+    ),
+    profile: profileResult.data ? toProfileView(profileResult.data) : null,
+  };
 }
