@@ -10,10 +10,12 @@ import { useAppData } from "@/components/data/app-data-provider";
 
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
+import { MerchantLogo } from "@/components/merchants/merchant-logo";
 import {
   deletePayment,
   togglePaymentActive,
 } from "@/lib/actions/payments";
+import { resolveMerchant } from "@/lib/merchants";
 import { sanitizeHexColor } from "@/lib/security/colors";
 import { useFormatCurrency } from "@/hooks/use-format-currency";
 import { localeToIntl } from "@/lib/i18n/locale";
@@ -33,6 +35,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
   const intlLocale = localeToIntl(locale as "en" | "fr" | "es" | "de");
   const { formatAmount } = useFormatCurrency();
   const { refresh: refreshAppData } = useAppData();
+  const merchant = resolveMerchant(payment.name);
 
   async function handleToggle() {
     const result = await togglePaymentActive(payment.id, !payment.is_active);
@@ -59,6 +62,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
         >
           <ArrowLeft className="size-5" />
         </Link>
+        {merchant ? <MerchantLogo merchant={merchant} size="lg" /> : null}
         <div className="min-w-0 flex-1">
           <p className="text-sm text-muted-foreground">{t("payment")}</p>
           <h1 className="truncate text-xl font-semibold tracking-tight">
@@ -67,7 +71,24 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
         </div>
       </div>
 
-      <section className="rounded-2xl border border-border/60 bg-card p-5">
+      <section
+        className="overflow-hidden rounded-2xl border border-border/60 bg-card"
+        style={
+          merchant
+            ? {
+                borderColor: `color-mix(in srgb, ${merchant.color} 35%, transparent)`,
+              }
+            : undefined
+        }
+      >
+        {merchant ? (
+          <div
+            className="h-1"
+            style={{ backgroundColor: merchant.color }}
+            aria-hidden
+          />
+        ) : null}
+        <div className="p-5">
         <div className="flex items-start justify-between gap-4">
           <div>
             <p className="text-3xl font-semibold tabular-nums">
@@ -127,6 +148,7 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
             <DetailRow label={t("dueDate")} value={payment.due_date ?? "—"} />
           )}
         </dl>
+        </div>
       </section>
 
       <div className="flex flex-col gap-3 sm:flex-row">
