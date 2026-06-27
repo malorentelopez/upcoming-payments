@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 import {
   BarChart3,
@@ -14,6 +13,7 @@ import {
 import { useTranslations } from "next-intl";
 
 import { cn } from "@/lib/utils";
+import { useBodyPortal } from "@/hooks/use-body-portal";
 
 function NavTab({
   href,
@@ -60,11 +60,7 @@ export function BottomNav() {
     { href: "/me", label: t("me"), icon: User },
   ];
 
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-
-  useLayoutEffect(() => {
-    setPortalTarget(document.body);
-  }, []);
+  const portalTarget = useBodyPortal();
 
   const nav = (
     <nav className="bottom-nav fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 pb-[var(--bottom-nav-inset)] md:hidden">

@@ -4,7 +4,6 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useLayoutEffect,
   useMemo,
   useState,
@@ -22,11 +21,10 @@ interface AppDataContextValue {
   userEmail: string | null;
   defaultCurrency: string;
   hasCache: boolean;
-  isLoading: boolean;
   isRefreshing: boolean;
   getPaymentById: (id: string) => PaymentView | null;
   seedFromServer: (data: AppShellData) => void;
-  loadIfEmpty: () => Promise<void>;
+  upsertPayment: (payment: PaymentView) => void;
   refresh: () => Promise<void>;
 }
 
@@ -34,11 +32,27 @@ const AppDataContext = createContext<AppDataContextValue | null>(null);
 
 export function AppDataProvider({ children }: { children: ReactNode }) {
   const [data, setData] = useState<AppShellData | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
   const seedFromServer = useCallback((seed: AppShellData) => {
     setData(seed);
+  }, []);
+
+  const upsertPayment = useCallback((payment: PaymentView) => {
+    setData((current) => {
+      if (!current) {
+        return current;
+      }
+
+      const exists = current.payments.some((item) => item.id === payment.id);
+      const payments = exists
+        ? current.payments.map((item) =>
+            item.id === payment.id ? payment : item,
+          )
+        : [...current.payments, payment];
+
+      return { ...current, payments };
+    });
   }, []);
 
   const refresh = useCallback(async () => {
@@ -51,28 +65,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const loadIfEmpty = useCallback(async () => {
-    if (data) {
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const next = await fetchAppData();
-      setData(next);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [data]);
-
   const getPaymentById = useCallback(
     (id: string) => data?.payments.find((payment) => payment.id === id) ?? null,
     [data],
   );
-
-  useEffect(() => {
-    void loadIfEmpty();
-  }, [loadIfEmpty]);
 
   const value = useMemo(
     () => ({
@@ -82,20 +78,18 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
       userEmail: data?.userEmail ?? null,
       defaultCurrency: data?.profile?.default_currency ?? "USD",
       hasCache: data !== null,
-      isLoading,
       isRefreshing,
       getPaymentById,
       seedFromServer,
-      loadIfEmpty,
+      upsertPayment,
       refresh,
     }),
     [
       data,
-      isLoading,
       isRefreshing,
       getPaymentById,
       seedFromServer,
-      loadIfEmpty,
+      upsertPayment,
       refresh,
     ],
   );

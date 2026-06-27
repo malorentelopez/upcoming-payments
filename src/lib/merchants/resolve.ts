@@ -1,6 +1,6 @@
 import { MERCHANT_CATALOG } from "./catalog";
 import { getMerchantIcon } from "./icons";
-import type { ResolvedMerchant } from "./types";
+import type { MerchantCatalogEntry, ResolvedMerchant } from "./types";
 
 const NOISE_WORDS = new Set([
   "subscription",
@@ -36,6 +36,12 @@ const NOISE_WORDS = new Set([
   "member",
 ]);
 
+type ResolverCandidate = {
+  entry: MerchantCatalogEntry;
+  normalized: string;
+  score: number;
+};
+
 function escapeRegExp(value: string): string {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
 }
@@ -52,56 +58,61 @@ export function normalizePaymentName(name: string): string {
     .trim();
 }
 
-function aliasMatches(normalizedPaymentName: string, alias: string): boolean {
-  const normalizedAlias = normalizePaymentName(alias);
-  if (!normalizedAlias) return false;
-
-  if (normalizedPaymentName === normalizedAlias) return true;
-  if (normalizedPaymentName.startsWith(`${normalizedAlias} `)) return true;
-  if (normalizedPaymentName.endsWith(` ${normalizedAlias}`)) return true;
-  if (normalizedPaymentName.includes(` ${normalizedAlias} `)) return true;
-
-  if (normalizedAlias.length >= 4) {
-    const pattern = new RegExp(
-      `(^|\\s)${escapeRegExp(normalizedAlias)}(\\s|$)`,
-    );
-    return pattern.test(normalizedPaymentName);
+function aliasMatches(normalizedPaymentName: string, normalizedAlias: string): boolean {
+  if (!normalizedAlias) {
+    return false;
   }
 
-  return false;
+  if (normalizedPaymentName === normalizedAlias) {
+    return true;
+  }
+
+  const pattern = new RegExp(
+    `(^|\\s)${escapeRegExp(normalizedAlias)}(\\s|$)`,
+  );
+  return pattern.test(normalizedPaymentName);
 }
+
+const RESOLVER_CANDIDATES: ResolverCandidate[] = MERCHANT_CATALOG.flatMap(
+  (entry) => {
+    const seen = new Set<string>();
+
+    return [entry.name, ...entry.aliases].flatMap((alias) => {
+      const normalized = normalizePaymentName(alias);
+      if (!normalized || seen.has(normalized)) {
+        return [];
+      }
+      seen.add(normalized);
+      return [{ entry, normalized, score: normalized.length }];
+    });
+  },
+).sort((left, right) => right.score - left.score);
 
 export function resolveMerchant(paymentName: string): ResolvedMerchant | null {
   const normalized = normalizePaymentName(paymentName);
-  if (!normalized) return null;
-
-  let bestMatch: { entry: (typeof MERCHANT_CATALOG)[number]; score: number } | null =
-    null;
-
-  for (const entry of MERCHANT_CATALOG) {
-    const candidates = [entry.name, ...entry.aliases];
-
-    for (const candidate of candidates) {
-      if (!aliasMatches(normalized, candidate)) continue;
-
-      const score = normalizePaymentName(candidate).length;
-      if (!bestMatch || score > bestMatch.score) {
-        bestMatch = { entry, score };
-      }
-    }
+  if (!normalized) {
+    return null;
   }
 
-  if (!bestMatch) return null;
+  for (const candidate of RESOLVER_CANDIDATES) {
+    if (!aliasMatches(normalized, candidate.normalized)) {
+      continue;
+    }
 
-  const icon = getMerchantIcon(bestMatch.entry.iconSlug);
-  if (!icon) return null;
+    const icon = getMerchantIcon(candidate.entry.iconSlug);
+    if (!icon) {
+      continue;
+    }
 
-  return {
-    slug: bestMatch.entry.slug,
-    name: bestMatch.entry.name,
-    color: icon.hex,
-    path: icon.path,
-  };
+    return {
+      slug: candidate.entry.slug,
+      name: candidate.entry.name,
+      color: icon.hex,
+      path: icon.path,
+    };
+  }
+
+  return null;
 }
 
 export function getPaymentAccentColor(

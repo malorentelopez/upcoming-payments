@@ -2,11 +2,11 @@
 
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { AheadWordmark } from "@/components/brand/ahead-wordmark";
 import type { BootOverlayMode } from "@/components/lifecycle/app-lifecycle-provider";
+import { useBodyPortal } from "@/hooks/use-body-portal";
 import { usePrefersReducedMotion } from "@/hooks/use-prefers-reduced-motion";
 import { cn } from "@/lib/utils";
 
@@ -17,11 +17,7 @@ interface AppBootOverlayProps {
 export function AppBootOverlay({ mode }: AppBootOverlayProps) {
   const t = useTranslations("boot");
   const reducedMotion = usePrefersReducedMotion();
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-
-  useLayoutEffect(() => {
-    setPortalTarget(document.body);
-  }, []);
+  const portalTarget = useBodyPortal();
 
   if (!mode || !portalTarget) {
     return null;

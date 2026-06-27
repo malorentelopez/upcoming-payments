@@ -1,7 +1,8 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState, useTransition } from "react";
+import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -39,6 +40,8 @@ export function PaymentFormWizard({
   const t = useTranslations("payments");
   const tWizard = useTranslations("payments.wizard");
   const today = todayIsoDate();
+  const formRef = useRef<HTMLFormElement>(null);
+  const [isPending, startTransition] = useTransition();
 
   const [step, setStep] = useState(1);
   const [type, setType] = useState<PaymentType>("recurring");
@@ -88,8 +91,31 @@ export function PaymentFormWizard({
     setStep(1);
   }
 
+  function handleCreate() {
+    if (step !== 2 || !validateStep2() || !formRef.current) {
+      return;
+    }
+
+    const formData = new FormData(formRef.current);
+    startTransition(async () => {
+      try {
+        await createPayment(formData);
+      } catch (error) {
+        toast.error(
+          error instanceof Error
+            ? error.message
+            : "Please check the form and try again.",
+        );
+      }
+    });
+  }
+
   return (
-    <form action={createPayment} className="space-y-6">
+    <form
+      ref={formRef}
+      className="space-y-6"
+      onSubmit={(event) => event.preventDefault()}
+    >
       <FormStepIndicator step={step} total={2} labels={stepLabels} />
 
       <input type="hidden" name="type" value={type} />
@@ -149,7 +175,7 @@ export function PaymentFormWizard({
           {type === "recurring" ? (
             <>
               <FrequencyPicker value={frequency} onChange={setFrequency} />
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <DateField
                   id="startDate"
                   label={t("startDate")}
@@ -191,7 +217,7 @@ export function PaymentFormWizard({
 
           {type === "installment" ? (
             <>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                 <CompactNumberField
                   id="totalInstallments"
                   label={t("totalInstallments")}
@@ -260,8 +286,9 @@ export function PaymentFormWizard({
           </Button>
         ) : (
           <Button
-            type="submit"
-            disabled={!validateStep2()}
+            type="button"
+            disabled={!validateStep2() || isPending}
+            onClick={handleCreate}
             className="h-11 flex-1 rounded-xl"
           >
             {t("addPayment")}
