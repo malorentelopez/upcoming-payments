@@ -20,6 +20,10 @@
     "settings": "Ajustes",
     "me": "Mi cuenta"
   },
+  "boot": {
+    "loading": "Cargando…",
+    "refreshing": "Actualizando…"
+  },
   "landing": {
     "signIn": "Iniciar sesión",
     "getStarted": "Empezar",

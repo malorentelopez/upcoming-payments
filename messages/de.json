@@ -20,6 +20,10 @@
     "settings": "Einstellungen",
     "me": "Mein Konto"
   },
+  "boot": {
+    "loading": "Wird geladen…",
+    "refreshing": "Wird aktualisiert…"
+  },
   "landing": {
     "signIn": "Anmelden",
     "getStarted": "Loslegen",

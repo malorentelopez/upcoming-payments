@@ -20,6 +20,10 @@
     "settings": "Settings",
     "me": "Me"
   },
+  "boot": {
+    "loading": "Loading ahead…",
+    "refreshing": "Refreshing…"
+  },
   "landing": {
     "signIn": "Sign in",
     "getStarted": "Get started",

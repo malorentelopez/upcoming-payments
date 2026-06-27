@@ -20,6 +20,10 @@
     "settings": "Paramètres",
     "me": "Mon compte"
   },
+  "boot": {
+    "loading": "Chargement…",
+    "refreshing": "Actualisation…"
+  },
   "landing": {
     "signIn": "Se connecter",
     "getStarted": "Commencer",

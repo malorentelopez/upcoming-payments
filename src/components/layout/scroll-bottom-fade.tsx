@@ -12,18 +12,13 @@ import { ScrollFadeOverlay } from "@/components/layout/scroll-fade-overlay";
  */
 export function ScrollBottomFade() {
   const pathname = usePathname();
-
-  if (pathname === "/dashboard") {
-    return null;
-  }
-
   const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
 
   useLayoutEffect(() => {
     setPortalTarget(document.body);
   }, []);
 
-  if (!portalTarget) {
+  if (pathname === "/dashboard" || !portalTarget) {
     return null;
   }
 
