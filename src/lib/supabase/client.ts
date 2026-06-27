@@ -1,8 +1,6 @@
-import { createBrowserClient } from "@supabase/ssr";
+import { getBrowserClient } from "@/lib/supabase/browser";
 
+/** Shared singleton browser Supabase client. */
 export function createClient() {
-  return createBrowserClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-  );
+  return getBrowserClient();
 }
