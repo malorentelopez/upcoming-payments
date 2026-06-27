@@ -1,6 +1,8 @@
 "use client";
 
 import { usePathname } from "next/navigation";
+import { useLayoutEffect, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { ScrollFadeOverlay } from "@/components/layout/scroll-fade-overlay";
 
@@ -15,7 +17,18 @@ export function ScrollBottomFade() {
     return null;
   }
 
-  return (
-    <ScrollFadeOverlay className="fixed inset-x-0 bottom-0 z-40 h-mobile-nav-fade md:hidden" />
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+
+  useLayoutEffect(() => {
+    setPortalTarget(document.body);
+  }, []);
+
+  if (!portalTarget) {
+    return null;
+  }
+
+  return createPortal(
+    <ScrollFadeOverlay className="scroll-bottom-fade fixed inset-x-0 bottom-0 z-40 h-mobile-nav-fade md:hidden" />,
+    portalTarget,
   );
 }
