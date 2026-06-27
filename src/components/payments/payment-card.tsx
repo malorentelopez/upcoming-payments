@@ -5,7 +5,9 @@ import { ChevronRight } from "lucide-react";
 import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
+import { MerchantLogo } from "@/components/merchants/merchant-logo";
 import { useFormatCurrency } from "@/hooks/use-format-currency";
+import { resolveMerchant } from "@/lib/merchants";
 import { formatDueDateParts } from "@/lib/payments/formatters";
 import { sanitizeHexColor } from "@/lib/security/colors";
 import type { PaymentOccurrence, PaymentType } from "@/lib/types";
@@ -32,7 +34,9 @@ export function PaymentCard({
   const displayCurrency = currency ?? occurrence.currency;
   const isPastDue = variant === "pastDue";
   const { month, day } = formatDueDateParts(occurrence.dueDate, intlLocale);
+  const merchant = resolveMerchant(occurrence.name);
   const categoryColor = sanitizeHexColor(occurrence.category?.color, "#64748b");
+  const accentColor = merchant?.color ?? categoryColor;
   const showInstallmentSummary =
     occurrence.type === "installment" &&
     occurrence.installmentRemainingCount !== undefined &&
@@ -48,9 +52,10 @@ export function PaymentCard({
           : "group flex items-center gap-3 rounded-2xl border border-border/60 bg-card p-4 transition-colors hover:border-primary/30 hover:bg-card/80"
       }
     >
-      <PaymentDueDate month={month} day={day} color={categoryColor} muted={isPastDue} />
+      <PaymentDueDate month={month} day={day} color={accentColor} muted={isPastDue} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
+          {merchant ? <MerchantLogo merchant={merchant} size="sm" /> : null}
           <p className={isPastDue ? "truncate font-medium text-muted-foreground" : "truncate font-medium"}>
             {occurrence.name}
           </p>
