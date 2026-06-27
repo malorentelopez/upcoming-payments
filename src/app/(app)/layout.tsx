@@ -4,7 +4,8 @@ import { BottomNav } from "@/components/layout/bottom-nav";
 import { AppProviders } from "@/components/layout/app-providers";
 import { ScrollBottomFade } from "@/components/layout/scroll-bottom-fade";
 import { SideNav } from "@/components/layout/side-nav";
-import { getCurrentUser } from "@/lib/data/queries";
+import { AppDataSeed } from "@/components/data/app-data-provider";
+import { getAppShellData, getCurrentUser } from "@/lib/data/queries";
 
 export default async function AppLayout({
   children,
@@ -14,14 +15,18 @@ export default async function AppLayout({
   const user = await getCurrentUser();
   if (!user) redirect("/login");
 
+  const appShellData = await getAppShellData();
+
   return (
     <AppProviders>
-      <div className="flex min-h-dvh md:min-h-full">
-        <SideNav />
-        <main className="app-main mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-4 pb-mobile-nav pt-safe-top md:max-w-4xl md:px-8 md:pb-8 md:pt-6">
-          {children}
-        </main>
-      </div>
+      <AppDataSeed data={appShellData}>
+        <div className="flex min-h-dvh md:min-h-full">
+          <SideNav />
+          <main className="app-main mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-4 pb-mobile-nav pt-safe-top md:max-w-4xl md:px-8 md:pb-8 md:pt-6">
+            {children}
+          </main>
+        </div>
+      </AppDataSeed>
       <ScrollBottomFade />
       <BottomNav />
     </AppProviders>

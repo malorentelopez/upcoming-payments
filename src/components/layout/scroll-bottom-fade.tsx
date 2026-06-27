@@ -1,10 +1,10 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { useLayoutEffect, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { ScrollFadeOverlay } from "@/components/layout/scroll-fade-overlay";
+import { useBodyPortal } from "@/hooks/use-body-portal";
 
 /**
  * Viewport-fixed fade above the mobile bottom nav (page-level scroll).
@@ -12,11 +12,7 @@ import { ScrollFadeOverlay } from "@/components/layout/scroll-fade-overlay";
  */
 export function ScrollBottomFade() {
   const pathname = usePathname();
-  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
-
-  useLayoutEffect(() => {
-    setPortalTarget(document.body);
-  }, []);
+  const portalTarget = useBodyPortal();
 
   if (pathname === "/dashboard" || !portalTarget) {
     return null;

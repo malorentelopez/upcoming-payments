@@ -29,49 +29,44 @@ const AppLifecycleContext = createContext<AppLifecycleContextValue | null>(null)
 
 export function AppLifecycleProvider({ children }: { children: ReactNode }) {
   const router = useRouter();
-  const { hasCache, isLoading, refresh } = useAppData();
+  const { hasCache, refresh } = useAppData();
   const [sessionReady, setSessionReady] = useState(false);
   const [isResuming, setIsResuming] = useState(false);
   const lastHiddenAt = useRef<number | null>(null);
-  const resumeInFlight = useRef(false);
+  const refreshInFlight = useRef(false);
 
-  const runSilentRefresh = useCallback(async () => {
-    if (resumeInFlight.current) {
-      return;
-    }
+  const runRefresh = useCallback(
+    async ({ showOverlay }: { showOverlay: boolean }) => {
+      if (refreshInFlight.current) {
+        return;
+      }
 
-    resumeInFlight.current = true;
+      refreshInFlight.current = true;
+      if (showOverlay) {
+        setIsResuming(true);
+      }
 
-    try {
-      await Promise.all([ensureSession(), refresh()]);
-      router.refresh();
-    } finally {
-      resumeInFlight.current = false;
-    }
-  }, [refresh, router]);
+      const overlayTimeoutId = showOverlay
+        ? window.setTimeout(() => {
+            setIsResuming(false);
+          }, RESUME_TIMEOUT_MS)
+        : undefined;
 
-  const runResume = useCallback(async () => {
-    if (resumeInFlight.current) {
-      return;
-    }
-
-    resumeInFlight.current = true;
-    setIsResuming(true);
-
-    const timeoutId = window.setTimeout(() => {
-      setIsResuming(false);
-      resumeInFlight.current = false;
-    }, RESUME_TIMEOUT_MS);
-
-    try {
-      await Promise.all([ensureSession(), refresh()]);
-      router.refresh();
-    } finally {
-      window.clearTimeout(timeoutId);
-      setIsResuming(false);
-      resumeInFlight.current = false;
-    }
-  }, [refresh, router]);
+      try {
+        await Promise.all([ensureSession(), refresh()]);
+        router.refresh();
+      } finally {
+        if (overlayTimeoutId !== undefined) {
+          window.clearTimeout(overlayTimeoutId);
+        }
+        if (showOverlay) {
+          setIsResuming(false);
+        }
+        refreshInFlight.current = false;
+      }
+    },
+    [refresh, router],
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -105,19 +100,19 @@ export function AppLifecycleProvider({ children }: { children: ReactNode }) {
 
       const hiddenMs = Date.now() - hiddenAt;
       if (hiddenMs >= RESUME_THRESHOLD_MS) {
-        void runResume();
+        void runRefresh({ showOverlay: true });
       }
     }
 
     function onPageShow(event: PageTransitionEvent) {
       if (event.persisted) {
-        void runResume();
+        void runRefresh({ showOverlay: true });
       }
     }
 
     function onOnline() {
       if (document.visibilityState === "visible") {
-        void runSilentRefresh();
+        void runRefresh({ showOverlay: false });
       }
     }
 
@@ -130,9 +125,9 @@ export function AppLifecycleProvider({ children }: { children: ReactNode }) {
       window.removeEventListener("pageshow", onPageShow);
       window.removeEventListener("online", onOnline);
     };
-  }, [runResume, runSilentRefresh]);
+  }, [runRefresh]);
 
-  const isColdLoading = !sessionReady || (isLoading && !hasCache);
+  const isColdLoading = !sessionReady || !hasCache;
   const overlayMode: BootOverlayMode = isResuming
     ? "resuming"
     : isColdLoading
