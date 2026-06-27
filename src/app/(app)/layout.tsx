@@ -16,16 +16,14 @@ export default async function AppLayout({
 
   return (
     <AppProviders>
-      <div className="flex min-h-full">
+      <div className="flex min-h-dvh md:min-h-full">
         <SideNav />
-        <div className="flex min-h-full flex-1 flex-col">
-          <main className="app-main mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-4 pb-mobile-nav pt-safe-top md:max-w-4xl md:px-8 md:pb-8 md:pt-6">
-            {children}
-          </main>
-          <ScrollBottomFade />
-          <BottomNav />
-        </div>
+        <main className="app-main mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-4 pb-mobile-nav pt-safe-top md:max-w-4xl md:px-8 md:pb-8 md:pt-6">
+          {children}
+        </main>
       </div>
+      <ScrollBottomFade />
+      <BottomNav />
     </AppProviders>
   );
 }

@@ -158,6 +158,26 @@
     animation-duration: 200ms;
     animation-timing-function: ease-out;
   }
+
+  ::view-transition-group(bottom-nav),
+  ::view-transition-new(bottom-nav) {
+    animation: none;
+    z-index: 50;
+  }
+
+  ::view-transition-old(bottom-nav) {
+    display: none;
+  }
+
+  ::view-transition-group(scroll-bottom-fade),
+  ::view-transition-new(scroll-bottom-fade) {
+    animation: none;
+    z-index: 40;
+  }
+
+  ::view-transition-old(scroll-bottom-fade) {
+    display: none;
+  }
 }
 
 @layer utilities {
@@ -180,6 +200,14 @@
   @supports (view-transition-name: none) {
     .app-main {
       view-transition-name: app-main;
+    }
+
+    .bottom-nav {
+      view-transition-name: bottom-nav;
+    }
+
+    .scroll-bottom-fade {
+      view-transition-name: scroll-bottom-fade;
     }
   }
 }

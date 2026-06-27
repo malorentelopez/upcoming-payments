@@ -28,7 +28,7 @@ export function DashboardUpcomingHero({
   const { formatAmount } = useFormatCurrency();
 
   return (
-    <section className="relative z-10 overflow-hidden rounded-2xl border border-primary/20 bg-gradient-to-br from-primary/15 via-primary/5 to-card p-5 max-md:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.18)] before:pointer-events-none before:absolute before:-right-8 before:-top-8 before:size-32 before:rounded-full before:bg-primary/10 dark:max-md:shadow-[0_14px_28px_-8px_rgba(0,0,0,0.45)]">
+    <section className="relative z-10 overflow-hidden rounded-2xl border border-primary/20 bg-card bg-gradient-to-br from-primary/15 via-primary/5 to-transparent p-5 max-md:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.18)] before:pointer-events-none before:absolute before:-right-8 before:-top-8 before:size-32 before:rounded-full before:bg-primary/10 dark:max-md:shadow-[0_14px_28px_-8px_rgba(0,0,0,0.45)]">
       <div className="relative flex items-start justify-between gap-4">
         <div>
           <p className="text-sm font-medium text-primary">{t("comingUp")}</p>

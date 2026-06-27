@@ -36,7 +36,7 @@ export function DashboardMonthHero({
   const { formatAmount } = useFormatCurrency();
 
   return (
-    <section className="relative z-10 rounded-2xl border border-border/60 bg-gradient-to-br from-primary/10 via-card to-card p-5 max-md:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.18)] dark:max-md:shadow-[0_14px_28px_-8px_rgba(0,0,0,0.45)]">
+    <section className="relative z-10 overflow-hidden rounded-2xl border border-border/60 bg-card bg-gradient-to-br from-primary/10 via-primary/5 to-transparent p-5 max-md:shadow-[0_12px_24px_-10px_rgba(0,0,0,0.18)] dark:max-md:shadow-[0_14px_28px_-8px_rgba(0,0,0,0.45)]">
       <div className="flex items-center justify-between">
         <button
           type="button"

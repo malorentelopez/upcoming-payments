@@ -2,6 +2,8 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useLayoutEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import {
   BarChart3,
   LayoutGrid,
@@ -58,8 +60,14 @@ export function BottomNav() {
     { href: "/me", label: t("me"), icon: User },
   ];
 
-  return (
-    <nav className="fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 pb-[var(--bottom-nav-inset)] md:hidden">
+  const [portalTarget, setPortalTarget] = useState<HTMLElement | null>(null);
+
+  useLayoutEffect(() => {
+    setPortalTarget(document.body);
+  }, []);
+
+  const nav = (
+    <nav className="bottom-nav fixed inset-x-0 bottom-0 z-50 border-t border-border/60 bg-background/95 pb-[var(--bottom-nav-inset)] md:hidden">
       <div className="relative mx-auto max-w-lg pt-2">
         <div className="grid grid-cols-[1fr_auto_1fr] items-end px-2">
           <ul className="flex items-end justify-evenly">
@@ -113,4 +121,10 @@ export function BottomNav() {
       </div>
     </nav>
   );
+
+  if (!portalTarget) {
+    return null;
+  }
+
+  return createPortal(nav, portalTarget);
 }
