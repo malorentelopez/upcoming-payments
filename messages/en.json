@@ -153,6 +153,7 @@
     "alreadyPaid": "Already paid",
     "nextDueDate": "Next due date",
     "dueDate": "Due date",
+    "dueToday": "Today",
     "type": "Type",
     "progress": "Progress",
     "progressValue": "{paid} / {total} paid",

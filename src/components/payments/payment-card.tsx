@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ChevronRight } from "lucide-react";
+import { useMemo } from "react";
 import { useTranslations } from "next-intl";
 
 import { Badge } from "@/components/ui/badge";
@@ -9,8 +10,10 @@ import { MerchantLogo } from "@/components/merchants/merchant-logo";
 import { useFormatCurrency } from "@/hooks/use-format-currency";
 import { resolveMerchant } from "@/lib/merchants";
 import { formatDueDateParts } from "@/lib/payments/formatters";
+import { isOccurrenceDueToday, startOfToday } from "@/lib/payments/occurrences";
 import { sanitizeHexColor } from "@/lib/security/colors";
 import type { PaymentOccurrence, PaymentType } from "@/lib/types";
+import { cn } from "@/lib/utils";
 
 interface PaymentCardProps {
   occurrence: PaymentOccurrence;
@@ -33,6 +36,8 @@ export function PaymentCard({
   const { formatAmount } = useFormatCurrency();
   const displayCurrency = currency ?? occurrence.currency;
   const isPastDue = variant === "pastDue";
+  const today = useMemo(() => startOfToday(), []);
+  const isDueToday = !isPastDue && isOccurrenceDueToday(occurrence.dueDate, today);
   const { month, day } = formatDueDateParts(occurrence.dueDate, intlLocale);
   const merchant = resolveMerchant(occurrence.name);
   const categoryColor = sanitizeHexColor(occurrence.category?.color, "#64748b");
@@ -46,11 +51,14 @@ export function PaymentCard({
   return (
     <Link
       href={`/payments/${occurrence.paymentId}`}
-      className={
+      className={cn(
+        "group flex items-center gap-3 rounded-2xl border p-4 transition-colors",
         isPastDue
-          ? "group flex items-center gap-3 rounded-2xl border border-border/30 bg-card/50 p-4 opacity-50 transition-colors hover:border-border/50 hover:bg-card/60"
-          : "group flex items-center gap-3 rounded-2xl border border-border/60 bg-card p-4 transition-colors hover:border-primary/30 hover:bg-card/80"
-      }
+          ? "border-border/30 bg-card/50 opacity-50 hover:border-border/50 hover:bg-card/60"
+          : isDueToday
+            ? "border-primary/40 bg-primary/10 hover:border-primary/50 hover:bg-primary/15"
+            : "border-border/60 bg-card hover:border-primary/30 hover:bg-card/80",
+      )}
     >
       <PaymentDueDate month={month} day={day} color={accentColor} muted={isPastDue} />
       <div className="min-w-0 flex-1">
@@ -59,6 +67,11 @@ export function PaymentCard({
           <p className={isPastDue ? "truncate font-medium text-muted-foreground" : "truncate font-medium"}>
             {occurrence.name}
           </p>
+          {isDueToday ? (
+            <Badge className="shrink-0 border-primary/30 bg-primary/20 text-[10px] text-primary">
+              {tPayments("dueToday")}
+            </Badge>
+          ) : null}
           <Badge variant="secondary" className="hidden shrink-0 text-[10px] sm:inline-flex">
             {t(occurrence.type as PaymentType)}
           </Badge>
