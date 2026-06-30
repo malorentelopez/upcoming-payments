@@ -153,6 +153,7 @@
     "alreadyPaid": "Bereits gezahlt",
     "nextDueDate": "Nächste Fälligkeit",
     "dueDate": "Fälligkeitsdatum",
+    "dueToday": "Heute",
     "type": "Art",
     "progress": "Fortschritt",
     "progressValue": "{paid} von {total} gezahlt",

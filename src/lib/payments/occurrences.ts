@@ -244,6 +244,10 @@ export function isOccurrenceUpcoming(dueDate: Date, today: Date): boolean {
   return startOfDay(dueDate).getTime() >= startOfDay(today).getTime();
 }
 
+export function isOccurrenceDueToday(dueDate: Date, today: Date): boolean {
+  return startOfDay(dueDate).getTime() === startOfDay(today).getTime();
+}
+
 export function splitOccurrencesByDueDate(
   occurrences: PaymentOccurrence[],
   today: Date,

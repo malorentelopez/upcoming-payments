@@ -153,6 +153,7 @@
     "alreadyPaid": "Cuotas pagadas",
     "nextDueDate": "Próximo vencimiento",
     "dueDate": "Fecha de vencimiento",
+    "dueToday": "Hoy",
     "type": "Tipo",
     "progress": "Progreso",
     "progressValue": "{paid} de {total} pagadas",

@@ -153,6 +153,7 @@
     "alreadyPaid": "Échéances réglées",
     "nextDueDate": "Prochaine échéance",
     "dueDate": "Date d'échéance",
+    "dueToday": "Aujourd'hui",
     "type": "Type",
     "progress": "Avancement",
     "progressValue": "{paid} sur {total} réglées",

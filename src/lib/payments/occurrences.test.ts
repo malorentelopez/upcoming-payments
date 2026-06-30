@@ -6,6 +6,7 @@ import {
   filterOccurrencesInRange,
   getHorizonRange,
   getMonthRange,
+  isOccurrenceDueToday,
   isOccurrenceUpcoming,
   isCurrentMonth,
   isFutureMonth,
@@ -253,6 +254,19 @@ describe("isOccurrenceUpcoming", () => {
 
   it("treats yesterday as past due", () => {
     expect(isOccurrenceUpcoming(new Date(2026, 5, 14), today)).toBe(false);
+  });
+});
+
+describe("isOccurrenceDueToday", () => {
+  const today = new Date(2026, 5, 15);
+
+  it("returns true when due date is today", () => {
+    expect(isOccurrenceDueToday(new Date(2026, 5, 15), today)).toBe(true);
+  });
+
+  it("returns false for other dates", () => {
+    expect(isOccurrenceDueToday(new Date(2026, 5, 14), today)).toBe(false);
+    expect(isOccurrenceDueToday(new Date(2026, 5, 16), today)).toBe(false);
   });
 });
 
