@@ -14,6 +14,7 @@ import { useRouter } from "next/navigation";
 import { useAppData } from "@/components/data/app-data-provider";
 import { AppBootOverlay } from "@/components/lifecycle/app-boot-overlay";
 import { ensureSession } from "@/lib/supabase/browser";
+import { syncViewportHeightWithRetries } from "@/lib/viewport-height";
 
 const RESUME_THRESHOLD_MS = 30_000;
 const RESUME_TIMEOUT_MS = 8_000;
@@ -44,6 +45,7 @@ export function AppLifecycleProvider({ children }: { children: ReactNode }) {
       refreshInFlight.current = true;
       if (showOverlay) {
         setIsResuming(true);
+        syncViewportHeightWithRetries();
       }
 
       const overlayTimeoutId = showOverlay
@@ -61,6 +63,7 @@ export function AppLifecycleProvider({ children }: { children: ReactNode }) {
         }
         if (showOverlay) {
           setIsResuming(false);
+          syncViewportHeightWithRetries();
         }
         refreshInFlight.current = false;
       }

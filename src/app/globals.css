@@ -86,6 +86,7 @@
   --mobile-bottom-clearance: calc(7rem + var(--bottom-nav-inset));
   --top-safe-extra: 1.5rem;
   --top-safe-inset: calc(env(safe-area-inset-top, 0px) + var(--top-safe-extra));
+  --app-height: 100dvh;
 }
 
 .dark {
