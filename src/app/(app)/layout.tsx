@@ -20,7 +20,7 @@ export default async function AppLayout({
   return (
     <AppProviders>
       <AppDataSeed data={appShellData}>
-        <div className="flex min-h-dvh md:min-h-full">
+        <div className="flex min-h-[var(--app-height)] md:min-h-full">
           <SideNav />
           <main className="app-main mx-auto flex min-h-0 w-full max-w-3xl flex-1 flex-col px-4 pb-mobile-nav pt-safe-top md:max-w-4xl md:px-8 md:pb-8 md:pt-6">
             {children}
