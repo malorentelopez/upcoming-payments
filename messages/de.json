@@ -125,6 +125,7 @@
     "trends": "Trends",
     "title": "Statistik",
     "lastSixMonths": "Letzte 6 Monate",
+    "lastSixCycles": "Letzte 6 Zyklen",
     "byCategory": "Nach Kategorie",
     "uncategorized": "Ohne Kategorie"
   },
@@ -239,6 +240,8 @@
     "displayName": "Anzeigename",
     "defaultCurrency": "Standardwährung",
     "defaultLedger": "Standard für neue Zahlungen",
+    "incomeCycleDay": "Einkommenstag",
+    "incomeCycleDayHelp": "Zahlungen in \"Diesen Monat\" werden von diesem Tag bis zum Tag vor deinem nächsten Einkommen gruppiert.",
     "saveProfile": "Profil speichern",
     "signOut": "Abmelden",
     "deleteAccountTitle": "Konto löschen",

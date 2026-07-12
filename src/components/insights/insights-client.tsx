@@ -15,8 +15,9 @@ import { MotionEntranceProvider } from "@/components/motion/motion-entrance";
 import { PrivacyToggle } from "@/components/privacy/privacy-toggle";
 import {
   expandAllOccurrences,
-  getMonthRange,
-  getMonthsWindow,
+  formatCycleLabel,
+  getCycleRange,
+  getCyclesWindow,
   groupByCategory,
   parseMonthParam,
   shiftMonth,
@@ -39,6 +40,7 @@ interface InsightsClientProps {
   payments: PaymentView[];
   defaultCurrency: string;
   initialMonth: string;
+  incomeCycleDay?: number;
 }
 
 function syncInsightsUrl(monthKey: string, ledger: LedgerFilter) {
@@ -51,6 +53,7 @@ export function InsightsClient({
   payments,
   defaultCurrency,
   initialMonth,
+  incomeCycleDay = 1,
 }: InsightsClientProps) {
   const searchParams = useSearchParams();
   const t = useTranslations("insights");
@@ -67,7 +70,7 @@ export function InsightsClient({
   );
 
   const { year, month } = parseMonthParam(monthKey);
-  const { start, end } = getMonthRange(year, month);
+  const { start, end } = getCycleRange(year, month, incomeCycleDay);
 
   const filteredPayments = useMemo(
     () => filterPaymentsByLedger(payments, ledger),
@@ -75,17 +78,16 @@ export function InsightsClient({
   );
 
   const monthlyData = useMemo(() => {
-    return getMonthsWindow(year, month, 6, intlLocale).map(
-      ({ year: y, month: m, label }) => {
-        const range = getMonthRange(y, m);
-        const occurrences = expandAllOccurrences(filteredPayments, range.start, range.end);
+    return getCyclesWindow(year, month, 6, incomeCycleDay, intlLocale).map(
+      ({ start: cycleStart, end: cycleEnd, label }) => {
+        const occurrences = expandAllOccurrences(filteredPayments, cycleStart, cycleEnd);
         return {
           label,
           total: sumOccurrences(occurrences, defaultCurrency),
         };
       },
     );
-  }, [filteredPayments, year, month, defaultCurrency, intlLocale]);
+  }, [filteredPayments, year, month, defaultCurrency, intlLocale, incomeCycleDay]);
 
   const selectedMonthOccurrences = useMemo(
     () => expandAllOccurrences(filteredPayments, start, end),
@@ -138,7 +140,7 @@ export function InsightsClient({
 
         <section className="rounded-2xl border border-border/60 bg-card p-5">
           <h2 className="mb-4 text-sm font-medium text-muted-foreground">
-            {t("lastSixMonths")}
+            {incomeCycleDay === 1 ? t("lastSixMonths") : t("lastSixCycles")}
           </h2>
           <MonthlyBarChart data={monthlyData} currency={defaultCurrency} intlLocale={intlLocale} />
         </section>
@@ -163,7 +165,9 @@ export function InsightsClient({
                 <ChevronLeft className="size-4" />
               </button>
               <span className="min-w-28 text-center text-sm font-medium">
-                {formatMonthYear(year, month, intlLocale)}
+                {incomeCycleDay === 1
+                  ? formatMonthYear(year, month, intlLocale)
+                  : formatCycleLabel(start, end, intlLocale)}
               </span>
               <button
                 type="button"

@@ -15,7 +15,7 @@ import type { LedgerFilter } from "@/lib/payments/ledger";
 import { uuidSchema } from "@/lib/payments/schemas";
 
 const PROFILE_COLUMNS =
-  "id, display_name, default_currency, timezone, locale, default_ledger, created_at";
+  "id, display_name, default_currency, timezone, locale, default_ledger, income_cycle_day, created_at";
 
 const CATEGORY_COLUMNS = "id, user_id, name, color, icon, created_at";
 
@@ -41,6 +41,7 @@ function toProfileView(profile: Profile): ProfileView {
     timezone: profile.timezone,
     locale: profile.locale,
     default_ledger: profile.default_ledger ?? "personal",
+    income_cycle_day: profile.income_cycle_day ?? 1,
   };
 }
 
