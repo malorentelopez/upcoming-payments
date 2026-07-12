@@ -125,6 +125,7 @@
     "trends": "Tendencias",
     "title": "Estadísticas",
     "lastSixMonths": "Últimos 6 meses",
+    "lastSixCycles": "Últimos 6 ciclos",
     "byCategory": "Por categoría",
     "uncategorized": "Sin categoría"
   },
@@ -239,6 +240,8 @@
     "displayName": "Nombre visible",
     "defaultCurrency": "Moneda por defecto",
     "defaultLedger": "Predeterminado para nuevos pagos",
+    "incomeCycleDay": "Día de ingreso",
+    "incomeCycleDayHelp": "Los pagos en \"Este mes\" se agrupan desde este día hasta el día anterior a tu próximo ingreso.",
     "saveProfile": "Guardar perfil",
     "signOut": "Cerrar sesión",
     "deleteAccountTitle": "Eliminar cuenta",

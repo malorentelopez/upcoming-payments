@@ -227,6 +227,104 @@ export function getMonthRange(year: number, month: number) {
   return { start, end };
 }
 
+function resolveIncomeCycleDay(
+  year: number,
+  month: number,
+  cycleStartDay: number,
+): Date {
+  const base = new Date(year, month - 1, 1);
+  const lastDay = endOfMonthFn(base).getDate();
+  return startOfDay(setDate(base, Math.min(cycleStartDay, lastDay)));
+}
+
+export function getCycleRange(
+  anchorYear: number,
+  anchorMonth: number,
+  cycleStartDay = 1,
+) {
+  if (cycleStartDay === 1) {
+    return getMonthRange(anchorYear, anchorMonth);
+  }
+
+  const start = resolveIncomeCycleDay(anchorYear, anchorMonth, cycleStartDay);
+  const next = shiftMonth(anchorYear, anchorMonth, 1);
+  const nextStart = resolveIncomeCycleDay(next.year, next.month, cycleStartDay);
+  const end = endOfDay(addDays(nextStart, -1));
+
+  return { start, end };
+}
+
+export function getCurrentCycleAnchor(
+  today = new Date(),
+  cycleStartDay = 1,
+): { year: number; month: number } {
+  if (cycleStartDay === 1) {
+    return { year: today.getFullYear(), month: today.getMonth() + 1 };
+  }
+
+  const year = today.getFullYear();
+  const month = today.getMonth() + 1;
+  const cycleStart = resolveIncomeCycleDay(year, month, cycleStartDay);
+
+  if (startOfDay(today).getTime() >= cycleStart.getTime()) {
+    return { year, month };
+  }
+
+  return shiftMonth(year, month, -1);
+}
+
+export function getInitialMonthKey(today = new Date(), cycleStartDay = 1): string {
+  const { year, month } = getCurrentCycleAnchor(today, cycleStartDay);
+  return `${year}-${String(month).padStart(2, "0")}`;
+}
+
+export function isCurrentCycle(
+  anchorYear: number,
+  anchorMonth: number,
+  cycleStartDay = 1,
+  today = new Date(),
+): boolean {
+  const { start, end } = getCycleRange(anchorYear, anchorMonth, cycleStartDay);
+  const day = startOfDay(today);
+  return (
+    day.getTime() >= startOfDay(start).getTime() &&
+    day.getTime() <= startOfDay(end).getTime()
+  );
+}
+
+export function isPastCycle(
+  anchorYear: number,
+  anchorMonth: number,
+  cycleStartDay = 1,
+  today = new Date(),
+): boolean {
+  const { end } = getCycleRange(anchorYear, anchorMonth, cycleStartDay);
+  return startOfDay(today).getTime() > startOfDay(end).getTime();
+}
+
+export function isFutureCycle(
+  anchorYear: number,
+  anchorMonth: number,
+  cycleStartDay = 1,
+  today = new Date(),
+): boolean {
+  const { start } = getCycleRange(anchorYear, anchorMonth, cycleStartDay);
+  return startOfDay(today).getTime() < startOfDay(start).getTime();
+}
+
+export function formatCycleLabel(start: Date, end: Date, locale = "en-US"): string {
+  const startStr = start.toLocaleDateString(locale, {
+    month: "short",
+    day: "numeric",
+  });
+  const endStr = end.toLocaleDateString(locale, {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+  return `${startStr} – ${endStr}`;
+}
+
 export function sumOccurrences(
   occurrences: PaymentOccurrence[],
   currency?: string,
@@ -365,4 +463,46 @@ export function getMonthsWindow(
   }
 
   return months;
+}
+
+export function getCyclesWindow(
+  anchorYear: number,
+  anchorMonth: number,
+  count: number,
+  cycleStartDay = 1,
+  locale = "en-US",
+): Array<{
+  year: number;
+  month: number;
+  key: string;
+  label: string;
+  start: Date;
+  end: Date;
+}> {
+  const cycles: Array<{
+    year: number;
+    month: number;
+    key: string;
+    label: string;
+    start: Date;
+    end: Date;
+  }> = [];
+  const startOffset = -(count - 1);
+
+  for (let i = startOffset; i <= 0; i += 1) {
+    const { year, month } = shiftMonth(anchorYear, anchorMonth, i);
+    const { start, end } = getCycleRange(year, month, cycleStartDay);
+    const key = `${year}-${String(month).padStart(2, "0")}`;
+    const label =
+      cycleStartDay === 1
+        ? new Date(year, month - 1, 1).toLocaleDateString(locale, {
+            month: "short",
+            year: "numeric",
+          })
+        : start.toLocaleDateString(locale, { month: "short", day: "numeric" });
+
+    cycles.push({ year, month, key, label, start, end });
+  }
+
+  return cycles;
 }

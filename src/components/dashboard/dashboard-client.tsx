@@ -23,11 +23,11 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   expandAllOccurrences,
+  getCycleRange,
   getHorizonRange,
-  getMonthRange,
-  isCurrentMonth,
-  isFutureMonth,
-  isPastMonth,
+  isCurrentCycle,
+  isFutureCycle,
+  isPastCycle,
   parseMonthParam,
   shiftMonth,
   splitOccurrencesByDueDate,
@@ -72,7 +72,7 @@ function syncDashboardUrl(options: {
 export function DashboardClient({
   initialMonth,
 }: DashboardClientProps) {
-  const { payments, defaultCurrency } = useAppData();
+  const { payments, defaultCurrency, profile } = useAppData();
   const searchParams = useSearchParams();
   const t = useTranslations("dashboard");
   const locale = useLocale();
@@ -90,6 +90,7 @@ export function DashboardClient({
   const [horizonDays, setHorizonDays] = useState<HorizonDays>(14);
 
   const { year, month } = parseMonthParam(monthKey);
+  const cycleStartDay = profile?.income_cycle_day ?? 1;
 
   const filteredPayments = useMemo(
     () => filterPaymentsByLedger(payments, ledger),
@@ -97,11 +98,11 @@ export function DashboardClient({
   );
 
   const today = useMemo(() => startOfToday(), []);
-  const viewingCurrentMonth = isCurrentMonth(year, month, today);
-  const viewingPastMonth = isPastMonth(year, month, today);
-  const viewingFutureMonth = isFutureMonth(year, month, today);
+  const viewingCurrentCycle = isCurrentCycle(year, month, cycleStartDay, today);
+  const viewingPastCycle = isPastCycle(year, month, cycleStartDay, today);
+  const viewingFutureCycle = isFutureCycle(year, month, cycleStartDay, today);
 
-  const { start, end } = getMonthRange(year, month);
+  const { start, end } = getCycleRange(year, month, cycleStartDay);
   const horizonRange = useMemo(
     () => getHorizonRange(horizonDays, today),
     [horizonDays, today],
@@ -132,8 +133,8 @@ export function DashboardClient({
   const monthPending = sumOccurrences(monthUpcoming, defaultCurrency);
   const horizonTotal = sumOccurrences(horizonOccurrences, defaultCurrency);
 
-  const visibleMonthList = viewingPastMonth ? [] : viewingFutureMonth ? monthOccurrences : monthUpcoming;
-  const collapsedMonthList = viewingPastMonth ? monthOccurrences : monthPastDue;
+  const visibleMonthList = viewingPastCycle ? [] : viewingFutureCycle ? monthOccurrences : monthUpcoming;
+  const collapsedMonthList = viewingPastCycle ? monthOccurrences : monthPastDue;
 
   function setView(nextView: DashboardView) {
     if (nextView === view) {
@@ -204,7 +205,10 @@ export function DashboardClient({
             <DashboardMonthHero
               year={year}
               month={month}
-              viewingCurrentMonth={viewingCurrentMonth}
+              cycleStartDay={cycleStartDay}
+              cycleStart={start}
+              cycleEnd={end}
+              viewingCurrentCycle={viewingCurrentCycle}
               monthPending={monthPending}
               monthTotal={monthTotal}
               defaultCurrency={defaultCurrency}
@@ -230,7 +234,7 @@ export function DashboardClient({
               <DashboardMonthList
                 visibleOccurrences={visibleMonthList}
                 collapsedOccurrences={collapsedMonthList}
-                viewingPastMonth={viewingPastMonth}
+                viewingPastCycle={viewingPastCycle}
                 hasPayments={filteredPayments.length > 0}
                 defaultCurrency={defaultCurrency}
                 intlLocale={intlLocale}
@@ -241,7 +245,7 @@ export function DashboardClient({
             <p className="pb-1 text-center text-xs text-muted-foreground">
               {view === "upcoming" ? (
                 t("horizonCount", { count: horizonOccurrences.length, days: horizonDays })
-              ) : viewingCurrentMonth && monthPastDue.length > 0 ? (
+              ) : viewingCurrentCycle && monthPastDue.length > 0 ? (
                 <>
                   {t("upcomingCount", { count: monthUpcoming.length })}
                   {" · "}
