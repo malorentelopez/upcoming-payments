@@ -9,6 +9,7 @@ export interface Profile {
   timezone: string;
   locale: string;
   default_ledger: PaymentLedger;
+  income_cycle_day: number;
   created_at: string;
 }
 

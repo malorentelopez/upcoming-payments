@@ -4,12 +4,20 @@ import {
   expandAllOccurrences,
   expandPaymentOccurrences,
   filterOccurrencesInRange,
+  formatCycleLabel,
+  getCycleRange,
+  getCurrentCycleAnchor,
+  getCyclesWindow,
   getHorizonRange,
+  getInitialMonthKey,
   getMonthRange,
+  isCurrentCycle,
+  isCurrentMonth,
+  isFutureCycle,
+  isFutureMonth,
   isOccurrenceDueToday,
   isOccurrenceUpcoming,
-  isCurrentMonth,
-  isFutureMonth,
+  isPastCycle,
   isPastMonth,
   parseMonthParam,
   shiftMonth,
@@ -320,5 +328,83 @@ describe("pending vs total sums", () => {
 
     expect(sumOccurrences(occurrences, "USD")).toBe(100);
     expect(sumOccurrences(upcoming, "USD")).toBe(60);
+  });
+});
+
+describe("income cycle helpers", () => {
+  it("returns calendar month range when cycle day is 1", () => {
+    const calendar = getMonthRange(2026, 1);
+    const cycle = getCycleRange(2026, 1, 1);
+
+    expect(cycle.start.getTime()).toBe(calendar.start.getTime());
+    expect(cycle.end.getTime()).toBe(calendar.end.getTime());
+  });
+
+  it("builds cycle range from payday through day before next payday", () => {
+    const { start, end } = getCycleRange(2026, 1, 25);
+
+    expect(start.getFullYear()).toBe(2026);
+    expect(start.getMonth()).toBe(0);
+    expect(start.getDate()).toBe(25);
+    expect(end.getFullYear()).toBe(2026);
+    expect(end.getMonth()).toBe(1);
+    expect(end.getDate()).toBe(24);
+  });
+
+  it("clamps cycle day to month length", () => {
+    const { start, end } = getCycleRange(2026, 2, 31);
+
+    expect(start.getDate()).toBe(28);
+    expect(end.getFullYear()).toBe(2026);
+    expect(end.getMonth()).toBe(2);
+    expect(end.getDate()).toBe(30);
+  });
+
+  it("resolves current cycle anchor before and after payday", () => {
+    expect(getCurrentCycleAnchor(new Date(2026, 1, 10), 25)).toEqual({
+      year: 2026,
+      month: 1,
+    });
+    expect(getCurrentCycleAnchor(new Date(2026, 1, 26), 25)).toEqual({
+      year: 2026,
+      month: 2,
+    });
+  });
+
+  it("builds initial month key from current cycle anchor", () => {
+    expect(getInitialMonthKey(new Date(2026, 1, 10), 25)).toBe("2026-01");
+    expect(getInitialMonthKey(new Date(2026, 1, 26), 25)).toBe("2026-02");
+  });
+
+  it("detects current, past, and future cycles", () => {
+    const today = new Date(2026, 1, 10);
+
+    expect(isCurrentCycle(2026, 1, 25, today)).toBe(true);
+    expect(isPastCycle(2025, 12, 25, today)).toBe(true);
+    expect(isFutureCycle(2026, 2, 25, today)).toBe(true);
+  });
+
+  it("produces contiguous non-overlapping cycle windows", () => {
+    const first = getCycleRange(2026, 1, 25);
+    const second = getCycleRange(2026, 2, 25);
+
+    expect(second.start.getTime()).toBe(first.end.getTime() + 1);
+  });
+
+  it("builds cycle window labels for insights", () => {
+    const cycles = getCyclesWindow(2026, 2, 2, 25, "en-US");
+
+    expect(cycles).toHaveLength(2);
+    expect(cycles[0].label).toMatch(/Jan/);
+    expect(cycles[1].label).toMatch(/Feb/);
+  });
+
+  it("formats cycle labels with start and end dates", () => {
+    const { start, end } = getCycleRange(2026, 1, 25);
+    const label = formatCycleLabel(start, end, "en-US");
+
+    expect(label).toContain("Jan");
+    expect(label).toContain("Feb");
+    expect(label).toContain("–");
   });
 });

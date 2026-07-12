@@ -8,12 +8,16 @@ import { PaymentCard } from "@/components/payments/payment-card";
 import { StaggerItem, StaggerList } from "@/components/motion/page-transition";
 import { useFormatCurrency } from "@/hooks/use-format-currency";
 import { formatMonthYear } from "@/lib/payments/formatters";
+import { formatCycleLabel } from "@/lib/payments/occurrences";
 import type { PaymentOccurrence } from "@/lib/types";
 
 interface DashboardMonthHeroProps {
   year: number;
   month: number;
-  viewingCurrentMonth: boolean;
+  cycleStartDay: number;
+  cycleStart: Date;
+  cycleEnd: Date;
+  viewingCurrentCycle: boolean;
   monthPending: number;
   monthTotal: number;
   defaultCurrency: string;
@@ -24,7 +28,10 @@ interface DashboardMonthHeroProps {
 export function DashboardMonthHero({
   year,
   month,
-  viewingCurrentMonth,
+  cycleStartDay,
+  cycleStart,
+  cycleEnd,
+  viewingCurrentCycle,
   monthPending,
   monthTotal,
   defaultCurrency,
@@ -47,7 +54,7 @@ export function DashboardMonthHero({
           <ChevronLeft className="size-5" />
         </button>
         <div className="text-center">
-          {viewingCurrentMonth ? (
+          {viewingCurrentCycle ? (
             <>
               <p className="text-sm text-muted-foreground">{t("stillToPay")}</p>
               <p className="text-3xl font-semibold tabular-nums tracking-tight">
@@ -68,7 +75,9 @@ export function DashboardMonthHero({
             </>
           )}
           <p className="mt-1 text-sm font-medium">
-            {formatMonthYear(year, month, intlLocale)}
+            {cycleStartDay === 1
+              ? formatMonthYear(year, month, intlLocale)
+              : formatCycleLabel(cycleStart, cycleEnd, intlLocale)}
           </p>
         </div>
         <button
@@ -87,7 +96,7 @@ export function DashboardMonthHero({
 interface DashboardMonthListProps {
   visibleOccurrences: PaymentOccurrence[];
   collapsedOccurrences: PaymentOccurrence[];
-  viewingPastMonth: boolean;
+  viewingPastCycle: boolean;
   hasPayments: boolean;
   defaultCurrency: string;
   intlLocale: string;
@@ -97,7 +106,7 @@ interface DashboardMonthListProps {
 export function DashboardMonthList({
   visibleOccurrences,
   collapsedOccurrences,
-  viewingPastMonth,
+  viewingPastCycle,
   hasPayments,
   defaultCurrency,
   intlLocale,
@@ -137,12 +146,12 @@ export function DashboardMonthList({
 
       <CollapsiblePaymentSection
         title={
-          viewingPastMonth
+          viewingPastCycle
             ? t("pastMonth", { count: collapsedOccurrences.length })
             : t("pastDue", { count: collapsedOccurrences.length })
         }
-        showLabel={viewingPastMonth ? t("showPastMonth") : t("showPastDue")}
-        hideLabel={viewingPastMonth ? t("hidePastMonth") : t("hidePastDue")}
+        showLabel={viewingPastCycle ? t("showPastMonth") : t("showPastDue")}
+        hideLabel={viewingPastCycle ? t("hidePastMonth") : t("hidePastDue")}
         occurrences={collapsedOccurrences}
         currency={defaultCurrency}
         intlLocale={intlLocale}

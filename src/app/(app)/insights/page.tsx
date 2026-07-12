@@ -1,5 +1,6 @@
 import { InsightsGate } from "@/components/insights/insights-gate";
-import { getMonthKey } from "@/lib/payments/occurrences";
+import { getProfile } from "@/lib/data/queries";
+import { getInitialMonthKey } from "@/lib/payments/occurrences";
 
 interface InsightsPageProps {
   searchParams: Promise<{ month?: string }>;
@@ -7,7 +8,9 @@ interface InsightsPageProps {
 
 export default async function InsightsPage({ searchParams }: InsightsPageProps) {
   const params = await searchParams;
-  const initialMonth = params.month ?? getMonthKey(new Date());
+  const profile = await getProfile();
+  const cycleStartDay = profile?.income_cycle_day ?? 1;
+  const initialMonth = params.month ?? getInitialMonthKey(new Date(), cycleStartDay);
 
   return <InsightsGate initialMonth={initialMonth} />;
 }

@@ -59,6 +59,22 @@ export function ProfileForm({ profile }: ProfileFormProps) {
           </select>
         </div>
         <TimezoneSelect defaultValue={profile.timezone} />
+        <div className="space-y-2">
+          <Label htmlFor="incomeCycleDay">{t("incomeCycleDay")}</Label>
+          <select
+            id="incomeCycleDay"
+            name="incomeCycleDay"
+            defaultValue={profile.income_cycle_day ?? 1}
+            className="flex h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
+          >
+            {Array.from({ length: 31 }, (_, index) => index + 1).map((day) => (
+              <option key={day} value={day}>
+                {day}
+              </option>
+            ))}
+          </select>
+          <p className="text-sm text-muted-foreground">{t("incomeCycleDayHelp")}</p>
+        </div>
         <Button type="submit" className="h-11 rounded-xl">
           {t("saveProfile")}
         </Button>

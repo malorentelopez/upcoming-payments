@@ -318,6 +318,7 @@ export async function updateProfile(formData: FormData): Promise<void> {
     timezone: formData.get("timezone"),
     defaultLedger:
       formData.get("defaultLedger") === "business" ? "business" : "personal",
+    incomeCycleDay: formData.get("incomeCycleDay"),
   });
 
   if (!parsed.success) {
@@ -331,6 +332,7 @@ export async function updateProfile(formData: FormData): Promise<void> {
       default_currency: parsed.data.defaultCurrency,
       timezone: parsed.data.timezone,
       default_ledger: parsed.data.defaultLedger,
+      income_cycle_day: parsed.data.incomeCycleDay,
     })
     .eq("id", user.id);
 
@@ -340,5 +342,6 @@ export async function updateProfile(formData: FormData): Promise<void> {
 
   revalidatePath("/settings");
   revalidatePath("/dashboard");
+  revalidatePath("/insights");
   revalidatePath("/me");
 }

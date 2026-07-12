@@ -125,6 +125,7 @@
     "trends": "Trends",
     "title": "Insights",
     "lastSixMonths": "Last 6 months",
+    "lastSixCycles": "Last 6 cycles",
     "byCategory": "By category",
     "uncategorized": "Uncategorized"
   },
@@ -239,6 +240,8 @@
     "displayName": "Display name",
     "defaultCurrency": "Default currency",
     "defaultLedger": "Default for new payments",
+    "incomeCycleDay": "Income day",
+    "incomeCycleDayHelp": "Payments in \"This month\" are grouped from this day until the day before your next income.",
     "saveProfile": "Save profile",
     "signOut": "Sign out",
     "deleteAccountTitle": "Delete account",

@@ -20,7 +20,7 @@ function InsightsSkeleton() {
 }
 
 export function InsightsGate({ initialMonth }: InsightsGateProps) {
-  const { payments, defaultCurrency } = useAppData();
+  const { payments, defaultCurrency, profile } = useAppData();
 
   return (
     <AppShellGate skeleton={<InsightsSkeleton />}>
@@ -28,6 +28,7 @@ export function InsightsGate({ initialMonth }: InsightsGateProps) {
         payments={payments}
         defaultCurrency={defaultCurrency}
         initialMonth={initialMonth}
+        incomeCycleDay={profile?.income_cycle_day ?? 1}
       />
     </AppShellGate>
   );

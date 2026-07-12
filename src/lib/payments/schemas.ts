@@ -83,6 +83,7 @@ export const profileSchema = z.object({
     .min(1)
     .refine(isValidTimezone, "Invalid timezone"),
   defaultLedger: paymentLedgerSchema.default("personal"),
+  incomeCycleDay: z.coerce.number().int().min(1).max(31).default(1),
 });
 
 export const passwordSchema = z
