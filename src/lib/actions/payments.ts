@@ -3,9 +3,8 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
-import { getPayment } from "@/lib/data/queries";
+import { getPayments } from "@/lib/data/queries";
 import { toUserErrorMessage } from "@/lib/errors";
-import { recordInstallmentPayment } from "@/lib/payments/installments";
 import {
   categorySchema,
   paymentFormSchema,
@@ -251,7 +250,7 @@ export async function togglePaymentActive(id: string, isActive: boolean) {
   return { success: true };
 }
 
-export async function markInstallmentPaid(id: string) {
+export async function syncInstallmentProgress() {
   const supabase = await createClient();
   const {
     data: { user },
@@ -259,48 +258,12 @@ export async function markInstallmentPaid(id: string) {
 
   if (!user) return { error: "Unauthorized" };
 
-  const paymentId = uuidSchema.safeParse(id);
-  if (!paymentId.success) {
-    return { error: "Invalid payment." };
-  }
-
-  const payment = await getPayment(paymentId.data);
-  if (!payment) {
-    return { error: "Payment not found." };
-  }
-
-  if (payment.type !== "installment") {
-    return { error: "Only installment payments can record a paid installment." };
-  }
-
-  const recorded = recordInstallmentPayment(payment);
-  if ("error" in recorded) {
-    const message = {
-      already_completed: "All installments are already paid.",
-      missing_due_date: "This payment is missing a next due date.",
-    }[recorded.error];
-    return { error: message };
-  }
-
-  const { error } = await supabase
-    .from("payments")
-    .update({
-      paid_installments: recorded.paid_installments,
-      next_due_date: recorded.next_due_date,
-      day_of_month: recorded.day_of_month,
-      is_active: recorded.is_active,
-    })
-    .eq("id", paymentId.data)
-    .eq("user_id", user.id);
-
-  if (error) {
-    return { error: toUserErrorMessage(error, "Could not record installment.") };
-  }
+  await getPayments();
 
   revalidatePath("/dashboard");
   revalidatePath("/insights");
-  revalidatePath(`/payments/${paymentId.data}`);
-  return { success: true, completed: recorded.completed };
+  revalidatePath("/settings");
+  return { success: true };
 }
 
 export async function createCategory(formData: FormData): Promise<void> {

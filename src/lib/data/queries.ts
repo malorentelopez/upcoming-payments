@@ -12,6 +12,10 @@ import type {
   ProfileView,
 } from "@/lib/types";
 import type { LedgerFilter } from "@/lib/payments/ledger";
+import {
+  applyInstallmentCatchUp,
+  getInstallmentCatchUpUpdate,
+} from "@/lib/payments/installments";
 import { uuidSchema } from "@/lib/payments/schemas";
 
 const PROFILE_COLUMNS =
@@ -132,6 +136,44 @@ export const getCategories = cache(async (): Promise<CategoryView[]> => {
   return (data ?? []).map(toCategoryView);
 });
 
+async function persistInstallmentCatchUp(
+  payments: PaymentView[],
+): Promise<PaymentView[]> {
+  const drifted = payments.flatMap((payment) => {
+    const update = getInstallmentCatchUpUpdate(payment);
+    return update ? [{ payment, update }] : [];
+  });
+
+  if (drifted.length === 0) {
+    return payments;
+  }
+
+  const user = await getAuthUser();
+  if (!user) {
+    return payments.map((payment) => applyInstallmentCatchUp(payment));
+  }
+
+  const supabase = await createClient();
+  await Promise.all(
+    drifted.map(({ payment, update }) =>
+      supabase
+        .from("payments")
+        .update(update)
+        .eq("id", payment.id)
+        .eq("user_id", user.id),
+    ),
+  );
+
+  const nextById = new Map(
+    drifted.map(({ payment, update }) => [
+      payment.id,
+      { ...payment, ...update },
+    ]),
+  );
+
+  return payments.map((payment) => nextById.get(payment.id) ?? payment);
+}
+
 export const getPayments = cache(async function getPayments(
   ledgerFilter: LedgerFilter = "all",
 ): Promise<PaymentView[]> {
@@ -151,7 +193,9 @@ export const getPayments = cache(async function getPayments(
 
   const { data } = await query.order("name");
 
-  return (data ?? []).map((row) => toPaymentView(row as PaymentRow));
+  return persistInstallmentCatchUp(
+    (data ?? []).map((row) => toPaymentView(row as PaymentRow)),
+  );
 });
 
 export async function getPayment(id: string): Promise<PaymentView | null> {
@@ -169,7 +213,12 @@ export async function getPayment(id: string): Promise<PaymentView | null> {
     .eq("user_id", user.id)
     .single();
 
-  return data ? toPaymentView(data as PaymentRow) : null;
+  if (!data) return null;
+
+  const [payment] = await persistInstallmentCatchUp([
+    toPaymentView(data as PaymentRow),
+  ]);
+  return payment ?? null;
 }
 
 export interface AppShellData {

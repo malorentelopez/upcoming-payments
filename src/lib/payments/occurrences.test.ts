@@ -268,6 +268,24 @@ describe("splitOccurrencesByDueDate", () => {
     expect(upcoming).toHaveLength(2);
     expect(upcoming.map((o) => o.paymentId)).toEqual(["today", "future"]);
   });
+
+  it("does not treat a passed installment as past due", () => {
+    const { start, end } = getMonthRange(2026, 6);
+    const payment = makePayment({
+      type: "installment",
+      amount: 200,
+      total_installments: 6,
+      paid_installments: 3,
+      next_due_date: "2026-06-01",
+      day_of_month: 1,
+    });
+    const occurrences = expandAllOccurrences([payment], start, end);
+    const { upcoming, pastDue } = splitOccurrencesByDueDate(occurrences, today);
+
+    expect(occurrences).toHaveLength(1);
+    expect(pastDue).toHaveLength(0);
+    expect(upcoming).toHaveLength(0);
+  });
 });
 
 describe("isOccurrenceUpcoming", () => {

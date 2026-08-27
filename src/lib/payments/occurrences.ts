@@ -383,7 +383,7 @@ export function splitOccurrencesByDueDate(
   for (const occurrence of occurrences) {
     if (isOccurrenceUpcoming(occurrence.dueDate, today)) {
       upcoming.push(occurrence);
-    } else {
+    } else if (occurrence.type !== "installment") {
       pastDue.push(occurrence);
     }
   }
