@@ -149,7 +149,7 @@ describe("expandPaymentOccurrences — installment", () => {
     expect(expandPaymentOccurrences(payment, start, end)).toHaveLength(0);
   });
 
-  it("includes remaining installment summary after the shown payment", () => {
+  it("includes remaining installment summary on the shown payment", () => {
     const payment = makePayment({
       type: "installment",
       amount: 200,
@@ -162,8 +162,8 @@ describe("expandPaymentOccurrences — installment", () => {
     const occurrences = expandPaymentOccurrences(payment, start, end);
 
     expect(occurrences).toHaveLength(1);
-    expect(occurrences[0].installmentRemainingCount).toBe(2);
-    expect(occurrences[0].installmentPendingAmount).toBe(400);
+    expect(occurrences[0].installmentRemainingCount).toBe(3);
+    expect(occurrences[0].installmentPendingAmount).toBe(600);
   });
 
   it("omits summary on the final installment", () => {
@@ -181,6 +181,23 @@ describe("expandPaymentOccurrences — installment", () => {
     expect(occurrences).toHaveLength(1);
     expect(occurrences[0].installmentRemainingCount).toBeUndefined();
     expect(occurrences[0].installmentPendingAmount).toBeUndefined();
+  });
+
+  it("keeps the next due day when stored day_of_month is the form default", () => {
+    const payment = makePayment({
+      type: "installment",
+      frequency: "monthly",
+      amount: 100,
+      total_installments: 4,
+      paid_installments: 0,
+      next_due_date: "2026-03-15",
+      day_of_month: 1,
+    });
+    const { start, end } = getMonthRange(2026, 4);
+    const occurrences = expandPaymentOccurrences(payment, start, end);
+
+    expect(occurrences).toHaveLength(1);
+    expect(occurrences[0].dueDate.getDate()).toBe(15);
   });
 });
 

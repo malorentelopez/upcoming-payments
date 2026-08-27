@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Pause, Pencil, Play, Trash2 } from "lucide-react";
+import { useTransition } from "react";
+import { ArrowLeft, Check, Pause, Pencil, Play, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -13,9 +14,11 @@ import { Button, buttonVariants } from "@/components/ui/button";
 import { MerchantLogo } from "@/components/merchants/merchant-logo";
 import {
   deletePayment,
+  markInstallmentPaid,
   togglePaymentActive,
 } from "@/lib/actions/payments";
 import { resolveMerchant } from "@/lib/merchants";
+import { getInstallmentProgress } from "@/lib/payments/installments";
 import { sanitizeHexColor } from "@/lib/security/colors";
 import { useFormatCurrency } from "@/hooks/use-format-currency";
 import { localeToIntl } from "@/lib/i18n/locale";
@@ -36,6 +39,9 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
   const { formatAmount } = useFormatCurrency();
   const { refresh: refreshAppData } = useAppData();
   const merchant = resolveMerchant(payment.name);
+  const [isRecording, startRecording] = useTransition();
+  const installment =
+    payment.type === "installment" ? getInstallmentProgress(payment) : null;
 
   async function handleToggle() {
     const result = await togglePaymentActive(payment.id, !payment.is_active);
@@ -51,6 +57,22 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
   async function handleDelete() {
     if (!confirm(t("deleteConfirm"))) return;
     await deletePayment(payment.id);
+  }
+
+  function handleMarkPaid() {
+    startRecording(async () => {
+      const result = await markInstallmentPaid(payment.id);
+      if (result.error) {
+        toast.error(result.error);
+        return;
+      }
+
+      toast.success(
+        result.completed ? t("installmentCompleted") : t("installmentRecorded"),
+      );
+      await refreshAppData();
+      router.refresh();
+    });
   }
 
   return (
@@ -107,7 +129,10 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
                   {payment.category.name}
                 </Badge>
               )}
-              {!payment.is_active && (
+              {installment?.completed && (
+                <Badge variant="outline">{t("completed")}</Badge>
+              )}
+              {!installment?.completed && !payment.is_active && (
                 <Badge variant="outline">{t("paused")}</Badge>
               )}
             </div>
@@ -132,16 +157,26 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
               )}
             </>
           )}
-          {payment.type === "installment" && (
+          {installment && (
             <>
               <DetailRow
                 label={t("progress")}
                 value={t("progressValue", {
-                  paid: payment.paid_installments,
-                  total: payment.total_installments ?? 0,
+                  paid: installment.paid,
+                  total: installment.total,
                 })}
               />
-              <DetailRow label={t("nextDue")} value={payment.next_due_date ?? "—"} />
+              <DetailRow
+                label={t("remaining")}
+                value={formatAmount(
+                  installment.remainingAmount,
+                  payment.currency,
+                  intlLocale,
+                )}
+              />
+              {!installment.completed && (
+                <DetailRow label={t("nextDue")} value={payment.next_due_date ?? "—"} />
+              )}
             </>
           )}
           {payment.type === "one_off" && (
@@ -151,44 +186,59 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
         </div>
       </section>
 
-      <div className="flex flex-col gap-3 sm:flex-row">
-        <Link
-          href={`/payments/${payment.id}/edit`}
-          className={cn(
-            buttonVariants({ variant: "outline" }),
-            "h-11 w-full gap-1.5 rounded-xl sm:flex-1",
+      <div className="flex flex-col gap-3">
+        {installment && !installment.completed && (
+          <Button
+            type="button"
+            className="h-11 w-full gap-1.5 rounded-xl"
+            disabled={isRecording}
+            onClick={handleMarkPaid}
+          >
+            <Check className="size-4" />
+            {t("markInstallmentPaid")}
+          </Button>
+        )}
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <Link
+            href={`/payments/${payment.id}/edit`}
+            className={cn(
+              buttonVariants({ variant: "outline" }),
+              "h-11 w-full gap-1.5 rounded-xl sm:flex-1",
+            )}
+          >
+            <Pencil className="size-4" />
+            {tCommon("edit")}
+          </Link>
+          {!installment?.completed && (
+            <Button
+              type="button"
+              variant="outline"
+              className="h-11 w-full gap-1.5 rounded-xl sm:flex-1"
+              onClick={handleToggle}
+            >
+              {payment.is_active ? (
+                <>
+                  <Pause className="size-4" />
+                  {t("pause")}
+                </>
+              ) : (
+                <>
+                  <Play className="size-4" />
+                  {t("activate")}
+                </>
+              )}
+            </Button>
           )}
-        >
-          <Pencil className="size-4" />
-          {tCommon("edit")}
-        </Link>
-        <Button
-          type="button"
-          variant="outline"
-          className="h-11 w-full gap-1.5 rounded-xl sm:flex-1"
-          onClick={handleToggle}
-        >
-          {payment.is_active ? (
-            <>
-              <Pause className="size-4" />
-              {t("pause")}
-            </>
-          ) : (
-            <>
-              <Play className="size-4" />
-              {t("activate")}
-            </>
-          )}
-        </Button>
-        <Button
-          type="button"
-          variant="destructive"
-          className="h-11 w-full gap-1.5 rounded-xl sm:flex-1"
-          onClick={handleDelete}
-        >
-          <Trash2 className="size-4" />
-          {tCommon("delete")}
-        </Button>
+          <Button
+            type="button"
+            variant="destructive"
+            className="h-11 w-full gap-1.5 rounded-xl sm:flex-1"
+            onClick={handleDelete}
+          >
+            <Trash2 className="size-4" />
+            {tCommon("delete")}
+          </Button>
+        </div>
       </div>
     </div>
   );

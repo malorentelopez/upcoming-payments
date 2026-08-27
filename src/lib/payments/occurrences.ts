@@ -16,10 +16,17 @@ import {
 
 import type { CategoryView, PaymentOccurrence, PaymentView } from "@/lib/types";
 
-function parseDate(value: string | null): Date | null {
+export function parseIsoDate(value: string | null): Date | null {
   if (!value) return null;
   const date = new Date(`${value}T00:00:00`);
   return Number.isNaN(date.getTime()) ? null : date;
+}
+
+export function toIsoDate(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
 }
 
 function resolveDayOfMonth(
@@ -48,12 +55,32 @@ function addByFrequency(date: Date, frequency: PaymentView["frequency"]): Date {
   }
 }
 
+export function advanceDueDate(
+  date: Date,
+  frequency: PaymentView["frequency"],
+  dayOfMonth: number | null = null,
+  useLastDayOfMonth = false,
+): Date {
+  const freq = frequency ?? "monthly";
+  let next = addByFrequency(date, freq);
+
+  if (freq === "monthly") {
+    next = resolveDayOfMonth(
+      next,
+      dayOfMonth ?? date.getDate(),
+      useLastDayOfMonth,
+    );
+  }
+
+  return next;
+}
+
 function expandRecurring(
   payment: PaymentView,
   rangeStart: Date,
   rangeEnd: Date,
 ): PaymentOccurrence[] {
-  const startDate = parseDate(payment.start_date);
+  const startDate = parseIsoDate(payment.start_date);
   if (!startDate) return [];
 
   let cursor = resolveDayOfMonth(
@@ -66,7 +93,7 @@ function expandRecurring(
     cursor = addByFrequency(cursor, payment.frequency ?? "monthly");
   }
 
-  const endDate = parseDate(payment.end_date);
+  const endDate = parseIsoDate(payment.end_date);
   const occurrences: PaymentOccurrence[] = [];
   const safetyLimit = 500;
   let iterations = 0;
@@ -108,11 +135,12 @@ function expandInstallment(
   const remaining = total - paid;
   if (remaining <= 0) return [];
 
-  let cursor = parseDate(payment.next_due_date);
+  let cursor = parseIsoDate(payment.next_due_date);
   if (!cursor) return [];
 
   const occurrences: PaymentOccurrence[] = [];
   const frequency = payment.frequency ?? "monthly";
+  const scheduledDay = Math.max(payment.day_of_month ?? 0, cursor.getDate());
 
   for (let i = 0; i < remaining; i += 1) {
     if (isAfter(cursor, rangeEnd)) break;
@@ -126,14 +154,12 @@ function expandInstallment(
       occurrences.push(occurrence);
     }
 
-    cursor = addByFrequency(cursor, frequency);
-    if (frequency === "monthly") {
-      cursor = resolveDayOfMonth(
-        cursor,
-        payment.day_of_month,
-        payment.use_last_day_of_month,
-      );
-    }
+    cursor = advanceDueDate(
+      cursor,
+      frequency,
+      scheduledDay,
+      payment.use_last_day_of_month,
+    );
   }
 
   return occurrences;
@@ -144,7 +170,7 @@ function expandOneOff(
   rangeStart: Date,
   rangeEnd: Date,
 ): PaymentOccurrence[] {
-  const due = parseDate(payment.due_date);
+  const due = parseIsoDate(payment.due_date);
   if (!due) return [];
 
   if (
@@ -170,7 +196,7 @@ function buildOccurrence(payment: PaymentView, dueDate: Date): PaymentOccurrence
   };
 }
 
-/** Installments still due after the occurrence at `installmentIndexFromNext` (0 = next due). */
+/** Installments still due, including the occurrence at `installmentIndexFromNext` (0 = next due). */
 function applyInstallmentSummary(
   occurrence: PaymentOccurrence,
   payment: PaymentView,
@@ -179,11 +205,12 @@ function applyInstallmentSummary(
   const total = payment.total_installments ?? 0;
   const paid = payment.paid_installments ?? 0;
   const remainingOnLoan = total - paid;
-  const remainingAfterThis = remainingOnLoan - installmentIndexFromNext - 1;
+  const remainingIncludingThis = remainingOnLoan - installmentIndexFromNext;
 
-  if (remainingAfterThis > 0) {
-    occurrence.installmentRemainingCount = remainingAfterThis;
-    occurrence.installmentPendingAmount = remainingAfterThis * Number(payment.amount);
+  if (remainingIncludingThis > 1) {
+    occurrence.installmentRemainingCount = remainingIncludingThis;
+    occurrence.installmentPendingAmount =
+      remainingIncludingThis * Number(payment.amount);
   }
 }
 
