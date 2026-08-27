@@ -3,8 +3,9 @@
 import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 
+import { getPayment } from "@/lib/data/queries";
 import { toUserErrorMessage } from "@/lib/errors";
-import { createClient } from "@/lib/supabase/server";
+import { recordInstallmentPayment } from "@/lib/payments/installments";
 import {
   categorySchema,
   paymentFormSchema,
@@ -12,6 +13,7 @@ import {
   uuidSchema,
 } from "@/lib/payments/schemas";
 import type { PaymentFormValues } from "@/lib/payments/schemas";
+import { createClient } from "@/lib/supabase/server";
 import type { Database } from "@/lib/types/database";
 
 type PaymentInsert = Database["public"]["Tables"]["payments"]["Insert"];
@@ -43,12 +45,13 @@ function formValuesToRow(values: PaymentFormValues, userId: string): PaymentInse
         total_installments: null,
         paid_installments: 0,
       };
-    case "installment":
+    case "installment": {
+      const dueDay = Number.parseInt(values.nextDueDate.slice(8, 10), 10);
       return {
         ...base,
         frequency: values.frequency,
-        day_of_month: values.useLastDayOfMonth ? null : (values.dayOfMonth ?? null),
-        use_last_day_of_month: values.useLastDayOfMonth,
+        day_of_month: dueDay,
+        use_last_day_of_month: false,
         start_date: null,
         end_date: null,
         due_date: null,
@@ -56,6 +59,7 @@ function formValuesToRow(values: PaymentFormValues, userId: string): PaymentInse
         total_installments: values.totalInstallments,
         paid_installments: values.paidInstallments,
       };
+    }
     case "one_off":
       return {
         ...base,
@@ -245,6 +249,58 @@ export async function togglePaymentActive(id: string, isActive: boolean) {
   revalidatePath("/insights");
   revalidatePath(`/payments/${paymentId.data}`);
   return { success: true };
+}
+
+export async function markInstallmentPaid(id: string) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return { error: "Unauthorized" };
+
+  const paymentId = uuidSchema.safeParse(id);
+  if (!paymentId.success) {
+    return { error: "Invalid payment." };
+  }
+
+  const payment = await getPayment(paymentId.data);
+  if (!payment) {
+    return { error: "Payment not found." };
+  }
+
+  if (payment.type !== "installment") {
+    return { error: "Only installment payments can record a paid installment." };
+  }
+
+  const recorded = recordInstallmentPayment(payment);
+  if ("error" in recorded) {
+    const message = {
+      already_completed: "All installments are already paid.",
+      missing_due_date: "This payment is missing a next due date.",
+    }[recorded.error];
+    return { error: message };
+  }
+
+  const { error } = await supabase
+    .from("payments")
+    .update({
+      paid_installments: recorded.paid_installments,
+      next_due_date: recorded.next_due_date,
+      day_of_month: recorded.day_of_month,
+      is_active: recorded.is_active,
+    })
+    .eq("id", paymentId.data)
+    .eq("user_id", user.id);
+
+  if (error) {
+    return { error: toUserErrorMessage(error, "Could not record installment.") };
+  }
+
+  revalidatePath("/dashboard");
+  revalidatePath("/insights");
+  revalidatePath(`/payments/${paymentId.data}`);
+  return { success: true, completed: recorded.completed };
 }
 
 export async function createCategory(formData: FormData): Promise<void> {
