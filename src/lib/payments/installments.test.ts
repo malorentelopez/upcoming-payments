@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 
-import { getInstallmentProgress, recordInstallmentPayment } from "./installments";
+import { getInstallmentCatchUpUpdate, getInstallmentProgress } from "./installments";
 import type { PaymentView } from "@/lib/types";
 
 function makeInstallment(overrides: Partial<PaymentView> = {}) {
@@ -12,91 +12,90 @@ function makeInstallment(overrides: Partial<PaymentView> = {}) {
     next_due_date: "2026-03-15",
     total_installments: 6,
     paid_installments: 2,
+    is_active: true,
     ...overrides,
   };
 }
 
 describe("getInstallmentProgress", () => {
-  it("computes remaining count and amount", () => {
-    expect(getInstallmentProgress(makeInstallment())).toEqual({
+  it("keeps stored progress when the next due date is today or later", () => {
+    expect(
+      getInstallmentProgress(makeInstallment(), new Date(2026, 2, 15)),
+    ).toEqual({
       total: 6,
       paid: 2,
       remainingCount: 4,
       remainingAmount: 800,
       completed: false,
+      nextDueDate: "2026-03-15",
     });
   });
 
-  it("marks the loan completed when every installment is paid", () => {
+  it("counts passed due dates as paid", () => {
     expect(
-      getInstallmentProgress(
-        makeInstallment({ paid_installments: 6, total_installments: 6 }),
-      ),
-    ).toMatchObject({ remainingCount: 0, remainingAmount: 0, completed: true });
+      getInstallmentProgress(makeInstallment(), new Date(2026, 5, 16)),
+    ).toEqual({
+      total: 6,
+      paid: 6,
+      remainingCount: 0,
+      remainingAmount: 0,
+      completed: true,
+      nextDueDate: null,
+    });
   });
-});
 
-describe("recordInstallmentPayment", () => {
-  it("increments paid installments and advances the next due date", () => {
-    expect(recordInstallmentPayment(makeInstallment())).toEqual({
-      paid_installments: 3,
-      next_due_date: "2026-04-15",
-      day_of_month: 15,
-      is_active: true,
+  it("stops on the next unpaid due date", () => {
+    expect(
+      getInstallmentProgress(makeInstallment(), new Date(2026, 4, 1)),
+    ).toMatchObject({
+      paid: 4,
+      remainingCount: 2,
+      remainingAmount: 400,
+      nextDueDate: "2026-05-15",
       completed: false,
     });
   });
 
-  it("keeps the due day when stored day_of_month is the form default", () => {
+  it("does not catch up a paused payment", () => {
     expect(
-      recordInstallmentPayment(
-        makeInstallment({ day_of_month: 1, next_due_date: "2026-03-15" }),
+      getInstallmentProgress(
+        makeInstallment({ is_active: false }),
+        new Date(2026, 5, 16),
       ),
     ).toMatchObject({
-      next_due_date: "2026-04-15",
-      day_of_month: 15,
+      paid: 2,
+      remainingCount: 4,
+      completed: false,
+      nextDueDate: "2026-03-15",
     });
   });
+});
 
-  it("restores a 31st after a short month", () => {
+describe("getInstallmentCatchUpUpdate", () => {
+  it("returns a patch when due dates have passed", () => {
     expect(
-      recordInstallmentPayment(
-        makeInstallment({
-          day_of_month: 31,
-          next_due_date: "2026-02-28",
-        }),
-      ),
-    ).toMatchObject({
-      next_due_date: "2026-03-31",
-      day_of_month: 31,
-    });
-  });
-
-  it("completes the loan on the last installment", () => {
-    expect(
-      recordInstallmentPayment(
-        makeInstallment({ paid_installments: 5, total_installments: 6 }),
+      getInstallmentCatchUpUpdate(
+        {
+          ...makeInstallment(),
+          type: "installment",
+        },
+        new Date(2026, 4, 1),
       ),
     ).toEqual({
-      paid_installments: 6,
-      next_due_date: "2026-03-15",
-      day_of_month: 15,
-      is_active: false,
-      completed: true,
+      paid_installments: 4,
+      next_due_date: "2026-05-15",
     });
   });
 
-  it("rejects a fully paid loan", () => {
+  it("returns null when progress already matches stored values", () => {
     expect(
-      recordInstallmentPayment(
-        makeInstallment({ paid_installments: 6, total_installments: 6 }),
+      getInstallmentCatchUpUpdate(
+        {
+          ...makeInstallment(),
+          type: "installment",
+        },
+        new Date(2026, 2, 15),
       ),
-    ).toEqual({ error: "already_completed" });
-  });
-
-  it("rejects a missing due date", () => {
-    expect(
-      recordInstallmentPayment(makeInstallment({ next_due_date: null })),
-    ).toEqual({ error: "missing_due_date" });
+    ).toBeNull();
   });
 });

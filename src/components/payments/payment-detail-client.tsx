@@ -2,8 +2,7 @@
 
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
-import { ArrowLeft, Check, Pause, Pencil, Play, Trash2 } from "lucide-react";
+import { ArrowLeft, Pause, Pencil, Play, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { toast } from "sonner";
 
@@ -12,11 +11,7 @@ import { useAppData } from "@/components/data/app-data-provider";
 import { Badge } from "@/components/ui/badge";
 import { Button, buttonVariants } from "@/components/ui/button";
 import { MerchantLogo } from "@/components/merchants/merchant-logo";
-import {
-  deletePayment,
-  markInstallmentPaid,
-  togglePaymentActive,
-} from "@/lib/actions/payments";
+import { deletePayment, togglePaymentActive } from "@/lib/actions/payments";
 import { resolveMerchant } from "@/lib/merchants";
 import { getInstallmentProgress } from "@/lib/payments/installments";
 import { sanitizeHexColor } from "@/lib/security/colors";
@@ -39,7 +34,6 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
   const { formatAmount } = useFormatCurrency();
   const { refresh: refreshAppData } = useAppData();
   const merchant = resolveMerchant(payment.name);
-  const [isRecording, startRecording] = useTransition();
   const installment =
     payment.type === "installment" ? getInstallmentProgress(payment) : null;
 
@@ -57,22 +51,6 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
   async function handleDelete() {
     if (!confirm(t("deleteConfirm"))) return;
     await deletePayment(payment.id);
-  }
-
-  function handleMarkPaid() {
-    startRecording(async () => {
-      const result = await markInstallmentPaid(payment.id);
-      if (result.error) {
-        toast.error(result.error);
-        return;
-      }
-
-      toast.success(
-        result.completed ? t("installmentCompleted") : t("installmentRecorded"),
-      );
-      await refreshAppData();
-      router.refresh();
-    });
   }
 
   return (
@@ -175,7 +153,10 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
                 )}
               />
               {!installment.completed && (
-                <DetailRow label={t("nextDue")} value={payment.next_due_date ?? "—"} />
+                <DetailRow
+                  label={t("nextDue")}
+                  value={installment.nextDueDate ?? "—"}
+                />
               )}
             </>
           )}
@@ -186,59 +167,46 @@ export function PaymentDetailClient({ payment }: PaymentDetailClientProps) {
         </div>
       </section>
 
-      <div className="flex flex-col gap-3">
-        {installment && !installment.completed && (
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Link
+          href={`/payments/${payment.id}/edit`}
+          className={cn(
+            buttonVariants({ variant: "outline" }),
+            "h-11 w-full gap-1.5 rounded-xl sm:flex-1",
+          )}
+        >
+          <Pencil className="size-4" />
+          {tCommon("edit")}
+        </Link>
+        {!installment?.completed && (
           <Button
             type="button"
-            className="h-11 w-full gap-1.5 rounded-xl"
-            disabled={isRecording}
-            onClick={handleMarkPaid}
+            variant="outline"
+            className="h-11 w-full gap-1.5 rounded-xl sm:flex-1"
+            onClick={handleToggle}
           >
-            <Check className="size-4" />
-            {t("markInstallmentPaid")}
+            {payment.is_active ? (
+              <>
+                <Pause className="size-4" />
+                {t("pause")}
+              </>
+            ) : (
+              <>
+                <Play className="size-4" />
+                {t("activate")}
+              </>
+            )}
           </Button>
         )}
-        <div className="flex flex-col gap-3 sm:flex-row">
-          <Link
-            href={`/payments/${payment.id}/edit`}
-            className={cn(
-              buttonVariants({ variant: "outline" }),
-              "h-11 w-full gap-1.5 rounded-xl sm:flex-1",
-            )}
-          >
-            <Pencil className="size-4" />
-            {tCommon("edit")}
-          </Link>
-          {!installment?.completed && (
-            <Button
-              type="button"
-              variant="outline"
-              className="h-11 w-full gap-1.5 rounded-xl sm:flex-1"
-              onClick={handleToggle}
-            >
-              {payment.is_active ? (
-                <>
-                  <Pause className="size-4" />
-                  {t("pause")}
-                </>
-              ) : (
-                <>
-                  <Play className="size-4" />
-                  {t("activate")}
-                </>
-              )}
-            </Button>
-          )}
-          <Button
-            type="button"
-            variant="destructive"
-            className="h-11 w-full gap-1.5 rounded-xl sm:flex-1"
-            onClick={handleDelete}
-          >
-            <Trash2 className="size-4" />
-            {tCommon("delete")}
-          </Button>
-        </div>
+        <Button
+          type="button"
+          variant="destructive"
+          className="h-11 w-full gap-1.5 rounded-xl sm:flex-1"
+          onClick={handleDelete}
+        >
+          <Trash2 className="size-4" />
+          {tCommon("delete")}
+        </Button>
       </div>
     </div>
   );

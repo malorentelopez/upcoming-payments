@@ -7,6 +7,7 @@ import { CookiePreferencesTrigger } from "@/components/consent/cookie-preference
 import { PageTransition } from "@/components/motion/page-transition";
 import { PrivacySettings } from "@/components/privacy/privacy-settings";
 import { CategoriesSection } from "@/components/settings/categories-section";
+import { InstallmentsSection } from "@/components/settings/installments-section";
 import { ThemeSettings } from "@/components/theme/theme-settings";
 import { buttonVariants } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
@@ -32,6 +33,8 @@ export function SettingsClient({ categories }: SettingsClientProps) {
       <PrivacySettings />
 
       <CategoriesSection categories={categories} />
+
+      <InstallmentsSection />
 
       <section className="rounded-2xl border border-border/60 bg-card p-5">
         <h2 className="mb-2 font-medium">{t("privacyCookies")}</h2>
